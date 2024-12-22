@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
 CustomUser = get_user_model()
-admin.site.unregister(User) 
+admin.site.unregister(User)
+
+
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
@@ -15,5 +17,6 @@ class CustomUserAdmin(UserAdmin):
         "username",
         "is_superuser",
     ]
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
