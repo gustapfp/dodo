@@ -278,3 +278,7 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,dotenv,django
+
+
+# Static and Templates related files
+/node_modules

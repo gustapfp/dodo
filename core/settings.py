@@ -65,10 +65,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':  [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,6 +81,9 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -97,7 +101,7 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT"),
     },
     'TEST': {
-            'NAME': 'TESTDB',  # Test database name
+            'NAME': 'TESTDB', 
         },
  }
 
