@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-
 class UserTests(TestCase):
     def test_user_creation(self):
         UserTable = get_user_model()
@@ -30,4 +29,3 @@ class UserTests(TestCase):
         self.assertTrue(superuser.is_staff)
         self.assertTrue(superuser.is_superuser)
 
-    
