@@ -41,7 +41,11 @@ class FormQuestions(models.Model):
     question = models.TextField(max_length=1000)
     question_hint = models.CharField(max_length=20)
     question_value = models.IntegerField()
+    question_id = models.CharField(max_length=20)
     
+    def __str__(self):
+        return self.question_id
+
 class FormSubsection(models.Model):
     questions = models.ManyToManyField()
 
