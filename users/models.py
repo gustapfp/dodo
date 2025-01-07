@@ -22,7 +22,7 @@ class Hospital(models.Model):
     address = models.TextField(max_length=80)
     created_at = models.DateTimeField(auto_now_add=True)
     active_user = models.BooleanField(default=True)
-    sectors = models.ManyToManyField(Sector, related_name='Hospitals', blank=True)
+    sectors = models.ManyToManyField(Sector, related_name='Hospitals', on_delete=models.CASCADE)
     # last_service = models.ForeignKey
 
     def __str__(self):
