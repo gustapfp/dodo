@@ -53,9 +53,12 @@ LOCAL_APPS = [
     "data_management.apps.DataManagementConfig",
 ]
 
-# THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    "allauth", 
+    "allauth.account", 
+]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS  # + THIRD_PARTY_APPS
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS  + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -68,6 +71,19 @@ MIDDLEWARE = [
 ]
 ROOT_URLCONF = "core.urls"
 
+
+
+# SITE_ID = 1
+# AUTHENTICATION_BACKENDS = (
+#     "django.contrib.auth.backends.ModelBackend",
+#     "allauth.account.auth_backends.AuthenticationBackend",
+# )
+
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" 
+
+# LOGIN_REDIRECT_URL = "home"
+# LOGOUT_REDIRECT_URL = "home"
+AUTH_USER_MODEL  = "users.CODEMember"
 # TEMPLATES
 TEMPLATES = [
     {

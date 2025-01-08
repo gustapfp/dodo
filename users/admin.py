@@ -1,17 +1,18 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import CODEMember, Hospital
 
-CustomUser = get_user_model()
+
+
 admin.site.unregister(User)
 
 
-class CustomUserAdmin(UserAdmin):
+class UserCODEMemberAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
-    model = CustomUser
+    model = CODEMember
     list_display = [
         "email",
         "username",
@@ -19,4 +20,4 @@ class CustomUserAdmin(UserAdmin):
     ]
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CODEMember, UserCODEMemberAdmin)
