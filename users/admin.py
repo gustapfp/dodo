@@ -1,23 +1,74 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CODEMemberCreationForm, CODEMemberChangeForm, HospitalCreationForm, HospitalChangeForm
 from .models import CODEMember, Hospital
-
-
 
 admin.site.unregister(User)
 
+@admin.register(CODEMember)
+class CODEMemberAdmin(UserAdmin):
+    add_form = CODEMemberCreationForm
+    form = CODEMemberChangeForm
 
-class UserCODEMemberAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
-    model = CODEMember
-    list_display = [
-        "email",
-        "username",
-        "is_superuser",
-    ]
+    fieldsets = (
+        (None, {
+            "fields": ("email", "password")
+            }
+        ),
+        ("Permissions", {
+            "fields": ("is_active", "is_staff", "is_superuser")
+            }
+        ),
+    )
+
+    add_fieldsets =  (
+        None, {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2', 'is_staff', 'is_superuser'),
+        }),
+
+    list_display = ("email", "is_staff", "is_superuser")
+    list_display_links = ("email")
+    list_editable = ("publicada",)
 
 
-admin.site.register(CODEMember, UserCODEMemberAdmin)
+
+@admin.register(Hospital)
+class HospitalAdmin(UserAdmin):
+    add_form = HospitalCreationForm
+    form = HospitalChangeForm
+
+    fieldsets = (
+        (
+            None, {"fields": ("username", "password")}
+        ),
+        (
+            "Details", {"fields": ( "email", "contact_number", "address","is_active", "sectors", "last_service")}
+        ),
+        (
+            "Permissions", {"fields": ("is_active")}
+        ),
+
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('name', 'email', 'password1', 'password2', 'is_active'),
+        }),
+    )
+
+    list_display = ("username", "is_active", "email")
+
+    list_display_links = ("username", "email")
+    search_fields = ("username",)
+    list_filter = ("is_active",)
+    list_editable = ("is_active",)
+    
+
+
+
+
+
+

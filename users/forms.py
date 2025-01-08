@@ -35,7 +35,7 @@ class CODEMemberChangeForm(UserChangeForm):
 
 
 
-class HospitalUserCreationForm(UserCreationForm):
+class HospitalCreationForm(UserCreationForm):
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
         label="Password confirmation", widget=forms.PasswordInput
@@ -60,7 +60,7 @@ class HospitalUserCreationForm(UserCreationForm):
         if commit:
             user.save()
 
-class HospitalUserChangeForm(UserChangeForm):
+class HospitalChangeForm(UserChangeForm):
     class Meta:
         model = Hospital
         fields =  ("username","password",  "email", "contact_number", "address","is_active", "sectors", "last_service")
