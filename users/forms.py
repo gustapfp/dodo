@@ -9,7 +9,7 @@ class CODEMemberCreationForm(UserCreationForm):
     )
     class Meta:
         model = CODEMember
-        fields = ("email", "is_admin")
+        fields = ("username", "is_superuser")
     
     def clean_passoword2(self):
         password1 = self.cleaned_data.get("password1")
@@ -29,11 +29,7 @@ class CODEMemberCreationForm(UserCreationForm):
 class CODEMemberChangeForm(UserChangeForm):
     class Meta:
         model = CODEMember
-        fields = ("email", "password","is_active", "is_admin")
-
-
-
-
+        fields = ("username", "password","is_active", "is_superuser")
 
 class HospitalCreationForm(UserCreationForm):
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
@@ -63,7 +59,7 @@ class HospitalCreationForm(UserCreationForm):
 class HospitalChangeForm(UserChangeForm):
     class Meta:
         model = Hospital
-        fields =  ("username","password",  "email", "contact_number", "address","is_active", "sectors", "last_service")
+        fields =  ("username","password",  "email", "contact_number", "address","is_active", "sectors", )
 # class LoginForms(forms.Form):
 #     login = forms.CharField(
 #         label = "Nome de Login",

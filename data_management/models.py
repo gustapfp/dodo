@@ -27,7 +27,7 @@ class Evaluator(models.Model):
         ("AMB", "Condutor(a) de Ambulância"),
     ]
     name = models.CharField(max_length=80)
-    job_role = models.CharField(max_length=4, choices=JOB_ROLE_CHOICES)
+    job_role = models.CharField(max_length=5, choices=JOB_ROLE_CHOICES)
     evaluation_date = models.DateTimeField(auto_now_add=True)
     hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     email = models.EmailField(max_length=80, unique=True)
