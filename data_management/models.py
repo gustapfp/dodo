@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import ForeignKey
-from ..users.models import Sector, Hospital
+from users.models import Hospital, Sector
 
 
 class Evaluator(models.Model):
@@ -37,7 +37,8 @@ class Evaluator(models.Model):
         return self.name
 
 
-class FormQuestions(models.Model):
+
+class Question(models.Model):
     question = models.TextField(max_length=1000)
     question_hint = models.CharField(max_length=20)
     question_value = models.IntegerField()
@@ -45,15 +46,15 @@ class FormQuestions(models.Model):
     
     def __str__(self):
         return self.question_id
-
+# sectors = models.ManyToManyField(Sector, related_name='hospital_sectors')
 class FormSubsection(models.Model):
-    questions = models.ManyToManyField()
+    questions = models.ManyToManyField(Question, related_name="subsections_questions")
 
 class FormSection(models.Model):
     form_subsections = models.ManyToManyField(FormSubsection, related_name="form_sections") 
 
 class ONAForm(models.Model):
-    ONA_sections = models.ManyToManyField(FormSection)
+    ONA_sections = models.ManyToManyField(FormSection, related_name="ona_form_sections")
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
 

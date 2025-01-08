@@ -57,7 +57,7 @@ class Hospital(AbstractBaseUser):
     address = models.TextField(max_length=150, blank=True)
     is_active  = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False) 
-    sectors = models.ManyToManyField(Sector, related_name='hospital_sectors', on_delete=models.CASCADE)
+    sectors = models.ManyToManyField(Sector, related_name='hospital_sectors')
     last_service = models.DateTimeField(auto_now=True) # TODO: I don't this this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
 
     objects = HospitalManager()
