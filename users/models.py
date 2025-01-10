@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-class CODEMemberManeger(BaseUserManager):
+class CODEMemberManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError("CODE user member must have an username address.")
@@ -25,11 +25,10 @@ class CODEMember(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=80, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
-    is_superuser = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=True)
 
-    objects = CODEMemberManeger()
+    objects = CODEMemberManager()
     USERNAME_FIELD = 'username'
-
     def __str__(self):
         return self.username
 
@@ -39,17 +38,24 @@ class Sector(models.Model):
         return self.name
  
 class HospitalManager(BaseUserManager):
-    def crete_user(self, username, password=None, **extra_fields):
+    def create_user(self, username, password=None, **extra_fields):
         if not username: 
             raise ValueError("Hospital must have a username, pela provide one. Ex: hospital_paula_ramos")
         
+        # sectors = extra_fields.pop('sectors', [])
+
         hospital = self.model(
             username=username, 
             **extra_fields
         )
+
         if password:
             hospital.set_password(password)
-        hospital.save(usign=self._db)
+        hospital.save(using=self._db)
+
+        # if sectors:
+        #     hospital.sectors.set(sectors)
+
         return hospital 
 
 class Hospital(AbstractBaseUser):
@@ -59,14 +65,14 @@ class Hospital(AbstractBaseUser):
     address = models.TextField(max_length=150, blank=True)
     is_active  = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False) 
+    is_superuser = models.BooleanField(default=False) 
     sectors = models.ManyToManyField(Sector, related_name='hospital_sectors')
     last_service = models.DateTimeField(auto_now=True) # TODO: I don't this this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
 
     objects = HospitalManager()
     
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['username', 'sectors']
-
+    REQUIRED_FIELDS = ['username']
 
 
     def __str__(self):
@@ -74,6 +80,7 @@ class Hospital(AbstractBaseUser):
     
     def save(self, *args, **kwargs):
         self.last_service = now()
+        
 # Signals for updating last_service
 @receiver(m2m_changed, sender=Hospital.sectors.through)
 def update_last_service_on_sectors_change(sender, instance, **kwargs):

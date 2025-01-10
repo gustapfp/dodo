@@ -36,26 +36,34 @@ class Evaluator(models.Model):
     def __str__(self):
         return self.name
 
-
-
 class Question(models.Model):
-    question = models.TextField(max_length=1000)
-    question_hint = models.CharField(max_length=20)
-    question_value = models.IntegerField()
     question_id = models.CharField(max_length=20)
+    description = models.CharField(max_length=20)
+    guidance = models.TextField(max_length=200, null=True)
+    evidence = models.TextField(max_length=200, null=True)
+    level = models.IntegerField()
+    result = models.IntegerField(default=0)
     
     def __str__(self):
         return self.question_id
-# sectors = models.ManyToManyField(Sector, related_name='hospital_sectors')
+
 class FormSubsection(models.Model):
+    level1 = models.ManyToManyField(Question, related_name="level1_questions")
+    level2 = models.ManyToManyField(Question, related_name="level2_questions")
+    subsection_title = models.CharField(max_length=80)
+    subsection_id = models.CharField(max_length=20)
     questions = models.ManyToManyField(Question, related_name="subsections_questions")
 
 class FormSection(models.Model):
     form_subsections = models.ManyToManyField(FormSubsection, related_name="form_sections") 
+    level3= models.ManyToManyField(Question, related_name="level3_questions")
+    section_id = models.CharField(max_length=20)
+    sections_title = models.CharField(max_length=80)
 
 class ONAForm(models.Model):
     ONA_sections = models.ManyToManyField(FormSection, related_name="ona_form_sections")
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
+    form_title = models.CharField(max_length=80)
 
 

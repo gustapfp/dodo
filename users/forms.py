@@ -24,6 +24,7 @@ class CODEMemberCreationForm(UserCreationForm):
         user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
+        return user
 
 
 class CODEMemberChangeForm(UserChangeForm):
@@ -55,19 +56,9 @@ class HospitalCreationForm(UserCreationForm):
         user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
+        return user
 
 class HospitalChangeForm(UserChangeForm):
     class Meta:
         model = Hospital
         fields =  ("username","password",  "email", "contact_number", "address","is_active", "sectors", )
-# class LoginForms(forms.Form):
-#     login = forms.CharField(
-#         label = "Nome de Login",
-#         required = True,
-#         max_length = 50
-#     )
-#     senha = forms.Charfield(
-#         label="Senha",
-#         required=True,
-#         maz_length = 50
-#     )

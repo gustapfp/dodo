@@ -2,9 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from .forms import CODEMemberCreationForm, CODEMemberChangeForm, HospitalCreationForm, HospitalChangeForm
-from .models import CODEMember, Hospital
+from .models import CODEMember, Hospital, Sector
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 admin.site.unregister(Group)
+admin.site.register(Sector)
 
 @admin.register(CODEMember)
 class CODEMemberAdmin(UserAdmin):
@@ -31,7 +34,7 @@ class CODEMemberAdmin(UserAdmin):
     list_display = ("username", "is_staff", "is_superuser",)
     list_display_links = ("username",)
     
-
+    
 
 
 @admin.register(Hospital)
@@ -41,10 +44,10 @@ class HospitalAdmin(UserAdmin):
 
     fieldsets = (
         (
-            None, {"fields": ("username", "password",)}
+            None, {"fields": ("username", "password")}
         ),
         (
-            "Details", {"fields": ( "email", "contact_number", "address", "sectors", "last_service",)}
+            "Details", {"fields": ( "email", "contact_number", "address", "sectors",)}
         ),
         (
             "Permissions", {"fields": ("is_active",)}
@@ -55,7 +58,7 @@ class HospitalAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('name', 'email', 'password1', 'password2', 'is_active'),
+            'fields': ('username', 'email', 'password1', 'password2', 'is_active'),
         }),
     )
     list_display = ("username", "is_active", "email",)
@@ -63,11 +66,8 @@ class HospitalAdmin(UserAdmin):
     search_fields = ("username",)
     list_filter = ("is_active",)
     list_editable = ("is_active",)
-    filter_horizontal = ()
-    
+    filter_horizontal = ["sectors"]
 
-
-
-
-
-
+    def has_module_permission(self, request):
+        """Restrict `Hospital` users from accessing the admin."""
+        return request.user.is_superuser or request.user.is_staff
