@@ -41,8 +41,6 @@ class HospitalManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username: 
             raise ValueError("Hospital must have a username, pela provide one. Ex: hospital_paula_ramos")
-        
-        # sectors = extra_fields.pop('sectors', [])
 
         hospital = self.model(
             username=username, 
@@ -53,8 +51,6 @@ class HospitalManager(BaseUserManager):
             hospital.set_password(password)
         hospital.save(using=self._db)
 
-        # if sectors:
-        #     hospital.sectors.set(sectors)
 
         return hospital 
 

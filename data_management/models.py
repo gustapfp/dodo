@@ -41,7 +41,7 @@ class Question(models.Model):
     description = models.CharField(max_length=20)
     guidance = models.TextField(max_length=200, null=True)
     evidence = models.TextField(max_length=200, null=True)
-
+    # level = models.IntegerField()
     def __str__(self):
         return self.question_id
 
