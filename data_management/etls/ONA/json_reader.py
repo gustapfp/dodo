@@ -1,6 +1,6 @@
 import json
 from typing import List
-from data_management.etls.ONA.json_base_models import Section, Subsection, Question
+from json_base_models import Section, Subsection, Question
 
 class JSONReader:
   def __init__(self, file_path):
@@ -59,3 +59,5 @@ if __name__ == "__main__":
   sections = json_reader.get_sections_list()
   subsections = json_reader.get_subsections_list(sections)
   questions = json_reader.get_questions_list(sections, subsections)
+  for question in questions:
+    print(question.id)
