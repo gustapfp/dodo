@@ -41,24 +41,27 @@ class Question(models.Model):
     description = models.CharField(max_length=20)
     guidance = models.TextField(max_length=200, null=True)
     evidence = models.TextField(max_length=200, null=True)
-    level = models.IntegerField()
-    result = models.IntegerField(default=0)
-    
+
     def __str__(self):
         return self.question_id
 
 class FormSubsection(models.Model):
-    level1 = models.ManyToManyField(Question, related_name="level1_questions")
-    level2 = models.ManyToManyField(Question, related_name="level2_questions")
     subsection_title = models.CharField(max_length=80)
     subsection_id = models.CharField(max_length=20)
-    questions = models.ManyToManyField(Question, related_name="subsections_questions")
+    questions_level1 = models.ManyToManyField(Question, related_name="level1_questions")
+    questions_level2 = models.ManyToManyField(Question, related_name="level2_questions")
+
+    def __str__(self):
+        return self.subsection_title
 
 class FormSection(models.Model):
-    form_subsections = models.ManyToManyField(FormSubsection, related_name="form_sections") 
-    level3= models.ManyToManyField(Question, related_name="level3_questions")
     section_id = models.CharField(max_length=20)
-    sections_title = models.CharField(max_length=80)
+    section_title = models.CharField(max_length=80)
+    form_subsections = models.ManyToManyField(FormSubsection, related_name="form_sections") 
+    questions_level3= models.ManyToManyField(Question, related_name="level3_questions")
+
+    def __str__(self):
+        return self.section_title
 
 class ONAForm(models.Model):
     ONA_sections = models.ManyToManyField(FormSection, related_name="ona_form_sections")
@@ -66,4 +69,5 @@ class ONAForm(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     form_title = models.CharField(max_length=80)
 
-
+    def __str__(self):
+        return self.form_title

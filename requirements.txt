@@ -7,3 +7,7 @@ typing_extensions==4.12.2
 psycopg2-binary==2.9.3
 watchdog==3.0.0
 django-allauth==0.50.0
+pydantic==2.10.5
+pydantic-core==2.27.2
+typing-extensions==4.12.2
+annoted-types==0.6.0
