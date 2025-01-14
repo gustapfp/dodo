@@ -18,8 +18,9 @@ class CODEMemberManager(BaseUserManager):
     
     def create_superuser(self, username, password=None, **extra_fields):
         user = self.create_user(username, password, **extra_fields)
-        user.is_admin = True
-        user.save(usign=self._db)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
 
 class CODEMember(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=80, unique=True)

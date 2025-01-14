@@ -38,9 +38,9 @@ class Evaluator(models.Model):
 
 class Question(models.Model):
     question_id = models.CharField(max_length=20)
-    description = models.CharField(max_length=20)
-    guidance = models.TextField(max_length=200, null=True)
-    evidence = models.TextField(max_length=200, null=True)
+    description = models.TextField(max_length=400, null=True)
+    guidance = models.TextField(max_length=400, null=True)
+    evidence = models.TextField(max_length=400, null=True)
     # level = models.IntegerField()
     def __str__(self):
         return self.question_id

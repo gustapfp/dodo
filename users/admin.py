@@ -33,6 +33,7 @@ class CODEMemberAdmin(UserAdmin):
 
     list_display = ("username", "is_staff", "is_superuser",)
     list_display_links = ("username",)
+    list_editable = ("is_staff", "is_superuser",)
     
     
 

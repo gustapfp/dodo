@@ -1,6 +1,6 @@
 import json
 from typing import List
-from json_base_models import Section, Subsection, Question
+from .json_base_models import Section, Subsection, Question
 
 class JSONReader:
   def __init__(self, file_path):

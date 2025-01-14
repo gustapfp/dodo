@@ -11,7 +11,6 @@ subsections = json_reader.get_subsections_list(sections)
 
 def insert_questions(apps, schema_editor):
     QuestionModel = apps.get_model('data_management', 'Question')
-
     questions_to_inset = json_reader.get_questions_list(sections, subsections)
     
     for question in questions_to_inset:
@@ -33,7 +32,7 @@ def remove_questions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0005_rename_level3_formsection_questions_level3_and_more'),
+        ('data_management', '0007_alter_question_description_alter_question_evidence_and_more'),
     ]
 
     operations = [
