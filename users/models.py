@@ -65,7 +65,7 @@ class Hospital(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False) 
     sectors = models.ManyToManyField(Sector, related_name='hospital_sectors')
     last_service = models.DateTimeField(auto_now=True) # TODO: I don't this this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
-
+    level = models.IntegerField(default=1)
     objects = HospitalManager()
     
     USERNAME_FIELD = 'username'

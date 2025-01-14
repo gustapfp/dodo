@@ -46,8 +46,8 @@ class Question(models.Model):
         return self.question_id
 
 class FormSubsection(models.Model):
-    subsection_title = models.CharField(max_length=80)
     subsection_id = models.CharField(max_length=20)
+    subsection_title = models.CharField(max_length=80)
     questions_level1 = models.ManyToManyField(Question, related_name="level1_questions")
     questions_level2 = models.ManyToManyField(Question, related_name="level2_questions")
 
