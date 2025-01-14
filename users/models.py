@@ -76,7 +76,10 @@ class Hospital(AbstractBaseUser):
         return self.username
     
     def save(self, *args, **kwargs):
+        # Any custom logic here
         self.last_service = now()
+        # Ensure the actual save is called
+        super().save(*args, **kwargs)
         
 # Signals for updating last_service
 @receiver(m2m_changed, sender=Hospital.sectors.through)

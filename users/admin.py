@@ -48,7 +48,7 @@ class HospitalAdmin(UserAdmin):
             None, {"fields": ("username", "password")}
         ),
         (
-            "Details", {"fields": ( "email", "contact_number", "address", "sectors",)}
+            "Details", {"fields": ( "email", "contact_number", "address", "sectors", "level")}
         ),
         (
             "Permissions", {"fields": ("is_active",)}
