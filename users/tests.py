@@ -1,11 +1,11 @@
 from django.test import TestCase
 
-from .models import CODEMember, Hospital, Sector
+from .models import CustomUser
 
 
 class UserTests(TestCase):
     def test_user_creation(self):
-        UserTable = CODEMember
+        UserTable = CustomUser
         user = UserTable.objects.create_user(
             username="test", email="test@test.com", password="test12345678"
         )
@@ -17,7 +17,7 @@ class UserTests(TestCase):
         self.assertFalse(user.is_superuser)
 
     def test_superuser_creation(self):
-        UserTable = CODEMember
+        UserTable = CustomUser
         superuser = UserTable.objects.create_superuser(
             username="test", email="test@test.com", password="test12345678"
         )

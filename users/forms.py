@@ -1,14 +1,14 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
-from .models import Hospital, CODEMember
+from .models import CustomUser
 
-class CODEMemberCreationForm(UserCreationForm):
+class CustomUSerCreationForm(UserCreationForm):
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
         label="Password confirmation", widget=forms.PasswordInput
     )
     class Meta:
-        model = CODEMember
+        model = CustomUser
         fields = ("username", "is_superuser")
     
     def clean_passoword2(self):
@@ -27,38 +27,8 @@ class CODEMemberCreationForm(UserCreationForm):
         return user
 
 
-class CODEMemberChangeForm(UserChangeForm):
+class CustomMemberChangeForm(UserChangeForm):
     class Meta:
-        model = CODEMember
+        model = CustomUser
         fields = ("username", "password","is_active", "is_superuser")
 
-class HospitalCreationForm(UserCreationForm):
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
-    password2 = forms.CharField(
-        label="Password confirmation", widget=forms.PasswordInput
-    )
-    class Meta:
-        model = Hospital
-        fields = ("username", "email", "contact_number", "address", "sectors")
-
-
-
-    def clean_passoword2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match")
-        return password2
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
-        if commit:
-            user.save()
-        return user
-
-class HospitalChangeForm(UserChangeForm):
-    class Meta:
-        model = Hospital
-        fields =  ("username","password",  "email", "contact_number", "address","is_active", "sectors", )

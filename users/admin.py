@@ -1,74 +1,44 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
-from .forms import CODEMemberCreationForm, CODEMemberChangeForm, HospitalCreationForm, HospitalChangeForm
-from .models import User, Hospital, Sector
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
+from .forms import CustomUSerCreationForm, CustomMemberChangeForm
+from .models import CustomUser
 
 admin.site.unregister(Group)
-admin.site.register(Sector)
 
-@admin.register(User)
-class CODEMemberAdmin(UserAdmin):
-    add_form = CODEMemberCreationForm
-    form = CODEMemberChangeForm
 
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    add_form = CustomUSerCreationForm
+    form = CustomMemberChangeForm
+    model = CustomUser  # ensures admin knows which model we're managing
+
+    # When viewing/editing an existing user
     fieldsets = (
         (None, {
-            "fields": ("username", "password",)
-            }
-        ),
+            "fields": ("username", "password", "role",),
+        }),
         ("Permissions", {
-            "fields": ("is_active", "is_staff", "is_superuser",)
-            }
-        ),
-    )
-
-    add_fieldsets =  (
-        None, {
-            'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2', 'is_staff', 'is_superuser',),
+            "fields": ("is_active", "is_staff", "is_superuser",),
         }),
-
-    list_display = ("username", "is_staff", "is_superuser",)
-    list_display_links = ("username",)
-    list_editable = ("is_staff", "is_superuser",)
-    
-    
-
-
-@admin.register(Hospital)
-class HospitalAdmin(UserAdmin):
-    add_form = HospitalCreationForm
-    form = HospitalChangeForm
-
-    fieldsets = (
-        (
-            None, {"fields": ("username", "password")}
-        ),
-        (
-            "Details", {"fields": ( "email", "contact_number", "address", "sectors", "level")}
-        ),
-        (
-            "Permissions", {"fields": ("is_active",)}
-        ),
-
     )
 
+    # When creating a new user
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'is_active'),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("username", "role", "password1", "password2", 
+                           "is_staff", "is_superuser"),
+            },
+        ),
     )
-    list_display = ("username", "is_active", "email",)
-    list_display_links = ("username", "email",)
-    search_fields = ("username",)
-    list_filter = ("is_active",)
-    list_editable = ("is_active",)
-    filter_horizontal = ["sectors"]
 
-    def has_module_permission(self, request):
-        """Restrict `Hospital` users from accessing the admin."""
-        return request.user.is_superuser or request.user.is_staff
+    list_display = ("username", "role", "is_staff", "is_superuser")
+    list_display_links = ("username",)
+    # Optional: make fields editable directly from the list view
+    list_editable = ("role", "is_staff", "is_superuser",)
+    
+
+

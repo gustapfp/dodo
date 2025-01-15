@@ -83,7 +83,10 @@ ROOT_URLCONF = "core.urls"
 
 # LOGIN_REDIRECT_URL = "home"
 # LOGOUT_REDIRECT_URL = "home"
-AUTH_USER_MODEL  = "users.CODEMember"
+AUTH_USER_MODEL  = "users.CustomUser"
+
+
+
 # TEMPLATES
 TEMPLATES = [
     {

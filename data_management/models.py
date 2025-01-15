@@ -1,6 +1,26 @@
 from django.db import models
 from django.db.models import ForeignKey
-from users.models import Hospital, Sector
+from users.models import CustomUser
+
+class Sector(models.Model):
+    name = models.CharField(max_length=80, unique=True)
+    def __str__(self):
+        return self.name
+ 
+class Hospital(models.Model):
+    name = models.CharField(max_length=80)
+    username = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, max_length=80, unique=True)
+    email = models.EmailField(max_length=80, blank=True)
+    contact_number = models.CharField(max_length=16, blank=True)
+    address = models.TextField(max_length=150, blank=True)
+    is_active  = models.BooleanField(default=True)
+    sectors = models.ManyToManyField(Sector, related_name='hospital_sectors')
+    last_service = models.DateTimeField(auto_now=True) # TODO: I don't this this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
+    level = models.IntegerField(default=1)
+
+
+    def __str__(self):
+        return self.name
 
 
 class Evaluator(models.Model):
