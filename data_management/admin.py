@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
-from .models import Question, FormSubsection, FormSection, ONAForm
+from .models import Question, FormSubsection, FormSection, ONAForm, Evaluator
 
 class QuestionAdmin(admin.ModelAdmin):  
    list_display = ("question_id", "description", )
    search_fields = ("question_id", "description", )
 
 class FormSubsectionAdmin(admin.ModelAdmin):
-   # form = FormSubsectionAdminForm
+
    list_display = ("subsection_id", "subsection_title", )
    search_fields = ("subsection_id", "subsection_title", )
    filter_horizontal = ["questions_level1", "questions_level2"]
@@ -28,3 +28,4 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(FormSubsection, FormSubsectionAdmin)
 admin.site.register(FormSection, FormSectionAdmin)
 admin.site.register(ONAForm, ONAFormAdmin)
+admin.site.register(Evaluator)

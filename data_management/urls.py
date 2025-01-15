@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import SortingFormView
+from .views import OnaFormView, EvaluatorView
 
 urlpatterns = [
-    path("sorting", SortingFormView.as_view(), name="sorting_form")
+    path("evaluator", EvaluatorView.as_view(), name="evaluator_form"), 
+    path("ona", OnaFormView.as_view(), name="ona_form")
 ]

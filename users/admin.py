@@ -2,14 +2,14 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from .forms import CODEMemberCreationForm, CODEMemberChangeForm, HospitalCreationForm, HospitalChangeForm
-from .models import CODEMember, Hospital, Sector
+from .models import User, Hospital, Sector
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 admin.site.unregister(Group)
 admin.site.register(Sector)
 
-@admin.register(CODEMember)
+@admin.register(User)
 class CODEMemberAdmin(UserAdmin):
     add_form = CODEMemberCreationForm
     form = CODEMemberChangeForm

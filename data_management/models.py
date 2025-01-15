@@ -5,6 +5,7 @@ from users.models import Hospital, Sector
 
 class Evaluator(models.Model):
     JOB_ROLE_CHOICES = [
+        (None, "Escolha sua profissão..."),
         ("MED", "Médico(a)"),
         ("ENF", "Enfermeiro(a)"),
         ("TENF", "Técnico(a) de Enfermagem"),
@@ -26,10 +27,10 @@ class Evaluator(models.Model):
         ("CENF", "Coordenador(a) de Enfermagem"),
         ("AMB", "Condutor(a) de Ambulância"),
     ]
-    name = models.CharField(max_length=80)
+    name = models.CharField(max_length=150)
+    hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     job_role = models.CharField(max_length=5, choices=JOB_ROLE_CHOICES)
     evaluation_date = models.DateTimeField(auto_now_add=True)
-    hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     email = models.EmailField(max_length=80, unique=True)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
 
@@ -68,6 +69,7 @@ class ONAForm(models.Model):
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
     form_title = models.CharField(max_length=80)
+    evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return self.form_title
