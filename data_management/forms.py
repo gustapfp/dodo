@@ -6,7 +6,26 @@ class EvaluatorForm(forms.ModelForm):
         model = Evaluator
         fields = "__all__"
         exclude = ('hospital', 'evaluation_date')
-
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'placeholder': 'Nome',
+                'id': 'evaluator-name'
+            }),
+            'hospital_sector': forms.Select(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'id': 'hospital-sector'
+            }),
+            'job_role': forms.Select(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'id': 'job-role'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'placeholder': 'nome@email.com',
+                'id': 'email-address'
+            }),
+        }
 class HospitalCreationForm(forms.ModelForm):
     """Form used when creating a new Hospital record in the admin."""
     class Meta:

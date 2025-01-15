@@ -29,6 +29,8 @@ class EvaluatorView(LoginRequiredMixin, View):
         if form.is_valid():
             evaluator = form.save(commit=False)
             evaluator.hospital = request.user.hospital
+            evaluator.save()  
+            messages.success(request, 'Evaluator successfully created.')
             return redirect("ona_form")
         else: 
             messages.error(request, 'Formulário Invalido. Você adicionou informações fora do padrão esperado.')
