@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import OnaFormView, EvaluatorView
+from .views import ONAFormView, EvaluatorView
 
 urlpatterns = [
     path("evaluator", EvaluatorView.as_view(), name="evaluator_form"), 
-    path("ona", OnaFormView.as_view(), name="ona_form")
+    path("form/<int:hospital_id>/", ONAFormView.as_view(), name="ona_form")
 ]

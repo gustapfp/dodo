@@ -1,5 +1,54 @@
-{%extends "./_base_ona.html"%}
-{%load static%}
+{% extends "./_base_ona.html" %}
+{% load static %}
 {% block content %}
-<h1>FORM</h1>
+
+
+<div class="flex h-screen my-16 items-center justify-center">
+    <div
+        class="w-full max-w-xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="mb-10 mt-5 text-xl font-semibold text-center text-gray-900 dark:text-white">Formulário ONA</h5>
+        <form method="POST">
+            {% for section in ona_form.ONA_sections.all %}
+            <section id="{{forloop.couter}}-section">
+
+                <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{section.section_title}}</h5>
+                {% for subsection in section.form_subsections.all %}
+                    <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{subsection.subsection_title}}</h5>
+                    <section id="subsection-{{forloop.counter}}">
+                        <section id="L1-subsection-{{forloop.counter}}-questions-level-1"></section>
+                        {% for question in subsection.questions_level1.all %}
+                        <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
+                        {% endfor %}
+
+                    {% if ona_form.hospital.level == 2 %}
+                    <section id="L2-subsection-{{forloop.counter}}-questions-level-2"></section>
+                        {% for question in subsection.questions_level2.all %}
+                            <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
+                        {% endfor %}
+                    {% elif ona_form.hospital.level == 3 %}
+                    <section id="L3-subsection-{{forloop.counter}}-questions-level-2"></section>
+                        {% for question in subsection.questions_level2.all %}
+                            <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
+                        {% endfor %}
+                        <section id="L3-subsection-{{forloop.counter}}-questions-level-3"></section>
+                        {% for question in section.questions_level3.all %}
+                            <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
+                        {% endfor %}
+                    {% endif %}
+                    </section>
+                    
+                {% endfor %}
+            </section>
+                
+            {% endfor %}
+
+
+        </form>
+    </div>
+</div>
+<script>
+  
+   
+</script>
+<script src="{% static 'js/ONAform.js' %}"></script>
 {% endblock content %}

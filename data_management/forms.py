@@ -1,11 +1,17 @@
 from django import forms
-from .models import Evaluator, Hospital
-from django.contrib.auth import get_user_model
+from .models import Evaluator, Hospital, ONAForm
+
+
 class EvaluatorForm(forms.ModelForm):
     class Meta:
         model = Evaluator
         fields = "__all__"
         exclude = ('hospital', 'evaluation_date')
+        error_messages = {
+            'email': {
+                'unique': "Esse Email já está em uso. Por favor, preencha o formulário de novo com outro email"
+            }
+        }
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
@@ -26,6 +32,7 @@ class EvaluatorForm(forms.ModelForm):
                 'id': 'email-address'
             }),
         }
+
 class HospitalCreationForm(forms.ModelForm):
     """Form used when creating a new Hospital record in the admin."""
     class Meta:
@@ -41,8 +48,6 @@ class HospitalCreationForm(forms.ModelForm):
             "is_active",
         )
     
-
-
 class HospitalChangeForm(forms.ModelForm):
     """Form used when editing an existing Hospital record in the admin."""
     class Meta:
@@ -57,3 +62,6 @@ class HospitalChangeForm(forms.ModelForm):
             "level",
             "is_active",
         )
+
+class SubsectionCreationForm(forms.ModelForm):
+    pass 

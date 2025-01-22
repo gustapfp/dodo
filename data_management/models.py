@@ -62,7 +62,7 @@ class Question(models.Model):
     description = models.TextField(max_length=400, null=True)
     guidance = models.TextField(max_length=400, null=True)
     evidence = models.TextField(max_length=400, null=True)
-    
+ 
     def __str__(self):
         return self.question_id
 
@@ -89,7 +89,26 @@ class ONAForm(models.Model):
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
     form_title = models.CharField(max_length=80)
-    evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return self.form_title
+    
+
+class QuestionAwnser(models.Model):
+    ona_form = models.ForeignKey(ONAForm, on_delete=models.CASCADE, related_name="form_answers")
+    form_subsection = models.ForeignKey(FormSubsection, on_delete=models.CASCADE, related_name="form_answers")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answers")
+    answer = models.IntegerField(null=True, blank=True)  # For text answers
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Answer to {self.question.question_id} in {self.ona_form.form_title}"
+    
+class FormSubsectionAnswered(models.Model):
+    answered_questions = models.ManyToManyField(QuestionAwnser, related_name="answered_questions")
+
+class FormSectionAnswered(models.Model):
+    answered_subsections = models.ManyToManyField(QuestionAwnser, related_name="answered_subsections")
+    
+class ONAFormAnswered(models.Model):
+    answered_sections = models.ManyToManyField(QuestionAwnser, related_name="answered_sections")
