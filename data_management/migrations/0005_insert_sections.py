@@ -56,7 +56,7 @@ def remove_subsections(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0009_insert_subsections'),
+        ('data_management', '0004_insert_subsections'),
     ]
 
     operations = [

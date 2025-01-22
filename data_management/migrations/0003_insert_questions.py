@@ -32,7 +32,7 @@ def remove_questions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0007_alter_question_description_alter_question_evidence_and_more'),
+        ('data_management', '0002_initial'),
     ]
 
     operations = [
