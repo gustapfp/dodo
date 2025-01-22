@@ -3,18 +3,19 @@
 {% block content %}
 
 
-<div class="flex h-screen my-16 items-center justify-center">
+<div class="flex  my-32 items-center justify-center">
     <div
-        class="w-full max-w-xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+        class=" bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
         <h5 class="mb-10 mt-5 text-xl font-semibold text-center text-gray-900 dark:text-white">Formulário ONA</h5>
         <form method="POST">
+            
             {% for section in ona_form.ONA_sections.all %}
-            <section id="{{forloop.couter}}-section">
+            <section id="{{section.section_title}}" class="hidden">
 
                 <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{section.section_title}}</h5>
                 {% for subsection in section.form_subsections.all %}
+                <section id="{{subsection.subsection_title}}" class="hidden">
                     <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{subsection.subsection_title}}</h5>
-                    <section id="subsection-{{forloop.counter}}">
                         <section id="L1-subsection-{{forloop.counter}}-questions-level-1"></section>
                         {% for question in subsection.questions_level1.all %}
                         <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
@@ -39,6 +40,7 @@
                     
                 {% endfor %}
             </section>
+            <button onclick="showSection('{{section.section_title}}')"></button>
                 
             {% endfor %}
 
@@ -46,9 +48,8 @@
         </form>
     </div>
 </div>
-<script>
-  
-   
-</script>
-<script src="{% static 'js/ONAform.js' %}"></script>
+{{ ona_json|json_script:"ona_json" }}
+
+<script src="{% static '/js/ONAForm.js' %}"></script>
+
 {% endblock content %}

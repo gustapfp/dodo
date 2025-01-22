@@ -8,7 +8,7 @@ from django.shortcuts import redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import model_to_dict
 from django.core import serializers
-
+from .utils import serialize_ona_form
 class EvaluatorView(LoginRequiredMixin, View):
     template_name = "ONA/evaluator_form.html"
     form_class = EvaluatorForm
@@ -47,7 +47,8 @@ class ONAFormView(LoginRequiredMixin, View):
             request=request,
             template_name=self.template_name,
             context={
-                "ona_form": ona_form
+                "ona_json": serialize_ona_form(ona_form),
+                "ona_form": ona_form,
                 }
         )
 
