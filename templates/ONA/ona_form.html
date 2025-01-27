@@ -8,7 +8,7 @@
         class="w-1/2 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
         <h5 class="mb-10 mt-5 text-xl font-semibold text-center text-gray-900 dark:text-white">Formulário ONA</h5>
         <form method="POST">
-
+            {% csrf_token %}
             {% for section in ona_form.ONA_sections.all %}
             <section id="{{section.section_title}}" class="hidden section">
 
@@ -31,7 +31,7 @@
                         <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
                             <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
                     </div>
-                    {% include "partials/forms/_ratio_input.html" %}
+                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id %}
                     {% endfor %}
 
                     {% if ona_form.hospital.level == 2 %}
@@ -47,7 +47,7 @@
                         <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
                             <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
                     </div>
-                    {% include "partials/forms/_ratio_input.html" %}
+                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id %}
                         {% endfor %}
 
                     </section>
@@ -64,7 +64,7 @@
                         <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
                             <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
                     </div>
-                    {% include "partials/forms/_ratio_input.html" %}
+                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id %}
                         {% endfor %}
                     </section>
 
@@ -107,7 +107,7 @@
                     Enviar Formulário 
                 </button>
             </div>
-
+            <div id="errorMessages" style="color: red;"></div>
         </form>
     </div>
 </div>
@@ -202,7 +202,7 @@
         if (nextIndex !== null) {
 
             checkVisiblity(currentIndex, nextIndex, subsectionsList)
-            //window.scrollTo({ top: 0, behavior: 'smooth' });
+            // window.scrollTo({ top: 0, behavior: 'smooth' });
            
         } else (
             showSubmitButton(currentIndex, subsectionsList)

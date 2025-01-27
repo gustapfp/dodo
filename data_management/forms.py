@@ -65,3 +65,15 @@ class HospitalChangeForm(forms.ModelForm):
 
 class SubsectionCreationForm(forms.ModelForm):
     pass 
+
+from django import forms
+
+class QuestionForm(forms.Form):
+    question_id = forms.CharField(max_length=100, widget=forms.HiddenInput())  # Hidden field for question ID
+    answer = forms.ChoiceField(choices=[
+        ('não aplicável', 'Não aplicável'),
+        ('não conforme', 'Não conforme'),
+        ('parcial conforme', 'Parcial conforme'),
+        ('conforme', 'Conforme'),
+        ('supera', 'Supera')
+    ], required=True) 

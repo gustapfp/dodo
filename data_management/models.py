@@ -95,20 +95,25 @@ class ONAForm(models.Model):
     
 
 class QuestionAwnser(models.Model):
-    ona_form = models.ForeignKey(ONAForm, on_delete=models.CASCADE, related_name="form_answers")
-    form_subsection = models.ForeignKey(FormSubsection, on_delete=models.CASCADE, related_name="form_answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answers")
-    answer = models.IntegerField(null=True, blank=True)  # For text answers
+    answer = models.CharField(max_length=20, null=True, blank=True)  # For text answers
     answered_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return f"Answer to {self.question.question_id} in {self.ona_form.form_title}"
     
 class FormSubsectionAnswered(models.Model):
-    answered_questions = models.ManyToManyField(QuestionAwnser, related_name="answered_questions")
+    answered_questions_level_1 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_1")
+    answered_questions_level_2 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_2")
+    form_subsection = models.ForeignKey(FormSubsection, on_delete=models.CASCADE, related_name="related_subsection", default=None)
 
 class FormSectionAnswered(models.Model):
     answered_subsections = models.ManyToManyField(QuestionAwnser, related_name="answered_subsections")
-    
+    form_section = models.ForeignKey(FormSection, on_delete=models.CASCADE, related_name="related_section", default=None)
+    answered_questions_level_3 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_3")
+
 class ONAFormAnswered(models.Model):
     answered_sections = models.ManyToManyField(QuestionAwnser, related_name="answered_sections")
+    ona_form = models.ForeignKey(ONAForm, on_delete=models.CASCADE, related_name="related_ona_form", default=None)
+    evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE, related_name="related_evaluator", default=None)
