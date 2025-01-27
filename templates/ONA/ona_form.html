@@ -71,7 +71,7 @@
 
                     {% endif %}
 
-                    <div class="flex justify-center mt-10 iteems-center">
+                    <div id="section-buttons" class="flex justify-center mt-10 iteems-center visible">
                         <button id="previous-button" type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                             onclick="showPrevious('{{section.section_title}}', '{{subsection.subsection_title}}')">
                             Subseção Anterior
@@ -83,16 +83,30 @@
                             Próxima Subseção
                         </button>
                     </div>
+                    
+                    <div>
+
+                    </div>
                 </section>
 
-
+               
 
                 {% endfor %}
             </section>
 
 
             {% endfor %}
-
+            <div id="submit-buttons"  class="flex justify-center mt-10 iteems-center hidden ">
+                <button id="previous-button" type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                    onclick="hideSubmitButton()">
+                    Subseção Anterior
+                </button>
+                <button id="next-button" type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
+                focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600
+                 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                    Enviar Formulário 
+                </button>
+            </div>
 
         </form>
     </div>
@@ -114,6 +128,38 @@
         firstSubSection.classList.remove('hidden');
         firstSubSection.classList.add('visible');
     }
+    const hideSubmitButton = () => {
+        let submitButtons = document.getElementById('submit-buttons')
+        let queryAllList = document.querySelectorAll('[class*="subsection"]')
+        let index = queryAllList.length -1
+
+        console.log(index)
+        console.log(submitButtons)
+        queryAllList[index].classList.remove('hidden');
+        queryAllList[index].classList.add('visible');
+       
+        submitButtons.classList.remove('visible');
+        submitButtons.classList.add('hidden');
+        
+    }
+
+    const showSubmitButton = (currentIndex, queryAllList) => {
+        console.log('showSubmitButton')
+        let submitButtons = document.getElementById('submit-buttons')
+       
+        queryAllList[currentIndex].classList.remove('visible');
+        queryAllList[currentIndex].classList.add('hidden');
+        
+
+
+        submitButtons.classList.remove('hidden');
+        submitButtons.classList.add('visible');
+    }
+
+
+    showFirstSection()
+    showFirstSubsection()
+
 
     const returnIndexes = (queryAllList, target) => {
         let currentIndex = Array.from(queryAllList).findIndex(
@@ -148,7 +194,7 @@
         } 
     }
 
-   
+    
 
     const showNextSubsection = (subSection) => {
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
@@ -156,8 +202,11 @@
         if (nextIndex !== null) {
 
             checkVisiblity(currentIndex, nextIndex, subsectionsList)
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            //window.scrollTo({ top: 0, behavior: 'smooth' });
+           
+        } else (
+            showSubmitButton(currentIndex, subsectionsList)
+        )
      
     }
 
@@ -171,13 +220,16 @@
 
     const showPreviousSubsection = (subSection) => {
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
-        let { currentIndex, _, previousIndex } = returnIndexes(subsectionsList, subSection)
-     
+        let { currentIndex, nextIndex, previousIndex } = returnIndexes(subsectionsList, subSection)
+        console.log({currentIndex, nextIndex, previousIndex})
+        
         if (previousIndex !== null) {
 
             checkVisiblity(currentIndex, previousIndex, subsectionsList)
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        } 
+       
+    
     }
     
     const showPreviousSection = (section) => {
@@ -205,10 +257,7 @@
 
 
 
-
-    showFirstSection()
-    showFirstSubsection()
-
+    
 </script>
 
 <!-- <script src="{% static '/js/ONAForm.js' %}"></script> -->
