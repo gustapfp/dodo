@@ -5,43 +5,98 @@
 
 <div class="flex  my-32 items-center justify-center">
     <div
-        class=" bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+        class="w-1/2 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
         <h5 class="mb-10 mt-5 text-xl font-semibold text-center text-gray-900 dark:text-white">Formulário ONA</h5>
         <form method="POST">
-            
-            {% for section in ona_form.ONA_sections.all %}
-            <section id="{{section.section_title}}" class="hidden">
 
-                <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{section.section_title}}</h5>
+
+
+
+
+
+
+            {% for section in ona_form.ONA_sections.all %}
+            <section id="{{section.section_title}}" class="hidden section">
+
+                <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">
+                    {{section.section_title}}</h5>
                 {% for subsection in section.form_subsections.all %}
-                <section id="{{subsection.subsection_title}}" class="hidden">
-                    <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{subsection.subsection_title}}</h5>
-                        <section id="L1-subsection-{{forloop.counter}}-questions-level-1"></section>
-                        {% for question in subsection.questions_level1.all %}
-                        <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
-                        {% endfor %}
+                <section id="{{subsection.subsection_title}}" class="hidden subsection">
+                    <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">
+                        {{subsection.subsection_title}}</h5>
+                    <section id="L1-subsection-{{forloop.counter}}-questions-level-1" class="question-level-1">
+                    </section>
+                    {% for question in subsection.questions_level1.all %}
+                    <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
+                        ID: {{question.question_id}}</h5>
+                    <div class="flex flex-col">
+                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
+                         <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
+                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
+                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
+                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
+                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
+                    </div>
+                    {% include "partials/forms/_ratio_input.html" %}
+                    {% endfor %}
 
                     {% if ona_form.hospital.level == 2 %}
-                    <section id="L2-subsection-{{forloop.counter}}-questions-level-2"></section>
+                    <section id="L2-subsection-{{forloop.counter}}-questions-level-2" class="questions-level-2">
                         {% for question in subsection.questions_level2.all %}
-                            <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
+                        <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
+                        ID: {{question.question_id}}</h5>
+                    <div class="flex flex-col">
+                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
+                         <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
+                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
+                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
+                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
+                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
+                    </div>
+                    {% include "partials/forms/_ratio_input.html" %}
                         {% endfor %}
-                    {% elif ona_form.hospital.level == 3 %}
-                    <section id="L3-subsection-{{forloop.counter}}-questions-level-2"></section>
-                        {% for question in subsection.questions_level2.all %}
-                            <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
-                        {% endfor %}
-                        <section id="L3-subsection-{{forloop.counter}}-questions-level-3"></section>
-                        {% for question in section.questions_level3.all %}
-                            <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">{{question.question_id}}</h5>
-                        {% endfor %}
-                    {% endif %}
+
                     </section>
-                    
+                    {% elif ona_form.hospital.level == 3 %}
+                    <section id="L3-subsection-{{forloop.counter}}-questions-level-3" class="question-level-3">
+                        {% for question in section.questions_level3.all %}
+                        <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
+                        ID: {{question.question_id}}</h5>
+                    <div class="flex flex-col">
+                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
+                         <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
+                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
+                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
+                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
+                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
+                    </div>
+                    {% include "partials/forms/_ratio_input.html" %}
+                        {% endfor %}
+                    </section>
+
+
+                    {% endif %}
+
+                    <div class="flex justify-center mt-10 iteems-center">
+                        <button type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                            onclick="show('{{section.section_title}}', '{{subsection.subsection_title}}')">
+                            Subseção Anterior
+                        </button>
+                        <button type="button" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
+                        focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600
+                         dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                            onclick="show('{{section.section_title}}', '{{subsection.subsection_title}}')">
+                            Próxima Subseção
+                        </button>
+                    </div>
+                </section>
+
+
+
                 {% endfor %}
             </section>
-            <button onclick="showSection('{{section.section_title}}')"></button>
-                
+
+
             {% endfor %}
 
 
@@ -49,7 +104,88 @@
     </div>
 </div>
 {{ ona_json|json_script:"ona_json" }}
+<script>
+    const onaJsonForm = JSON.parse(document.getElementById('ona_json').textContent);
 
-<script src="{% static '/js/ONAForm.js' %}"></script>
+    const showFirstSection = () => {
+        let firstSection = onaJsonForm['ONA_sections'][0]['section_title']
+        firstSection = document.getElementById(firstSection)
+        firstSection.classList.remove('hidden');
+        firstSection.classList.add('visible');
+    }
+
+    const showFirstSubsection = () => {
+        let firstSubSection = onaJsonForm['ONA_sections'][0]['form_subsections'][0]['subsection_title']
+        firstSubSection = document.getElementById(firstSubSection)
+        firstSubSection.classList.remove('hidden');
+        firstSubSection.classList.add('visible');
+    }
+
+    const returnIndexes = (queryAllList, target) => {
+        let currentIndex = Array.from(queryAllList).findIndex(
+            (subSectionElement) => subSectionElement.id === target
+        )
+        let nextIndex = currentIndex + 1
+        if (nextIndex >= queryAllList.length) {
+            nextIndex = null;
+        }
+        return { currentIndex, nextIndex }
+    }
+
+    const checkVisiblity = (currentIndex, nextIndex, queryAllList) => {
+
+        if (queryAllList[currentIndex].classList.contains('visible')) {
+            queryAllList[currentIndex].classList.remove('visible');
+            queryAllList[currentIndex].classList.add('hidden');
+        }
+
+        if (nextIndex !== null) {
+            queryAllList[nextIndex].classList.remove('hidden');
+            queryAllList[nextIndex].classList.add('visible');
+        } else {
+
+        }
+    }
+
+
+
+    const showNextSubsection = (subSection) => {
+        let subsectionsList = document.querySelectorAll('[class*="subsection"]')
+        let { currentIndex, nextIndex } = returnIndexes(subsectionsList, subSection)
+        checkVisiblity(currentIndex, nextIndex, subsectionsList)
+    }
+
+    const showNextSection = (section) => {
+        let sectionList = document.querySelectorAll('[class*="section"]')
+        let { currentIndex, nextIndex } = returnIndexes(sectionList, section)
+        checkVisiblity(currentIndex, nextIndex, sectionList)
+    }
+
+    const showNext = (subSection, section) => {
+        showNextSubsection(subSection)
+        showNextSection(section)
+    }
+
+    const showSubsection = (subsectionHTMLElement) => {
+        let subSection = document.getElementById(subsectionHTMLElement)
+        subSection.classList.remove('hidden');
+        subSection.classList.add('visible');
+    }
+
+    const show = (sectionHTMLElement, subSectionHTMLElement) => {
+        let section = document.getElementById(sectionHTMLElement).id
+        let subSection = document.getElementById(subSectionHTMLElement).id
+
+        showNext(subSection, subSection);
+    }
+
+
+
+    showFirstSection()
+    showFirstSubsection()
+
+</script>
+
+<!-- <script src="{% static '/js/ONAForm.js' %}"></script> -->
 
 {% endblock content %}

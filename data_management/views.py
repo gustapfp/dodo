@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms.models import model_to_dict
 from django.core import serializers
 from .utils import serialize_ona_form
+
 class EvaluatorView(LoginRequiredMixin, View):
     template_name = "ONA/evaluator_form.html"
     form_class = EvaluatorForm

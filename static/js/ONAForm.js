@@ -1,5 +1,5 @@
 const onaJsonForm = JSON.parse(document.getElementById('ona_json').textContent);
-console.log(onaJsonForm)
+
 const showFirstSection = ()=> {
     let firstSection = onaJsonForm['ONA_sections'][0]['section_title']
     firstSection = document.getElementById(firstSection)
@@ -13,21 +13,21 @@ const showFirstSubsection = ()=> {
     firstSubSection.classList.remove('hidden');
     firstSubSection.classList.add('visible');
 }
-showFirstSection()
-showFirstSubsection()
 
 
 
-const showNextElement = (sectionHTMLElement) => {
-    const section = document.getElementById(sectionHTMLElement)
-    if (section.classList.contains('hidden')) {
-
-        section.classList.remove('hidden');
-        section.classList.add('visible');
+const showNextSubsection = (sectionHTMLElement) => {
+    const subSection = document.getElementById(sectionHTMLElement)
+    if (subSection.classList.contains('hidden')) {
+        
+        subSection.classList.remove('hidden');
+        subSection.classList.add('visible');
     } else {
-  
-        section.classList.remove('visible');
-        section.classList.add('hidden');
+        
+        subSection.classList.remove('visible');
+        subSection.classList.add('hidden');
     }    
 }
 
+showFirstSection()
+showFirstSubsection()

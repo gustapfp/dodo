@@ -27,7 +27,7 @@ def serialize_ona_form(ona_form):
         "form_title": ona_form.form_title,
         "ONA_sections": [serialize_form_section(f) for f in ona_form.ONA_sections.all()],
         "hospital": {
-            "hospital_id": ona_form.hospital.id,
+            "hospital_level": ona_form.hospital.level,
             "hospital_name": ona_form.hospital.name,
             # Add any other necessary fields from the Hospital model
         },
