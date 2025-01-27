@@ -9,12 +9,6 @@
         <h5 class="mb-10 mt-5 text-xl font-semibold text-center text-gray-900 dark:text-white">Formulário ONA</h5>
         <form method="POST">
 
-
-
-
-
-
-
             {% for section in ona_form.ONA_sections.all %}
             <section id="{{section.section_title}}" class="hidden section">
 
@@ -78,14 +72,14 @@
                     {% endif %}
 
                     <div class="flex justify-center mt-10 iteems-center">
-                        <button type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                            onclick="show('{{section.section_title}}', '{{subsection.subsection_title}}')">
+                        <button id="previous-button" type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                            onclick="showPrevious('{{section.section_title}}', '{{subsection.subsection_title}}')">
                             Subseção Anterior
                         </button>
-                        <button type="button" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
+                        <button id="next-button" type="button" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
                         focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600
                          dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                            onclick="show('{{section.section_title}}', '{{subsection.subsection_title}}')">
+                            onclick="showNext('{{section.section_title}}', '{{subsection.subsection_title}}')">
                             Próxima Subseção
                         </button>
                     </div>
@@ -125,59 +119,90 @@
         let currentIndex = Array.from(queryAllList).findIndex(
             (subSectionElement) => subSectionElement.id === target
         )
+        
         let nextIndex = currentIndex + 1
+
         if (nextIndex >= queryAllList.length) {
             nextIndex = null;
         }
-        return { currentIndex, nextIndex }
+
+        let previousIndex = currentIndex - 1
+
+        if (previousIndex < 0) {
+            previousIndex = null;
+        }
+        console.log({ currentIndex, nextIndex, previousIndex })
+        return { currentIndex, nextIndex, previousIndex }
     }
 
-    const checkVisiblity = (currentIndex, nextIndex, queryAllList) => {
+    const checkVisiblity = (mainIndex, auxiliarIndex, queryAllList) => {
 
-        if (queryAllList[currentIndex].classList.contains('visible')) {
-            queryAllList[currentIndex].classList.remove('visible');
-            queryAllList[currentIndex].classList.add('hidden');
+        if (queryAllList[mainIndex].classList.contains('visible')) {
+            queryAllList[mainIndex].classList.remove('visible');
+            queryAllList[mainIndex].classList.add('hidden');
         }
 
-        if (nextIndex !== null) {
-            queryAllList[nextIndex].classList.remove('hidden');
-            queryAllList[nextIndex].classList.add('visible');
-        } else {
-
-        }
+        if (auxiliarIndex !== null) {
+            queryAllList[auxiliarIndex].classList.remove('hidden');
+            queryAllList[auxiliarIndex].classList.add('visible');
+        } 
     }
 
-
+   
 
     const showNextSubsection = (subSection) => {
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
-        let { currentIndex, nextIndex } = returnIndexes(subsectionsList, subSection)
-        checkVisiblity(currentIndex, nextIndex, subsectionsList)
+        let { currentIndex, nextIndex, _ } = returnIndexes(subsectionsList, subSection)
+        if (nextIndex !== null) {
+
+            checkVisiblity(currentIndex, nextIndex, subsectionsList)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+     
     }
 
     const showNextSection = (section) => {
         let sectionList = document.querySelectorAll('[class*="section"]')
-        let { currentIndex, nextIndex } = returnIndexes(sectionList, section)
+        let { currentIndex, nextIndex, _ } = returnIndexes(sectionList, section)
+        showPreviousButton(currentIndex)
         checkVisiblity(currentIndex, nextIndex, sectionList)
     }
+    
 
-    const showNext = (subSection, section) => {
-        showNextSubsection(subSection)
-        showNextSection(section)
+    const showPreviousSubsection = (subSection) => {
+        let subsectionsList = document.querySelectorAll('[class*="subsection"]')
+        let { currentIndex, _, previousIndex } = returnIndexes(subsectionsList, subSection)
+     
+        if (previousIndex !== null) {
+
+            checkVisiblity(currentIndex, previousIndex, subsectionsList)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+    
+    const showPreviousSection = (section) => {
+        let sectionList = document.querySelectorAll('[class*="section"]')
+        let { currentIndex, _, previousIndex } = returnIndexes(sectionList, section)
+        
     }
 
-    const showSubsection = (subsectionHTMLElement) => {
-        let subSection = document.getElementById(subsectionHTMLElement)
-        subSection.classList.remove('hidden');
-        subSection.classList.add('visible');
-    }
-
-    const show = (sectionHTMLElement, subSectionHTMLElement) => {
+    const showNext = (sectionHTMLElement, subSectionHTMLElement) => {
         let section = document.getElementById(sectionHTMLElement).id
         let subSection = document.getElementById(subSectionHTMLElement).id
-
-        showNext(subSection, subSection);
+        showNextSubsection(subSection)
+        // showNextSection(section)
     }
+
+    const showPrevious = (sectionHTMLElement, subSectionHTMLElement) => {
+        let section = document.getElementById(sectionHTMLElement).id
+        let subSection = document.getElementById(subSectionHTMLElement).id
+        showPreviousSubsection(subSection)
+        // showPreviousSection(section)
+    }
+
+
+       
+
 
 
 
