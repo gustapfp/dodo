@@ -54,6 +54,10 @@ class Evaluator(models.Model):
     email = models.EmailField(max_length=80, unique=True)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name = "Avaliador"
+        verbose_name_plural = "Avaliadores"
+
     def __str__(self):
         return self.name
 
@@ -62,6 +66,10 @@ class Question(models.Model):
     description = models.TextField(max_length=400, null=True)
     guidance = models.TextField(max_length=400, null=True)
     evidence = models.TextField(max_length=400, null=True)
+
+    class Meta:
+        verbose_name = "Questão"
+        verbose_name_plural = "Questões"
  
     def __str__(self):
         return self.question_id
@@ -72,6 +80,10 @@ class FormSubsection(models.Model):
     questions_level1 = models.ManyToManyField(Question, related_name="level1_questions")
     questions_level2 = models.ManyToManyField(Question, related_name="level2_questions")
 
+    class Meta:
+        verbose_name = "Subseção"
+        verbose_name_plural = "Subseções"
+
     def __str__(self):
         return self.subsection_title
 
@@ -80,6 +92,10 @@ class FormSection(models.Model):
     section_title = models.CharField(max_length=80)
     form_subsections = models.ManyToManyField(FormSubsection, related_name="form_sections") 
     questions_level3= models.ManyToManyField(Question, related_name="level3_questions")
+
+    class Meta:
+        verbose_name = "Seção"
+        verbose_name_plural = "Seções"
 
     def __str__(self):
         return self.section_title
@@ -90,6 +106,10 @@ class ONAForm(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     form_title = models.CharField(max_length=80)
 
+    class Meta: 
+        verbose_name = "Formulário ONA"
+        verbose_name_plural = "Formulários ONA"
+
     def __str__(self):
         return self.form_title
     
@@ -98,7 +118,6 @@ class QuestionAwnser(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answers")
     answer = models.CharField(max_length=20, null=True, blank=True)  # For text answers
     answered_at = models.DateTimeField(auto_now_add=True)
-    
 
     def __str__(self):
         return f"Answer to {self.question.question_id} in {self.ona_form.form_title}"
@@ -109,11 +128,18 @@ class FormSubsectionAnswered(models.Model):
     form_subsection = models.ForeignKey(FormSubsection, on_delete=models.CASCADE, related_name="related_subsection", default=None)
 
 class FormSectionAnswered(models.Model):
-    answered_subsections = models.ManyToManyField(QuestionAwnser, related_name="answered_subsections")
+    answered_subsections = models.ManyToManyField(FormSubsectionAnswered, related_name="answered_subsections")
     form_section = models.ForeignKey(FormSection, on_delete=models.CASCADE, related_name="related_section", default=None)
     answered_questions_level_3 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_3")
-
+    
+    def __str__(self):
+        return f"Answered section {self.form_section.section_title}"
+    
 class ONAFormAnswered(models.Model):
-    answered_sections = models.ManyToManyField(QuestionAwnser, related_name="answered_sections")
+    answered_sections = models.ManyToManyField(FormSectionAnswered, related_name="answered_sections")
     ona_form = models.ForeignKey(ONAForm, on_delete=models.CASCADE, related_name="related_ona_form", default=None)
     evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE, related_name="related_evaluator", default=None)
+
+    class Meta:
+        verbose_name = "Formulário ONA Respondido"
+        verbose_name_plural = "Formulários ONA Respondidos"

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from .forms import HospitalCreationForm, HospitalChangeForm
-from .models import Question, FormSubsection, FormSection, ONAForm, Evaluator, Hospital, Sector
+from .models import Question, FormSubsection, FormSection, ONAForm, Evaluator, Hospital, Sector, ONAFormAnswered
 from users.models import CustomUser
 
 class QuestionAdmin(admin.ModelAdmin):  
@@ -69,7 +69,10 @@ class HospitalAdmin(admin.ModelAdmin):
             kwargs["queryset"] = CustomUser.objects.filter(role="hospital")
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
-    
+@admin.register(ONAFormAnswered)
+class ONAFormAwnseredAdmin(admin.ModelAdmin):
+   list_display = ("ona_form", "evaluator")
+   filter_horizontal = ["answered_sections"]
     
 
 

@@ -55,17 +55,21 @@ class ONAFormView(LoginRequiredMixin, View):
 
     def post(self, request, hospital_id, evaluator_id):
         ona_form = ONAForm.objects.get(hospital=hospital_id)
-        evalutor = get_object_or_404(Evaluator, pk=evaluator_id)
+   
         form_data = request.POST
 
 
         new_ona_form = ONAFormAnswered.objects.create(ona_form=ona_form, 
-                                                      evaluator_id=evalutor
+                                                      evaluator_id=evaluator_id
                                                       )
-        new_sections = []
+       
+    
+      
 
+        section_list = []
         for section in ona_form.ONA_sections.all():
             new_section = FormSectionAnswered.objects.create(form_section=section)
+            subsection_list = []
             for subsection in section.form_subsections.all():
                 new_subsection = FormSubsectionAnswered.objects.create(form_subsection=subsection)
 
@@ -91,20 +95,27 @@ class ONAFormView(LoginRequiredMixin, View):
                         questions_level_2.append(new_question)
                     
                 new_subsection.answered_questions_level_2.set(questions_level_1)
+                subsection_list.append(new_subsection)
+
+            new_section.answered_subsections.set(subsection_list)
+
 
             questions_level_3 = []
             for question in section.questions_level3.all():
                 if question.question_id in form_data:
                     answer = form_data.get(question.question_id, None)
-                    QuestionAwnser.objects.create(
+                    new_question = QuestionAwnser.objects.create(
                         question=question, 
                         answer=answer
                         )
+                    questions_level_3.append(new_question)
             new_section.answered_questions_level_3.set(questions_level_3)
             
-            new_sections.append(new_section)
+            section_list.append(new_section)
+      
+        new_ona_form.answered_sections.set(section_list)
 
-        new_ona_form.answered_sections.set(new_sections)
+        return redirect("evaluator_form")
 
          
         
