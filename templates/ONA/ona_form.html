@@ -33,7 +33,7 @@
                         <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
                             <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
                     </div>
-                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id %}
+                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id  subsection_title=subsection.subsection_title %}
                     {% endfor %}
 
                     {% if ona_form.hospital.level == 2 %}
@@ -49,7 +49,7 @@
                         <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
                             <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
                     </div>
-                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id %}
+                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id  subsection_title=subsection.subsection_title %}
                         {% endfor %}
 
                     </section>
@@ -66,7 +66,7 @@
                         <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
                             <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
                     </div>
-                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id %}
+                    {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id  subsection_title=subsection.subsection_title %}
                         {% endfor %}
                     </section>
 
@@ -109,14 +109,14 @@
                     Enviar Formulário 
                 </button>
             </div>
-            <div id="errorMessages" style="color: red;"></div>
+            
         </form>
     </div>
 </div>
 {{ ona_json|json_script:"ona_json" }}
 <script>
     const onaJsonForm = JSON.parse(document.getElementById('ona_json').textContent);
-    console.log(onaJsonForm)
+   
 
     
     const showFirstSection = () => {
@@ -208,7 +208,7 @@
  
         
         if (nextIndex !== null) {
-            
+            checkRatioInputsBySubsection(currentIndex, subsectionsList)
             let currentSection = String(subsectionsList[currentIndex].id)[0]
             let nextSection = String(subsectionsList[nextIndex].id)[0]
             if (currentSection !== nextSection) {
@@ -273,17 +273,41 @@
         let subSection = document.getElementById(subSectionHTMLElement).id
         let section = document.getElementById(sectionHTMLElement).id
         showNextSubsection(subSection, section)
-        // showNextSection(section)
+       
     }
 
     const showPrevious = (sectionHTMLElement, subSectionHTMLElement) => {
         let section = document.getElementById(sectionHTMLElement).id
         let subSection = document.getElementById(subSectionHTMLElement).id
         showPreviousSubsection(subSection, section)
-        // showPreviousSection(section)
+       
     }
 
+    const checkRatioInputsBySubsection = (currentIndex, subsectionsList) => {
+        const curentSubsection = subsectionsList[currentIndex]
+        let ratioInputs = curentSubsection.querySelectorAll('ul[id]');
+        console.log(ratioInputs)
+        
 
+        ratioInputs.forEach(
+            (inputGroup) => {
+                let inputs = inputGroup.querySelectorAll('input[type="radio"]')
+                let isAnyInputSelected = Array.from(inputs).some(
+                    (inputValue) => (inputValue.checked)
+                )
+
+                if (!isAnyInputSelected) {
+                  
+                    let inputGroupPostionY = inputGroup.getBoundingClientRect().top + window.scrollY; 
+                    window.scrollTo({ top: inputGroupPostionY, behavior: 'smooth' });
+                    alert(`Ops! Você esqueceu de selecionar uma opção para a questão com ID: ${inputGroup.id}`)
+                    throw new Error('Selecione uma opção para continuar')
+                }
+                
+            }
+        )
+        //console.log(ratioInputs)
+    }
        
 
 
