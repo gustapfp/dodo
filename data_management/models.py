@@ -4,6 +4,11 @@ from users.models import CustomUser
 
 class Sector(models.Model):
     name = models.CharField(max_length=80, unique=True)
+
+    class Meta:
+        verbose_name = "Setor"
+        verbose_name_plural = "Setores"
+        
     def __str__(self):
         return self.name
  
@@ -18,7 +23,9 @@ class Hospital(models.Model):
     last_service = models.DateTimeField(auto_now=True) # TODO: I don't this this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
     level = models.IntegerField(default=1)
 
-
+    class Meta:
+        verbose_name = "Hospital"
+        verbose_name_plural = "Hospitais"   
     def __str__(self):
         return self.name
 
