@@ -1,14 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import CreateView, TemplateView
 from .forms import EvaluatorForm
 from django.views import View
-from .models import ONAForm, Evaluator, QuestionAwnser, FormSubsectionAnswered, FormSectionAnswered, ONAFormAnswered
+from .models import ONAForm, ONAFormAnswered
 from django.contrib import messages
-from django.shortcuts import redirect, HttpResponse, get_object_or_404
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms.models import model_to_dict
-from django.core import serializers
-from .utils import serialize_ona_form, create_answered_questions, create_subsections, create_section
+
+from .utils import serialize_ona_form,  create_section
 
 class EvaluatorView(LoginRequiredMixin, View):
     template_name = "ONA/evaluator_form.html"

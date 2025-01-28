@@ -10,12 +10,14 @@
         <form method="POST">
             {% csrf_token %}
             {% for section in ona_form.ONA_sections.all %}
-            <section id="{{section.section_title}}" class="hidden section">
+            <section id="{{section.section_title}}" class="hidden ona-section">
 
                 <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">
                     {{section.section_title}}</h5>
                 {% for subsection in section.form_subsections.all %}
+                
                 <section id="{{subsection.subsection_title}}" class="hidden subsection">
+                    
                     <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">
                         {{subsection.subsection_title}}</h5>
                     <section id="L1-subsection-{{forloop.counter}}-questions-level-1" class="question-level-1">
@@ -114,9 +116,12 @@
 {{ ona_json|json_script:"ona_json" }}
 <script>
     const onaJsonForm = JSON.parse(document.getElementById('ona_json').textContent);
+    console.log(onaJsonForm)
 
+    
     const showFirstSection = () => {
         let firstSection = onaJsonForm['ONA_sections'][0]['section_title']
+        
         firstSection = document.getElementById(firstSection)
         firstSection.classList.remove('hidden');
         firstSection.classList.add('visible');
@@ -128,6 +133,7 @@
         firstSubSection.classList.remove('hidden');
         firstSubSection.classList.add('visible');
     }
+
     const hideSubmitButton = () => {
         let submitButtons = document.getElementById('submit-buttons')
         let queryAllList = document.querySelectorAll('[class*="subsection"]')
@@ -182,7 +188,7 @@
     }
 
     const checkVisiblity = (mainIndex, auxiliarIndex, queryAllList) => {
-
+        
         if (queryAllList[mainIndex].classList.contains('visible')) {
             queryAllList[mainIndex].classList.remove('visible');
             queryAllList[mainIndex].classList.add('hidden');
@@ -194,15 +200,27 @@
         } 
     }
 
-    
+   
 
-    const showNextSubsection = (subSection) => {
+    const showNextSubsection = (subSection, section) => {
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
         let { currentIndex, nextIndex, _ } = returnIndexes(subsectionsList, subSection)
+ 
+        
         if (nextIndex !== null) {
+            
+            let currentSection = String(subsectionsList[currentIndex].id)[0]
+            let nextSection = String(subsectionsList[nextIndex].id)[0]
+            if (currentSection !== nextSection) {
 
-            checkVisiblity(currentIndex, nextIndex, subsectionsList)
-            // window.scrollTo({ top: 0, behavior: 'smooth' });
+                showNextSection(section)
+                checkVisiblity(currentIndex, nextIndex, subsectionsList)
+            } else {
+             
+                checkVisiblity(currentIndex, nextIndex, subsectionsList)
+            }
+    
+            window.scrollTo({ top: 0, behavior: 'smooth' });
            
         } else (
             showSubmitButton(currentIndex, subsectionsList)
@@ -211,21 +229,32 @@
     }
 
     const showNextSection = (section) => {
-        let sectionList = document.querySelectorAll('[class*="section"]')
+        let sectionList = document.querySelectorAll('[class*="ona-section"]')
+
         let { currentIndex, nextIndex, _ } = returnIndexes(sectionList, section)
-        showPreviousButton(currentIndex)
+       
         checkVisiblity(currentIndex, nextIndex, sectionList)
     }
     
 
-    const showPreviousSubsection = (subSection) => {
+    const showPreviousSubsection = (subSection, section) => {
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
         let { currentIndex, nextIndex, previousIndex } = returnIndexes(subsectionsList, subSection)
-        console.log({currentIndex, nextIndex, previousIndex})
+         
         
         if (previousIndex !== null) {
-
-            checkVisiblity(currentIndex, previousIndex, subsectionsList)
+            
+            let previousSection = String(subsectionsList[previousIndex].id)[0]
+            let currentSection = String(subsectionsList[currentIndex].id)[0]
+            
+            if (currentSection !== previousSection) {
+                showPreviousSection(section)
+                checkVisiblity(currentIndex, previousIndex, subsectionsList)
+            } else {
+             
+                
+                checkVisiblity(currentIndex, previousIndex, subsectionsList)
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } 
        
@@ -233,22 +262,24 @@
     }
     
     const showPreviousSection = (section) => {
-        let sectionList = document.querySelectorAll('[class*="section"]')
+        let sectionList = document.querySelectorAll('[class*="ona-section"]')
         let { currentIndex, _, previousIndex } = returnIndexes(sectionList, section)
-        
+        checkVisiblity(currentIndex, previousIndex, sectionList)
     }
 
     const showNext = (sectionHTMLElement, subSectionHTMLElement) => {
-        let section = document.getElementById(sectionHTMLElement).id
+        
+        
         let subSection = document.getElementById(subSectionHTMLElement).id
-        showNextSubsection(subSection)
+        let section = document.getElementById(sectionHTMLElement).id
+        showNextSubsection(subSection, section)
         // showNextSection(section)
     }
 
     const showPrevious = (sectionHTMLElement, subSectionHTMLElement) => {
         let section = document.getElementById(sectionHTMLElement).id
         let subSection = document.getElementById(subSectionHTMLElement).id
-        showPreviousSubsection(subSection)
+        showPreviousSubsection(subSection, section)
         // showPreviousSection(section)
     }
 
