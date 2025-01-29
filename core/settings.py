@@ -51,6 +51,7 @@ LOCAL_APPS = [
     "pages.apps.PagesConfig",
     "users.apps.UsersConfig",
     "data_management.apps.DataManagementConfig",
+    "report.apps.ReportConfig",
 ]
 
 THIRD_PARTY_APPS = [

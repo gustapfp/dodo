@@ -121,7 +121,7 @@ class ONAForm(models.Model):
         return self.form_title
     
 
-class QuestionAwnser(models.Model):
+class QuestionAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answers")
     answer = models.CharField(max_length=20, null=True, blank=True)  # For text answers
     
@@ -130,14 +130,14 @@ class QuestionAwnser(models.Model):
         return f"Answer to {self.question.question_id} in {self.ona_form.form_title}"
     
 class FormSubsectionAnswered(models.Model):
-    answered_questions_level_1 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_1")
-    answered_questions_level_2 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_2")
+    answered_questions_level_1 = models.ManyToManyField(QuestionAnswer, related_name="answered_questions_level_1")
+    answered_questions_level_2 = models.ManyToManyField(QuestionAnswer, related_name="answered_questions_level_2")
     form_subsection = models.ForeignKey(FormSubsection, on_delete=models.CASCADE, related_name="related_subsection", default=None)
 
 class FormSectionAnswered(models.Model):
     answered_subsections = models.ManyToManyField(FormSubsectionAnswered, related_name="answered_subsections")
     form_section = models.ForeignKey(FormSection, on_delete=models.CASCADE, related_name="related_section", default=None)
-    answered_questions_level_3 = models.ManyToManyField(QuestionAwnser, related_name="answered_questions_level_3")
+    answered_questions_level_3 = models.ManyToManyField(QuestionAnswer, related_name="answered_questions_level_3")
     
     def __str__(self):
         return f"Answered section {self.form_section.section_title}"

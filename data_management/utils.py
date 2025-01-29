@@ -1,4 +1,4 @@
-from .models import QuestionAwnser, FormSubsectionAnswered, FormSectionAnswered
+from .models import QuestionAnswer, FormSubsectionAnswered, FormSectionAnswered
 
 def serialize_question(question):
     return {
@@ -41,7 +41,7 @@ def create_answered_questions(form_data, subsection_questions):
     for question in subsection_questions:
         if question.question_id in form_data:
             answer = form_data.get(question.question_id, None)
-            new_question = QuestionAwnser.objects.create(
+            new_question = QuestionAnswer.objects.create(
                 question=question, 
                 answer=answer
                 )
