@@ -36,7 +36,7 @@
                     {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id  subsection_title=subsection.subsection_title %}
                     {% endfor %}
 
-                    {% if ona_form.hospital.level == 2 %}
+                    {% if ona_form.hospital.level == 2  or  ona_form.hospital.level == 3%}
                     <section id="L2-subsection-{{forloop.counter}}-questions-level-2" class="questions-level-2">
                         {% for question in subsection.questions_level2.all %}
                         <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
@@ -51,10 +51,13 @@
                     </div>
                     {% include "partials/forms/_ratio_input.html" with awnser_id=question.question_id  subsection_title=subsection.subsection_title %}
                         {% endfor %}
-
+                        {% endif %}
                     </section>
-                    {% elif ona_form.hospital.level == 3 %}
-                    <section id="L3-subsection-{{forloop.counter}}-questions-level-3" class="question-level-3">
+                    {% if ona_form.hospital.level == 3 %}
+                    {% if forloop.last %}
+
+                    <section id="L3-subsection-{{forloop.counter}}-questions-level-3" class="question-level-3 ">
+                      
                         {% for question in section.questions_level3.all %}
                         <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
                         ID: {{question.question_id}}</h5>
@@ -71,6 +74,7 @@
                     </section>
 
 
+                    {% endif %}
                     {% endif %}
 
                     <div id="section-buttons" class="flex justify-center mt-10 iteems-center visible">
@@ -205,26 +209,33 @@
     const showNextSubsection = (subSection, section) => {
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
         let { currentIndex, nextIndex, _ } = returnIndexes(subsectionsList, subSection)
+        
  
         
         if (nextIndex !== null) {
-            checkRatioInputsBySubsection(currentIndex, subsectionsList)
+            //checkRatioInputsBySubsection(currentIndex, subsectionsList)
             let currentSection = String(subsectionsList[currentIndex].id)[0]
             let nextSection = String(subsectionsList[nextIndex].id)[0]
+            
             if (currentSection !== nextSection) {
 
+                
                 showNextSection(section)
                 checkVisiblity(currentIndex, nextIndex, subsectionsList)
             } else {
              
                 checkVisiblity(currentIndex, nextIndex, subsectionsList)
             }
-    
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            currentSection = String(subsectionsList[currentIndex].id)[0]
+            nextSection = String(subsectionsList[nextIndex].id)[0]
+            //window.scrollTo({ top: 0, behavior: 'smooth' });
+            
            
         } else (
             showSubmitButton(currentIndex, subsectionsList)
         )
+        
+
      
     }
 
@@ -306,10 +317,7 @@
                 
             }
         )
-        //console.log(ratioInputs)
     }
-       
-
 
 
     

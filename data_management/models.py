@@ -124,7 +124,7 @@ class ONAForm(models.Model):
 class QuestionAwnser(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answers")
     answer = models.CharField(max_length=20, null=True, blank=True)  # For text answers
-    answered_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return f"Answer to {self.question.question_id} in {self.ona_form.form_title}"
@@ -146,6 +146,7 @@ class ONAFormAnswered(models.Model):
     answered_sections = models.ManyToManyField(FormSectionAnswered, related_name="answered_sections")
     ona_form = models.ForeignKey(ONAForm, on_delete=models.CASCADE, related_name="related_ona_form", default=None)
     evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE, related_name="related_evaluator", default=None)
+    answered_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
         verbose_name = "Formulário ONA Respondido"
