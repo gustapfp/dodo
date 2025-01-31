@@ -17,16 +17,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='formsectionanswered',
             name='answered_questions_level_3',
-            field=models.ManyToManyField(related_name='answered_questions_level_3', to='data_management.questionawnser'),
+            field=models.ManyToManyField(related_name='answered_questions_level_3', to='data_management.questionanswer'),
         ),
         migrations.AddField(
             model_name='formsubsectionanswered',
             name='answered_questions_level_1',
-            field=models.ManyToManyField(related_name='answered_questions_level_1', to='data_management.questionawnser'),
+            field=models.ManyToManyField(related_name='answered_questions_level_1', to='data_management.questionanswer'),
         ),
         migrations.AddField(
             model_name='formsubsectionanswered',
             name='answered_questions_level_2',
-            field=models.ManyToManyField(related_name='answered_questions_level_2', to='data_management.questionawnser'),
+            field=models.ManyToManyField(related_name='answered_questions_level_2', to='data_management.questionanswer'),
         ),
     ]

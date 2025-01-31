@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='questionawnser',
+            model_name='questionanswer',
             name='answered_at',
         ),
         migrations.AddField(

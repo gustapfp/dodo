@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0013_remove_questionawnser_answered_at_and_more'),
+        ('data_management', '0013_remove_questionanswer_answered_at_and_more'),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='QuestionAwnser',
+            old_name='Questionanswer',
             new_name='QuestionAnswer',
         ),
     ]

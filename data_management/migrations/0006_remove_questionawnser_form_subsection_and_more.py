@@ -12,11 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='questionawnser',
+            model_name='questionanswer',
             name='form_subsection',
         ),
         migrations.RemoveField(
-            model_name='questionawnser',
+            model_name='questionanswer',
             name='ona_form',
         ),
         migrations.AddField(

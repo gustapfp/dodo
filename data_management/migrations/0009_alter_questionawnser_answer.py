@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='questionawnser',
+            model_name='questionanswer',
             name='answer',
             field=models.CharField(blank=True, max_length=20, null=True),
         ),

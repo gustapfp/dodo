@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='formsubsectionanswered',
             name='answered_questions',
-            field=models.ManyToManyField(related_name='answered_questions', to='data_management.questionawnser'),
+            field=models.ManyToManyField(related_name='answered_questions', to='data_management.questionanswer'),
         ),
         migrations.AddField(
             model_name='formsubsection',
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='formsectionanswered',
             name='answered_subsections',
-            field=models.ManyToManyField(related_name='answered_subsections', to='data_management.questionawnser'),
+            field=models.ManyToManyField(related_name='answered_subsections', to='data_management.questionanswer'),
         ),
         migrations.AddField(
             model_name='formsection',

@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='QuestionAwnser',
+            name='Questionanswer',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('answer', models.IntegerField(blank=True, null=True)),
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
             name='ONAFormAnswered',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answered_sections', models.ManyToManyField(related_name='answered_sections', to='data_management.questionawnser')),
+                ('answered_sections', models.ManyToManyField(related_name='answered_sections', to='data_management.questionanswer')),
             ],
         ),
         migrations.AddField(

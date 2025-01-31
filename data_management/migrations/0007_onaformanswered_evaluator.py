@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0006_remove_questionawnser_form_subsection_and_more'),
+        ('data_management', '0006_remove_questionanswer_form_subsection_and_more'),
     ]
 
     operations = [
