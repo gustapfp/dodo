@@ -1,7 +1,6 @@
 from django.db import models
 from data_management.models import FormSection, FormSubsection, ONAForm, Question, Evaluator, Hospital
 from pydantic import BaseModel
-from typing import Literal
 
 class QuestionAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_answers")
@@ -46,7 +45,7 @@ class SubsectionDistribution(BaseModel):
     subsection_title: str
     subsection_distribution: AnswerDistribution
 
-class SectionDistribution:
+class SectionDistribution(BaseModel):
     section_title: str
     section_answer_distribution: AnswerDistribution
     answer_distibution_by_subsection: list[SubsectionDistribution]
@@ -56,14 +55,14 @@ class ONAMetrics(BaseModel):
     ona_general_answer_distribution: AnswerDistribution
 
 
-# class ONAFormDistribution(models.model):
-#     ona_form = models.ForeignKey(ONAFormAnswered, on_delete=models.CASCADE, related_name="related_ona_form_distribution", default=None)
-#     distribution = models.JSONField(default=dict)
-#     total_distribution = models.FloatField(default=0.0)
-#     score = models.FloatField(default=0.0, null=True)
-#     date = models.DateTimeField(auto_now_add=True, null=True)
-#     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="related_hospital_distribution", default=None)
+class ONAFormDistribution(models.Model):
+    ona_form = models.ForeignKey(ONAFormAnswered, on_delete=models.CASCADE, related_name="related_ona_form_distribution", default=None)
+    distribution = models.JSONField(default=dict)
+    total_distribution = models.FloatField(default=0.0)
+    score = models.FloatField(default=0.0, null=True)
+    date = models.DateTimeField(auto_now_add=True, null=True)
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name="related_hospital_distribution", default=None)
 
-#     class Meta:
-#         verbose_name = "Distribuição ONA"
-#         verbose_name_plural = "Distribuições ONA"
+    class Meta:
+        verbose_name = "Distribuição ONA"
+        verbose_name_plural = "Distribuições ONA"

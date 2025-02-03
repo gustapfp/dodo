@@ -1,12 +1,10 @@
-
-from report.models import ONAFormAnswered, FormSubsectionAnswered, FormSectionAnswered, QuestionAnswer
+from pptx import Presentation
+from pptx.util import Inches
 from collections import Counter
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from io import BytesIO
-from pptx import Presentation
-from pptx.util import Inches
 
 
 class GraphsGenerator:
@@ -109,6 +107,7 @@ class GraphsGenerator:
         buf.seek(0)
         return buf
     
+
     def plot_grouped_bar_split_section_1(self, data, title):
         # Define the hard-coded colors from the Set1 palette
         colors = ['#E41A1C', '#377EB8', '#4DAF4A', '#FF7F00']  # Set1 colors: red, blue, green, orange
@@ -162,6 +161,7 @@ class GraphsGenerator:
         buf.seek(0)
         return buf
     
+
     def plot_grouped_bar_split_section_2(self, data, title):
         # Define the hard-coded colors from the Set1 palette
         colors = ['#E41A1C', '#377EB8', '#4DAF4A', '#FF7F00']  # Set1 colors: red, blue, green, orange
@@ -226,6 +226,8 @@ class GraphsGenerator:
         buf.seek(0)
         return buf
     
+
+
     def awnser_distribution_by_percentage(self, answer_distribution: dict) -> dict:
        
         # Remove 'não aplicável' if it exists
@@ -246,7 +248,6 @@ class GraphsGenerator:
             sections_distribution[key] = self.awnser_distribution_by_percentage(value)
 
         return sections_distribution
-
 class ReportGenerator:
     def __init__(self):
         self.template_ona_path = "report/helpers/template-ona-report.pptx"
@@ -303,119 +304,26 @@ class ReportGenerator:
         sections = data['Sections Distribution']
         self.add_section_images(sections), 
         self.add_subsection_images(subsections)
-        self.presentation.save(f"{report_name}.pptx")
+        self.presentation.save(report_name)
 
 
-class MetricsCalculator:
-    def __get_subsection_questions(self, subsection: FormSubsectionAnswered) -> list[QuestionAnswer]:
-        leve1_questions = subsection.answered_questions_level_1.all()
-        level2_questions = subsection.answered_questions_level_2.all()
 
-        questions_answers = leve1_questions.union(level2_questions)
-        return questions_answers
-       
-    def __get_questions_average_distribution(self, questions_list: list[QuestionAnswer]) -> dict[str, int]:
-        questions_answers = [question.answer for question in questions_list]
-        answers_distribution = Counter(questions_answers)
-        return answers_distribution
-    
 
-    def __get_subsection_average_distribution(self, subsection_questions: list[QuestionAnswer]) ->  dict[str, dict[str, int]]:
-        subsection_distribution = self.__get_questions_average_distribution(questions_list=subsection_questions)
-        return dict(subsection_distribution)
-    
-    def __get_section_and_subsection_answers_distribution(self, section:FormSectionAnswered) -> dict[str, int]: 
-        subsections = section.answered_subsections.all()
-        level3_questions = section.answered_questions_level_3.all()
 
-        section_answers = level3_questions
-        subsection_distribution = {}
-        for subsction in subsections:
-            subsection_title = subsction.form_subsection.subsection_title
-            subsection_questions_level_1_and_level_2 = self.__get_subsection_questions(subsction)
-            subsection_distribution[subsection_title] = self.__get_subsection_average_distribution(subsection_questions_level_1_and_level_2)
-            
-            section_answers = section_answers.union(subsection_questions_level_1_and_level_2)
-           
-        section_distribution = self.__get_questions_average_distribution(section_answers)
 
-        return section_distribution, subsection_distribution
-    
-    def __get_ona_form_total_metrics(self, distribution_by_section:dict) -> dict[str, int]:
-        total_counts = Counter()
-        for section, counts in distribution_by_section.items():
-            total_counts.update(counts)
-        return dict(total_counts)
-            
-        
-    def get_ona_form_average_distribution(self, ona_form: ONAFormAnswered) -> dict[str, dict[str, int]]:
-        sections = ona_form.answered_sections.all()
-        
+# Example usage:
+if __name__ == "__main__":
 
-        distribution_by_section = {}
-        distribution_by_subsections = {}
-        for section in sections:
-            section_name = section.form_section.section_title
-            section_distribution, subsection_distribution = self.__get_section_and_subsection_answers_distribution(section)
+    data = {'Subsections Distribution': {'SEÇÃO 01 - GESTÃO ORGANIZACIONAL': {'1.1 LIDERANÇA ORGANIZACIONAL': {'conforme': 21, 'não aplicável': 10, 'não conforme': 6, 'supera': 5, 'parcial conforme': 3}, '1.2 GESTÃO DA QUALIDADE': {'parcial conforme': 5, 'não conforme': 7, 'conforme': 14, 'não aplicável': 2, 'supera': 2}, '1.3 PREV. CONTROLE DE INFECÇÃO': {'conforme': 15, 'não conforme': 7, 'supera': 2, 'não aplicável': 6, 'parcial conforme': 2}, '1.4 GESTÃO ADM FINANCEIRA': {'conforme': 10, 'não aplicável': 5, 'não conforme': 3, 'supera': 2}, '1.5 GESTÃO DE PESSOAS': {'conforme': 13, 'não conforme': 4, 'supera': 7, 'não aplicável': 5, 'parcial conforme': 2}, '1.6 GESTÃO DE SUPRIMENTOS': {'não conforme': 9, 'conforme': 9, 'supera': 3}, '1.7 GESTÃO DA TEC. DA INF.': {'não conforme': 8, 'parcial conforme': 3, 'supera': 3, 'conforme': 10}, '1.8 GESTÃO DO ACESSO': {'conforme': 10, 'parcial conforme': 1, 'não conforme': 6, 'não aplicável': 3, 'supera': 1}, '1.9 GESTÃO DA SEGURANÇA': {'conforme': 7, 'não conforme': 5, 'não aplicável': 2, 'supera': 5, 'parcial conforme': 1}, '1.10 GESTÃO DA COMUNICAÇÃO': {'não conforme': 6, 'conforme': 9, 'não aplicável': 1, 'parcial conforme': 1, 'supera': 3}}, 'SEÇÃO 02  - ATENÇÃO AO PACIENTE': {'2.1 INTERNAÇÃO': {'não aplicável': 3, 'conforme': 15, 'não conforme': 10, 'parcial conforme': 7, 'supera': 2}, '2.2 ATENDIMENTO AMBULATORIAL': {'supera': 3, 'conforme': 12, 'parcial conforme': 11, 'não conforme': 11, 'não aplicável': 2}, '2.3 ATENDIMENTO EMERGENCIAL': {'não aplicável': 5, 'supera': 6, 'conforme': 15, 'não conforme': 6, 'parcial conforme': 5}, '2.4 ATENDIMENTO CIRÚRGICO': {'conforme': 14, 'não conforme': 13, 'parcial conforme': 16, 'supera': 4, 'não aplicável': 2}, '2.5 ATENDIMENTO OBSTÉTRICO': {'supera': 5, 'conforme': 15, 'parcial conforme': 23, 'não conforme': 11}, '2.6 ATENDIMENTO NEONATAL': {'não conforme': 11, 'parcial conforme': 12, 'supera': 6, 'conforme': 11, 'não aplicável': 4}, '2.7 CUIDADOS INTENSIVOS': {'não conforme': 6, 'parcial conforme': 13, 'conforme': 10, 'supera': 6, 'não aplicável': 3}, '2.8 ASSISTÊNCIA HEMOTERÁPICA': {'parcial conforme': 24, 'não conforme': 19, 'conforme': 12, 'supera': 1, 'não aplicável': 8}, '2.9 ASSISTÊNCIA NEFROLÓGICA': {'parcial conforme': 18, 'conforme': 15, 'não conforme': 10, 'supera': 1, 'não aplicável': 3}, '2.10 ASSISTÊNCIA ONCOLÓGICA': {'parcial conforme': 17, 'não conforme': 13, 'não aplicável': 4, 'conforme': 12, 'supera': 2}, '2.11 RADIOTERAPIA': {'parcial conforme': 24, 'conforme': 11, 'não conforme': 4, 'supera': 2}, '2.12 MED. HIPERBÁRICA': {'conforme': 11, 'parcial conforme': 12, 'não aplicável': 3, 'não conforme': 8, 'supera': 2}, '2.13 ASSISTÊNCIA FARMACÊUTICA': {'parcial conforme': 13, 'conforme': 18, 'supera': 6, 'não conforme': 7}, '2.14 ASSISTÊNCIA NUTRICIONAL ': {'parcial conforme': 24, 'conforme': 19, 'não conforme': 15, 'supera': 2, 'não aplicável': 2}, '2.15 ATENDIMENTO OFTALMOLÓGICO': {'parcial conforme': 21, 'conforme': 14, 'supera': 3, 'não aplicável': 5, 'não conforme': 13}, '2.16 ATEND. PRÉ HOSPITALAR': {'parcial conforme': 15, 'conforme': 17, 'não conforme': 5, 'supera': 3, 'não aplicável': 1}, '2.17 ODONTOLOGIA': {'conforme': 17, 'parcial conforme': 19, 'não conforme': 13}, '2.18 TELEMEDICINA': {'não conforme': 13, 'conforme': 8, 'parcial conforme': 12, 'não aplicável': 2, 'supera': 1}, '2.19 ATENÇÃO PRIMÁRIA': {'conforme': 28, 'não conforme': 9, 'supera': 7, 'parcial conforme': 10}, '2.20 ATENÇÃO DOMICILIAR': {'conforme': 9, 'não conforme': 9, 'parcial conforme': 22, 'não aplicável': 1}}, 'SEÇÃO 03 - DIAGNÓSTICO E TERAPÊUTICA': {'3.1 Análises clínicas': {'conforme': 9, 'não conforme': 22, 'parcial conforme': 20}, '3.2 Anatomia Patológica e Citop': {'conforme': 20, 'parcial conforme': 11, 'não conforme': 11, 'supera': 2}, '3.3 Met. Diagósticos. e Terap.': {'conforme': 14, 'não conforme': 5, 'parcial conforme': 14, 'supera': 2}, '3.4 Diagósticos por imagem': {'parcial conforme': 13, 'conforme': 15, 'não conforme': 9, 'não aplicável': 2}, '3.5 Medicina Nuclear': {'conforme': 14, 'não conforme': 16, 'parcial conforme': 13, 'não aplicável': 5, 'supera': 2}, '3.6 Radiologia Interv.': {'parcial conforme': 20, 'não aplicável': 2, 'não conforme': 14, 'conforme': 7, 'supera': 1}, '3.7 Mét. endoscópicos e vid.': {'não aplicável': 3, 'parcial conforme': 14, 'conforme': 14, 'não conforme': 14, 'supera': 1}}, 'SEÇÃO 04 - GESTÃO DE APOIO': {'4.1 Gestão de equipamentos': {'parcial conforme': 13, 'conforme': 7, 'não conforme': 11, 'não aplicável': 2}, '4.2 Gestão de Infraestrutura': {'parcial conforme': 6, 'não conforme': 7, 'conforme': 6, 'supera': 1, 'não aplicável': 1}, '4.3 Limpeza e Desinf. de superf': {'conforme': 7, 'parcial conforme': 6, 'não conforme': 8}, '4.4 Process. de produtos ': {'parcial conforme': 11, 'supera': 3, 'não conforme': 6, 'conforme': 12, 'não aplicável': 2}, '4.5 Process. de Roupas': {'conforme': 11, 'parcial conforme': 12, 'supera': 1, 'não conforme': 3}}}, 'Sections Distribution': {'SEÇÃO 01 - GESTÃO ORGANIZACIONAL': {'não aplicável': 37, 'conforme': 125, 'não conforme': 66, 'supera': 36, 'parcial conforme': 18}, 'SEÇÃO 02  - ATENÇÃO AO PACIENTE': {'parcial conforme': 325, 'não conforme': 209, 'supera': 64, 'conforme': 289, 'não aplicável': 48}, 'SEÇÃO 03 - DIAGNÓSTICO E TERAPÊUTICA': {'conforme': 96, 'não conforme': 96, 'parcial conforme': 108, 'supera': 9, 'não aplicável': 18}, 'SEÇÃO 04 - GESTÃO DE APOIO': {'não conforme': 40, 'parcial conforme': 55, 'conforme': 49, 'não aplicável': 5, 'supera': 5}}, 'ONA awnser Distribution': {'não aplicável': 108, 'conforme': 559, 'não conforme': 411, 'supera': 114, 'parcial conforme': 506}}
+    subsections = data['Subsections Distribution']
+    sections = data['Sections Distribution']
+    ona_awnser = data['ONA awnser Distribution']
+    # graph = GraphsGenerator()
+    # bar_plot_img = graph.plot_bar_plot(sections['SEÇÃO 01 - GESTÃO ORGANIZACIONAL'], 'SEÇÃO 01 - GESTÃO ORGANIZACIONAL')
 
-            distribution_by_section[section_name] = dict(section_distribution)
 
-            distribution_by_subsections[section_name] = dict(subsection_distribution)
-            
-        total_distribution = self.__get_ona_form_total_metrics(distribution_by_section)
 
-        metrics = {
-            "Subsections Distribution" : distribution_by_subsections,
-            "Sections Distribution": distribution_by_section,
-            "ONA answer Distribution" : total_distribution,
-        }
-
-        return metrics
-        
-
+    rg = ReportGenerator()
+    prs = rg.make_report(data, "TEST06.pptx")
     
     
-        
-
-
-
-
-
-    # from pydantic import BaseModel, Field
-    # from typing import List, Optional
-    # from datetime import datetime
-
-    # # Simulating related models (FormSectionAnswered, ONAForm, Evaluator)
-    # class FormSectionAnswered(BaseModel):
-    #     section_name: str
-
-    # class ONAForm(BaseModel):
-    #     form_name: str
-
-    # class Evaluator(BaseModel):
-    #     name: str
-    #     email: str
-
-    # # The main model - ONAFormAnswered
-    # class ONAFormAnswered(BaseModel):
-    #     answered_sections: List[FormSectionAnswered] = Field(..., description="List of answered sections")
-    #     ona_form: ONAForm
-    #     evaluator: Evaluator
-    #     answered_at: Optional[datetime] = Field(default_factory=datetime.now)
-
-    # # Example of creating some objects
-    # form_section_1 = FormSectionAnswered(section_name="Section 1")
-    # form_section_2 = FormSectionAnswered(section_name="Section 2")
-
-    # ona_form_instance = ONAForm(form_name="Form 1")
-    # evaluator_instance = Evaluator(name="Evaluator 1", email="evaluator1@example.com")
-
-    # # Create an ONAFormAnswered instance
-    # ona_form_answered = ONAFormAnswered(
-    #     ona_form=ona_form_instance,
-    #     evaluator=evaluator_instance,
-    #     answered_sections=[form_section_1, form_section_2]
-    # )
-
-    # # Output the instance
-    # print(ona_form_answered)
