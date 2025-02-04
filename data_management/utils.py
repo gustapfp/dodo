@@ -1,4 +1,4 @@
-from .models import QuestionAnswer, FormSubsectionAnswered, FormSectionAnswered
+from report.models import QuestionAnswer, FormSubsectionAnswered, FormSectionAnswered
 
 def serialize_question(question):
     return {

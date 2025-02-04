@@ -1,38 +1,38 @@
 {% load static %}
-<ul id="{{awnser_id}}" class="flex flex-col lg:flex-row items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+<ul id="{{answer_id}}" class="flex flex-col lg:flex-row items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
         <div class="flex items-center ps-3">
-            <input id="horizontal-list-nao-aplicavel-{{awnser_id}}" type="radio" value="não aplicável" name={{awnser_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <!-- <input id="horizontal-list-nao-aplicavel-{{awnser_id}}" type="radio" value="não aplicável" name={{awnser_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
-            <label for="horizontal-list-nao-aplicavel-{{awnser_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 p-1">Não aplicável</label>
+            <input id="horizontal-list-nao-aplicavel-{{answer_id}}" type="radio" value="não aplicável" name={{answer_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+            <!-- <input id="horizontal-list-nao-aplicavel-{{answer_id}}" type="radio" value="não aplicável" name={{answer_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
+            <label for="horizontal-list-nao-aplicavel-{{answer_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 p-1">Não aplicável</label>
         </div>
     </li>
     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
         <div class="flex items-center ps-3">
-            <input id="horizontal-list-nao-conforme-{{awnser_id}}-2" type="radio" value="não conforme" name={{awnser_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <!-- <input id="horizontal-list-nao-conforme-{{awnser_id}}-2" type="radio" value="não conforme" name={{awnser_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
-            <label for="horizontal-list-nao-conforme-{{awnser_id}}-2" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Não conforme</label>
+            <input id="horizontal-list-nao-conforme-{{answer_id}}-2" type="radio" value="não conforme" name={{answer_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+            <!-- <input id="horizontal-list-nao-conforme-{{answer_id}}-2" type="radio" value="não conforme" name={{answer_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
+            <label for="horizontal-list-nao-conforme-{{answer_id}}-2" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Não conforme</label>
         </div>
     </li>
     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
         <div class="flex items-center ps-3">
-            <input id="horizontal-list-parcial-conforme-{{awnser_id}}" type="radio" value="parcial conforme" name={{awnser_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <!-- <input id="horizontal-list-parcial-conforme-{{awnser_id}}" type="radio" value="parcial conforme" name={{awnser_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
-            <label for="horizontal-list-parcial-conforme-{{awnser_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Parcial conforme</label>
+            <input id="horizontal-list-parcial-conforme-{{answer_id}}" type="radio" value="parcial conforme" name={{answer_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+            <!-- <input id="horizontal-list-parcial-conforme-{{answer_id}}" type="radio" value="parcial conforme" name={{answer_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
+            <label for="horizontal-list-parcial-conforme-{{answer_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Parcial conforme</label>
         </div>
     </li>
     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
         <div class="flex items-center ps-3">
-            <input id="horizontal-list-conforme-{{awnser_id}}" type="radio" value="conforme" name={{awnser_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <!-- <input id="horizontal-list-conforme-{{awnser_id}}" type="radio" value="conforme" name={{awnser_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
-            <label for="horizontal-list-conforme-{{awnser_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Conforme</label>
+            <input id="horizontal-list-conforme-{{answer_id}}" type="radio" value="conforme" name={{answer_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+            <!-- <input id="horizontal-list-conforme-{{answer_id}}" type="radio" value="conforme" name={{answer_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
+            <label for="horizontal-list-conforme-{{answer_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Conforme</label>
         </div>
     </li>
     <li class="w-full dark:border-gray-600">
         <div class="flex items-center ps-3">
-            <input id="horizontal-list-supera-{{awnser_id}}" type="radio" value="supera" name={{awnser_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-            <!-- <input id="horizontal-list-supera-{{awnser_id}}" type="radio" value="supera" name={{awnser_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
-            <label for="horizontal-list-supera-{{awnser_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Supera</label>
+            <input id="horizontal-list-supera-{{answer_id}}" type="radio" value="supera" name={{answer_id}} class="{{subsection_title}} w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+            <!-- <input id="horizontal-list-supera-{{answer_id}}" type="radio" value="supera" name={{answer_id}} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" required> -->
+            <label for="horizontal-list-supera-{{answer_id}}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Supera</label>
         </div>
     </li>
 </ul>

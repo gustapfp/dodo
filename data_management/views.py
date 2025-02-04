@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from .forms import EvaluatorForm
 from django.views import View
-from .models import ONAForm, ONAFormAnswered
+from report.models import ONAForm, ONAFormAnswered
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 from .utils import serialize_ona_form,  create_section
 
