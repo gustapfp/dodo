@@ -4,70 +4,72 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('data_management', '0005_insert_sections'),
+        ("data_management", "0005_insert_sections"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='formsubsectionanswered',
-            name='answered_questions',
+            model_name="formsubsectionanswered",
+            name="answered_questions",
         ),
         migrations.RemoveField(
-            model_name='onaformanswered',
-            name='answered_sections',
+            model_name="onaformanswered",
+            name="answered_sections",
         ),
         migrations.RemoveField(
-            model_name='questionanswer',
-            name='form_subsection',
+            model_name="questionanswer",
+            name="form_subsection",
         ),
         migrations.RemoveField(
-            model_name='questionanswer',
-            name='ona_form',
+            model_name="questionanswer",
+            name="ona_form",
         ),
         migrations.RemoveField(
-            model_name='questionanswer',
-            name='question',
+            model_name="questionanswer",
+            name="question",
         ),
         migrations.AlterModelOptions(
-            name='evaluator',
-            options={'verbose_name': 'Avaliador', 'verbose_name_plural': 'Avaliadores'},
+            name="evaluator",
+            options={"verbose_name": "Avaliador", "verbose_name_plural": "Avaliadores"},
         ),
         migrations.AlterModelOptions(
-            name='formsection',
-            options={'verbose_name': 'Seção', 'verbose_name_plural': 'Seções'},
+            name="formsection",
+            options={"verbose_name": "Seção", "verbose_name_plural": "Seções"},
         ),
         migrations.AlterModelOptions(
-            name='formsubsection',
-            options={'verbose_name': 'Subseção', 'verbose_name_plural': 'Subseções'},
+            name="formsubsection",
+            options={"verbose_name": "Subseção", "verbose_name_plural": "Subseções"},
         ),
         migrations.AlterModelOptions(
-            name='hospital',
-            options={'verbose_name': 'Hospital', 'verbose_name_plural': 'Hospitais'},
+            name="hospital",
+            options={"verbose_name": "Hospital", "verbose_name_plural": "Hospitais"},
         ),
         migrations.AlterModelOptions(
-            name='onaform',
-            options={'verbose_name': 'Formulário ONA', 'verbose_name_plural': 'Formulários ONA'},
+            name="onaform",
+            options={
+                "verbose_name": "Formulário ONA",
+                "verbose_name_plural": "Formulários ONA",
+            },
         ),
         migrations.AlterModelOptions(
-            name='question',
-            options={'verbose_name': 'Questão', 'verbose_name_plural': 'Questões'},
+            name="question",
+            options={"verbose_name": "Questão", "verbose_name_plural": "Questões"},
         ),
         migrations.AlterModelOptions(
-            name='sector',
-            options={'verbose_name': 'Setor', 'verbose_name_plural': 'Setores'},
+            name="sector",
+            options={"verbose_name": "Setor", "verbose_name_plural": "Setores"},
         ),
         migrations.DeleteModel(
-            name='FormSectionAnswered',
+            name="FormSectionAnswered",
         ),
         migrations.DeleteModel(
-            name='FormSubsectionAnswered',
+            name="FormSubsectionAnswered",
         ),
         migrations.DeleteModel(
-            name='ONAFormAnswered',
+            name="ONAFormAnswered",
         ),
         migrations.DeleteModel(
-            name='Questionanswer',
+            name="Questionanswer",
         ),
     ]

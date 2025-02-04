@@ -55,11 +55,11 @@ LOCAL_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "allauth", 
-    "allauth.account", 
+    "allauth",
+    "allauth.account",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS  + THIRD_PARTY_APPS
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -72,7 +72,7 @@ MIDDLEWARE = [
 ]
 ROOT_URLCONF = "core.urls"
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
 
 
 # SITE_ID = 1
@@ -81,12 +81,11 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
 #     "allauth.account.auth_backends.AuthenticationBackend",
 # )
 
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" 
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # LOGIN_REDIRECT_URL = "home"
 # LOGOUT_REDIRECT_URL = "home"
-AUTH_USER_MODEL  = "users.CustomUser"
-
+AUTH_USER_MODEL = "users.CustomUser"
 
 
 # TEMPLATES
@@ -172,10 +171,10 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER =""  # Your email address
+EMAIL_HOST_USER = ""  # Your email address
 EMAIL_HOST_PASSWORD = ""  # Your email password or app-specific password
 DEFAULT_FROM_EMAIL = ""  # Default from email

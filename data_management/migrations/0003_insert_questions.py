@@ -3,26 +3,27 @@
 from django.db import migrations
 from ..etls.ONA.json_reader import JSONReader
 
-JSON_PATH = 'data_management//ONAformquerquirements//ona_form.json' 
+JSON_PATH = "data_management//ONAformquerquirements//ona_form.json"
 json_reader = JSONReader(JSON_PATH)
 sections = json_reader.get_sections_list()
 subsections = json_reader.get_subsections_list(sections)
 
 
 def insert_questions(apps, schema_editor):
-    QuestionModel = apps.get_model('data_management', 'Question')
+    QuestionModel = apps.get_model("data_management", "Question")
     questions_to_inset = json_reader.get_questions_list(sections, subsections)
-    
+
     for question in questions_to_inset:
         QuestionModel.objects.create(
-            question_id = question.id,
-            description = question.description,
-            guidance = question.guidance,
-            evidence = question.evidence
+            question_id=question.id,
+            description=question.description,
+            guidance=question.guidance,
+            evidence=question.evidence,
         )
 
+
 def remove_questions(apps, schema_editor):
-    QuestionModel = apps.get_model('data_management', 'Question')
+    QuestionModel = apps.get_model("data_management", "Question")
 
     questions = json_reader.get_questions_list(sections, subsections)
     questions_to_remove = [question.id for question in questions]
@@ -30,14 +31,8 @@ def remove_questions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('data_management', '0002_initial'),
+        ("data_management", "0002_initial"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            insert_questions,
-            reverse_code=remove_questions
-        )
-    ]
+    operations = [migrations.RunPython(insert_questions, reverse_code=remove_questions)]

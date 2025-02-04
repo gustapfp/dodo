@@ -4,24 +4,25 @@ from django.db import migrations
 
 from ..etls.ONA.json_reader import JSONReader
 
-JSON_PATH = 'data_management//ONAformquerquirements//ona_form.json' 
+JSON_PATH = "data_management//ONAformquerquirements//ona_form.json"
 json_reader = JSONReader(JSON_PATH)
 sections = json_reader.get_sections_list()
 subsections = json_reader.get_subsections_list(sections)
 
+
 def insert_subsections(apps, schema_editor):
-    SubsectionModel = apps.get_model('data_management', 'FormSubsection')
-    QuestionModel = apps.get_model('data_management', 'Question')
-    
-    for subsection in subsections: 
+    SubsectionModel = apps.get_model("data_management", "FormSubsection")
+    QuestionModel = apps.get_model("data_management", "Question")
+
+    for subsection in subsections:
         subsection_obj = SubsectionModel.objects.create(
-            subsection_id = subsection.subsectionId,
-            subsection_title = subsection.subsectionTitle,
+            subsection_id=subsection.subsectionId,
+            subsection_title=subsection.subsectionTitle,
         )
-        # --- Questions Level 1 --- 
+        # --- Questions Level 1 ---
         q_level1 = subsection.level1
         q_level1_id = [question.id for question in q_level1]
-    
+
         questions_level1 = []
         for question_id in q_level1_id:
             try:
@@ -32,7 +33,7 @@ def insert_subsections(apps, schema_editor):
 
         subsection_obj.questions_level1.set(questions_level1)
 
-        # --- Questions Level 2 --- 
+        # --- Questions Level 2 ---
         q_level2 = subsection.level2
         q_level2_id = [question.id for question in q_level2]
         questions_level2 = []
@@ -42,30 +43,21 @@ def insert_subsections(apps, schema_editor):
                 questions_level2.append(question_object)
             except QuestionModel.DoesNotExist:
                 pass
-        
+
         subsection_obj.questions_level2.set(questions_level2)
 
 
-    
-    
-
 def remove_subsections(apps, schema_editor):
-
-    SubsectionModel = apps.get_model('data_management', 'FormSubsection')
+    SubsectionModel = apps.get_model("data_management", "FormSubsection")
 
     SubsectionModel.objects.all().delete()
 
 
-
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('data_management', '0003_insert_questions'),
+        ("data_management", "0003_insert_questions"),
     ]
 
     operations = [
-        migrations.RunPython(
-            insert_subsections,
-            reverse_code=remove_subsections
-        )
+        migrations.RunPython(insert_subsections, reverse_code=remove_subsections)
     ]

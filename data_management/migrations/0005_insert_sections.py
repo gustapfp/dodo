@@ -4,64 +4,64 @@ from django.db import migrations
 
 from ..etls.ONA.json_reader import JSONReader
 
-JSON_PATH = 'data_management//ONAformquerquirements//ona_form.json' 
+JSON_PATH = "data_management//ONAformquerquirements//ona_form.json"
 json_reader = JSONReader(JSON_PATH)
 sections = json_reader.get_sections_list()
 subsections = json_reader.get_subsections_list(sections)
 
+
 def insert_subsections(apps, schema_editor):
-    SectionModel = apps.get_model('data_management', 'FormSection')
-    SubsectionModel = apps.get_model('data_management', 'FormSubsection')
-    QuestionModel = apps.get_model('data_management', 'Question')
-    
-    for section in sections: 
+    SectionModel = apps.get_model("data_management", "FormSection")
+    SubsectionModel = apps.get_model("data_management", "FormSubsection")
+    QuestionModel = apps.get_model("data_management", "Question")
+
+    for section in sections:
         section_obj = SectionModel.objects.create(
-            section_id = section.sectionId,
-            section_title = section.sectionTitle,
+            section_id=section.sectionId,
+            section_title=section.sectionTitle,
         )
 
-        # --- Questions Level 3 --- 
+        # --- Questions Level 3 ---
         q_level3 = section.level3
         q_level3_id = [question.id for question in q_level3]
-    
+
         questions_level3 = []
         for question_id in q_level3_id:
             try:
-                 question_object = QuestionModel.objects.get(question_id=question_id)
-                 questions_level3.append(question_object)
+                question_object = QuestionModel.objects.get(question_id=question_id)
+                questions_level3.append(question_object)
             except QuestionModel.DoesNotExist:
                 pass
 
         section_obj.questions_level3.set(questions_level3)
 
-        # --- SubSections --- 
+        # --- SubSections ---
         json_subsections = section.subsections
         subsection_ids = [subsection.subsectionId for subsection in json_subsections]
         subsections_objects = []
         for _subsection_id in subsection_ids:
             try:
-                subsection_object = SubsectionModel.objects.get(subsection_id=_subsection_id) 
+                subsection_object = SubsectionModel.objects.get(
+                    subsection_id=_subsection_id
+                )
                 subsections_objects.append(subsection_object)
             except SubsectionModel.DoesNotExist:
                 pass
-        
+
         section_obj.form_subsections.set(subsections_objects)
 
-def remove_subsections(apps, schema_editor):
 
-    SubsectionModel = apps.get_model('data_management', 'FormSection')
+def remove_subsections(apps, schema_editor):
+    SubsectionModel = apps.get_model("data_management", "FormSection")
 
     SubsectionModel.objects.all().delete()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('data_management', '0004_insert_subsections'),
+        ("data_management", "0004_insert_subsections"),
     ]
 
     operations = [
-        migrations.RunPython(
-            insert_subsections,
-            reverse_code=remove_subsections
-        )
+        migrations.RunPython(insert_subsections, reverse_code=remove_subsections)
     ]

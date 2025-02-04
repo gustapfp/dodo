@@ -5,112 +5,267 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Evaluator',
+            name="Evaluator",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=150)),
-                ('job_role', models.CharField(choices=[(None, 'Escolha sua profissão...'), ('MED', 'Médico(a)'), ('ENF', 'Enfermeiro(a)'), ('TENF', 'Técnico(a) de Enfermagem'), ('AENF', 'Auxiliar de Enfermagem'), ('FARM', 'Farmacêutico(a)'), ('TFARM', 'Técnico(a) de Farmácia'), ('FISIO', 'Fisioterapeuta'), ('TOCUP', 'Terapeuta Ocupacional'), ('NUTR', 'Nutricionista'), ('PSI', 'Psicólogo(a)'), ('ASSOC', 'Assistente Social'), ('TRAD', 'Técnico(a) em Radiologia'), ('REC', 'Recepcionista'), ('SEC', 'Secretário(a)'), ('ADM', 'Administrador(a) Hospitalar'), ('CONT', 'Contador / Analista Financeiro'), ('LIMP', 'Auxiliar de Limpeza'), ('MAQ', 'Maqueiro'), ('CENF', 'Coordenador(a) de Enfermagem'), ('AMB', 'Condutor(a) de Ambulância')], max_length=5)),
-                ('evaluation_date', models.DateTimeField(auto_now_add=True)),
-                ('email', models.EmailField(max_length=80, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=150)),
+                (
+                    "job_role",
+                    models.CharField(
+                        choices=[
+                            (None, "Escolha sua profissão..."),
+                            ("MED", "Médico(a)"),
+                            ("ENF", "Enfermeiro(a)"),
+                            ("TENF", "Técnico(a) de Enfermagem"),
+                            ("AENF", "Auxiliar de Enfermagem"),
+                            ("FARM", "Farmacêutico(a)"),
+                            ("TFARM", "Técnico(a) de Farmácia"),
+                            ("FISIO", "Fisioterapeuta"),
+                            ("TOCUP", "Terapeuta Ocupacional"),
+                            ("NUTR", "Nutricionista"),
+                            ("PSI", "Psicólogo(a)"),
+                            ("ASSOC", "Assistente Social"),
+                            ("TRAD", "Técnico(a) em Radiologia"),
+                            ("REC", "Recepcionista"),
+                            ("SEC", "Secretário(a)"),
+                            ("ADM", "Administrador(a) Hospitalar"),
+                            ("CONT", "Contador / Analista Financeiro"),
+                            ("LIMP", "Auxiliar de Limpeza"),
+                            ("MAQ", "Maqueiro"),
+                            ("CENF", "Coordenador(a) de Enfermagem"),
+                            ("AMB", "Condutor(a) de Ambulância"),
+                        ],
+                        max_length=5,
+                    ),
+                ),
+                ("evaluation_date", models.DateTimeField(auto_now_add=True)),
+                ("email", models.EmailField(max_length=80, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='FormSection',
+            name="FormSection",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('section_id', models.CharField(max_length=20)),
-                ('section_title', models.CharField(max_length=80)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("section_id", models.CharField(max_length=20)),
+                ("section_title", models.CharField(max_length=80)),
             ],
         ),
         migrations.CreateModel(
-            name='FormSectionAnswered',
+            name="FormSectionAnswered",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FormSubsection',
+            name="FormSubsection",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('subsection_id', models.CharField(max_length=20)),
-                ('subsection_title', models.CharField(max_length=80)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("subsection_id", models.CharField(max_length=20)),
+                ("subsection_title", models.CharField(max_length=80)),
             ],
         ),
         migrations.CreateModel(
-            name='FormSubsectionAnswered',
+            name="FormSubsectionAnswered",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Hospital',
+            name="Hospital",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=80)),
-                ('email', models.EmailField(blank=True, max_length=80)),
-                ('contact_number', models.CharField(blank=True, max_length=16)),
-                ('address', models.TextField(blank=True, max_length=150)),
-                ('is_active', models.BooleanField(default=True)),
-                ('last_service', models.DateTimeField(auto_now=True)),
-                ('level', models.IntegerField(default=1)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=80)),
+                ("email", models.EmailField(blank=True, max_length=80)),
+                ("contact_number", models.CharField(blank=True, max_length=16)),
+                ("address", models.TextField(blank=True, max_length=150)),
+                ("is_active", models.BooleanField(default=True)),
+                ("last_service", models.DateTimeField(auto_now=True)),
+                ("level", models.IntegerField(default=1)),
             ],
         ),
         migrations.CreateModel(
-            name='ONAForm',
+            name="ONAForm",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('form_title', models.CharField(max_length=80)),
-                ('ONA_sections', models.ManyToManyField(related_name='ona_form_sections', to='data_management.formsection')),
-                ('hospital', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_management.hospital')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("form_title", models.CharField(max_length=80)),
+                (
+                    "ONA_sections",
+                    models.ManyToManyField(
+                        related_name="ona_form_sections",
+                        to="data_management.formsection",
+                    ),
+                ),
+                (
+                    "hospital",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="data_management.hospital",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question_id', models.CharField(max_length=20)),
-                ('description', models.TextField(max_length=400, null=True)),
-                ('guidance', models.TextField(max_length=400, null=True)),
-                ('evidence', models.TextField(max_length=400, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question_id", models.CharField(max_length=20)),
+                ("description", models.TextField(max_length=400, null=True)),
+                ("guidance", models.TextField(max_length=400, null=True)),
+                ("evidence", models.TextField(max_length=400, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Sector',
+            name="Sector",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=80, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=80, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Questionanswer',
+            name="Questionanswer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answer', models.IntegerField(blank=True, null=True)),
-                ('answered_at', models.DateTimeField(auto_now_add=True)),
-                ('form_subsection', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_answers', to='data_management.formsubsection')),
-                ('ona_form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='form_answers', to='data_management.onaform')),
-                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='question_answers', to='data_management.question')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("answer", models.IntegerField(blank=True, null=True)),
+                ("answered_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "form_subsection",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="form_answers",
+                        to="data_management.formsubsection",
+                    ),
+                ),
+                (
+                    "ona_form",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="form_answers",
+                        to="data_management.onaform",
+                    ),
+                ),
+                (
+                    "question",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="question_answers",
+                        to="data_management.question",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ONAFormAnswered',
+            name="ONAFormAnswered",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answered_sections', models.ManyToManyField(related_name='answered_sections', to='data_management.questionanswer')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "answered_sections",
+                    models.ManyToManyField(
+                        related_name="answered_sections",
+                        to="data_management.questionanswer",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='hospital',
-            name='sectors',
-            field=models.ManyToManyField(related_name='hospital_sectors', to='data_management.sector'),
+            model_name="hospital",
+            name="sectors",
+            field=models.ManyToManyField(
+                related_name="hospital_sectors", to="data_management.sector"
+            ),
         ),
     ]

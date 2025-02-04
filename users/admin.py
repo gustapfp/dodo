@@ -15,12 +15,26 @@ class CustomUserAdmin(UserAdmin):
 
     # When viewing/editing an existing user
     fieldsets = (
-        (None, {
-            "fields": ("username", "password", "role",),
-        }),
-        ("Permissions", {
-            "fields": ("is_active", "is_staff", "is_superuser",),
-        }),
+        (
+            None,
+            {
+                "fields": (
+                    "username",
+                    "password",
+                    "role",
+                ),
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                ),
+            },
+        ),
     )
 
     # When creating a new user
@@ -29,8 +43,14 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "role", "password1", "password2", 
-                           "is_staff", "is_superuser"),
+                "fields": (
+                    "username",
+                    "role",
+                    "password1",
+                    "password2",
+                    "is_staff",
+                    "is_superuser",
+                ),
             },
         ),
     )
@@ -38,7 +58,8 @@ class CustomUserAdmin(UserAdmin):
     list_display = ("username", "role", "is_staff", "is_superuser")
     list_display_links = ("username",)
     # Optional: make fields editable directly from the list view
-    list_editable = ("role", "is_staff", "is_superuser",)
-    
-
-
+    list_editable = (
+        "role",
+        "is_staff",
+        "is_superuser",
+    )

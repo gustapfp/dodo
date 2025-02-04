@@ -6,58 +6,79 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('data_management', '0001_initial'),
+        ("data_management", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hospital',
-            name='username',
-            field=models.OneToOneField(max_length=80, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="hospital",
+            name="username",
+            field=models.OneToOneField(
+                max_length=80,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='formsubsectionanswered',
-            name='answered_questions',
-            field=models.ManyToManyField(related_name='answered_questions', to='data_management.questionanswer'),
+            model_name="formsubsectionanswered",
+            name="answered_questions",
+            field=models.ManyToManyField(
+                related_name="answered_questions", to="data_management.questionanswer"
+            ),
         ),
         migrations.AddField(
-            model_name='formsubsection',
-            name='questions_level1',
-            field=models.ManyToManyField(related_name='level1_questions', to='data_management.question'),
+            model_name="formsubsection",
+            name="questions_level1",
+            field=models.ManyToManyField(
+                related_name="level1_questions", to="data_management.question"
+            ),
         ),
         migrations.AddField(
-            model_name='formsubsection',
-            name='questions_level2',
-            field=models.ManyToManyField(related_name='level2_questions', to='data_management.question'),
+            model_name="formsubsection",
+            name="questions_level2",
+            field=models.ManyToManyField(
+                related_name="level2_questions", to="data_management.question"
+            ),
         ),
         migrations.AddField(
-            model_name='formsectionanswered',
-            name='answered_subsections',
-            field=models.ManyToManyField(related_name='answered_subsections', to='data_management.questionanswer'),
+            model_name="formsectionanswered",
+            name="answered_subsections",
+            field=models.ManyToManyField(
+                related_name="answered_subsections", to="data_management.questionanswer"
+            ),
         ),
         migrations.AddField(
-            model_name='formsection',
-            name='form_subsections',
-            field=models.ManyToManyField(related_name='form_sections', to='data_management.formsubsection'),
+            model_name="formsection",
+            name="form_subsections",
+            field=models.ManyToManyField(
+                related_name="form_sections", to="data_management.formsubsection"
+            ),
         ),
         migrations.AddField(
-            model_name='formsection',
-            name='questions_level3',
-            field=models.ManyToManyField(related_name='level3_questions', to='data_management.question'),
+            model_name="formsection",
+            name="questions_level3",
+            field=models.ManyToManyField(
+                related_name="level3_questions", to="data_management.question"
+            ),
         ),
         migrations.AddField(
-            model_name='evaluator',
-            name='hospital',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_management.hospital'),
+            model_name="evaluator",
+            name="hospital",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="data_management.hospital",
+            ),
         ),
         migrations.AddField(
-            model_name='evaluator',
-            name='hospital_sector',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_management.sector'),
+            model_name="evaluator",
+            name="hospital_sector",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="data_management.sector"
+            ),
         ),
     ]
