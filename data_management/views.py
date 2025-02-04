@@ -7,7 +7,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-from .utils import serialize_ona_form, create_section
+from .helpers.serialize_to_json import serialize_ona_form
+from .helpers.answers_organizer import create_section
 
 
 class EvaluatorView(LoginRequiredMixin, View):
