@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import ForeignKey
 from users.models import CustomUser
-
+from data_management.helpers.consts import JOB_DESCRIPTION_CHOICES
 
 class Sector(models.Model):
     name = models.CharField(max_length=80, unique=True)
@@ -38,32 +38,10 @@ class Hospital(models.Model):
 
 
 class Evaluator(models.Model):
-    JOB_ROLE_CHOICES = [
-        (None, "Escolha sua profissão..."),
-        ("MED", "Médico(a)"),
-        ("ENF", "Enfermeiro(a)"),
-        ("TENF", "Técnico(a) de Enfermagem"),
-        ("AENF", "Auxiliar de Enfermagem"),
-        ("FARM", "Farmacêutico(a)"),
-        ("TFARM", "Técnico(a) de Farmácia"),
-        ("FISIO", "Fisioterapeuta"),
-        ("TOCUP", "Terapeuta Ocupacional"),
-        ("NUTR", "Nutricionista"),
-        ("PSI", "Psicólogo(a)"),
-        ("ASSOC", "Assistente Social"),
-        ("TRAD", "Técnico(a) em Radiologia"),
-        ("REC", "Recepcionista"),
-        ("SEC", "Secretário(a)"),
-        ("ADM", "Administrador(a) Hospitalar"),
-        ("CONT", "Contador / Analista Financeiro"),
-        ("LIMP", "Auxiliar de Limpeza"),
-        ("MAQ", "Maqueiro"),
-        ("CENF", "Coordenador(a) de Enfermagem"),
-        ("AMB", "Condutor(a) de Ambulância"),
-    ]
+    
     name = models.CharField(max_length=150)
     hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
-    job_role = models.CharField(max_length=5, choices=JOB_ROLE_CHOICES)
+    job_role = models.CharField(max_length=7, choices=JOB_DESCRIPTION_CHOICES)
     evaluation_date = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(max_length=80, unique=True)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
@@ -81,6 +59,7 @@ class Question(models.Model):
     description = models.TextField(max_length=400, null=True)
     guidance = models.TextField(max_length=400, null=True)
     evidence = models.TextField(max_length=400, null=True)
+    # core = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Questão"

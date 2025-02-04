@@ -7,6 +7,7 @@ class Question(BaseModel):
     description: str
     guidance: str
     evidence: str
+    # core: bool
 
 
 class Subsection(BaseModel):

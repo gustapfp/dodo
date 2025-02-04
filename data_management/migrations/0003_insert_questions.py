@@ -3,7 +3,7 @@
 from django.db import migrations
 from ..etls.ONA.json_reader import JSONReader
 
-JSON_PATH = "data_management//ONAformquerquirements//ona_form.json"
+JSON_PATH = "data_management//ona_form_as_json//ona_form.json"
 json_reader = JSONReader(JSON_PATH)
 sections = json_reader.get_sections_list()
 subsections = json_reader.get_subsections_list(sections)
@@ -19,6 +19,7 @@ def insert_questions(apps, schema_editor):
             description=question.description,
             guidance=question.guidance,
             evidence=question.evidence,
+            # core=question.core,
         )
 
 
