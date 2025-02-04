@@ -11,7 +11,7 @@ class ONAFormansweredAdmin(admin.ModelAdmin):
    actions = ['test_admin']
 
     
-   @admin.action(description="Test admin action")
+   @admin.action(description="Criar Relatório")
    def test_admin(self,request, queryset):
       mc = MetricsCalculator()
       rp = ReportGenerator()

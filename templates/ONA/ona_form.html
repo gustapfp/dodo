@@ -211,12 +211,13 @@
         let { currentIndex, nextIndex, _ } = returnIndexes(subsectionsList, subSection)
         
  
-        
         if (nextIndex !== null) {
             checkRatioInputsBySubsection(currentIndex, subsectionsList)
+            console.log(subsectionsList[currentIndex].id)
             let currentSection = String(subsectionsList[currentIndex].id)[0]
             let nextSection = String(subsectionsList[nextIndex].id)[0]
-            
+            console.log(currentSection)
+            console.log(nextSection)
             if (currentSection !== nextSection) {
 
                 

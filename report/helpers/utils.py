@@ -2,12 +2,14 @@
 from report.models import ONAFormAnswered, FormSubsectionAnswered, FormSectionAnswered, QuestionAnswer
 from collections import Counter
 import matplotlib.pyplot as plt
+from datetime import datetime
 import seaborn as sns
 import pandas as pd
 from io import BytesIO
 from pptx import Presentation
 from pptx.util import Inches
-
+from django.core.mail import EmailMessage
+import os
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
@@ -303,8 +305,33 @@ class ReportGenerator:
         sections = data['Sections Distribution']
         self.add_section_images(sections), 
         self.add_subsection_images(subsections)
-        self.presentation.save(f"{report_name}.pptx")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = f"report/presentations_report/{report_name}_{timestamp}.pptx"
+        self.presentation.save(path)
+        self.send_email(path, "gustavopfpereira30@gmail.com")
 
+    def send_email(self, report_path, recipient_email):
+        subject = "Generated Report"
+        body = "Please find attached the generated report."
+
+        # Create the email message
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email='gustavopfpereira30@gmail.com',  # Use the sender email from settings
+            to=['gustavopfpereira30@gmail.com']
+        )
+
+        # Attach the report file
+        with open(report_path, 'rb') as file:
+            email.attach_file(report_path)
+
+        # Send the email
+        try:
+            email.send()  # This sends the email using Django's configured email backend
+            print(f"Email sent to {recipient_email}")
+        except Exception as e:
+            print(f"Error sending email: {e}")
 
 class MetricsCalculator:
     def __get_subsection_questions(self, subsection: FormSubsectionAnswered) -> list[QuestionAnswer]:
