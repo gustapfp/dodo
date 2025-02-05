@@ -57,6 +57,9 @@ LOCAL_APPS = [
 THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
+    "nested_admin",
+    "django_object_actions",
+
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS

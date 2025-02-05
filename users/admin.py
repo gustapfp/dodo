@@ -37,7 +37,7 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
 
-    # When creating a new user
+    
     add_fieldsets = (
         (
             None,

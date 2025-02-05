@@ -311,7 +311,7 @@
                 if (!isAnyInputSelected) {
                   
                     let inputGroupPostionY = inputGroup.getBoundingClientRect().top + window.scrollY; 
-                    window.scrollTo({ top: inputGroupPostionY - 15, behavior: 'smooth' });
+                    window.scrollTo({ top: inputGroupPostionY - 100, behavior: 'smooth' });
                     alert(`Ops! Você esqueceu de selecionar uma opção para a questão com ID: ${inputGroup.id}`)
                     throw new Error('Selecione uma opção para continuar')
                 }

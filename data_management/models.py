@@ -38,7 +38,6 @@ class Hospital(models.Model):
 
 
 class Evaluator(models.Model):
-    
     name = models.CharField(max_length=150)
     hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     job_role = models.CharField(max_length=7, choices=JOB_DESCRIPTION_CHOICES)
@@ -76,8 +75,8 @@ class FormSubsection(models.Model):
     questions_level2 = models.ManyToManyField(Question, related_name="level2_questions")
 
     class Meta:
-        verbose_name = "Subseção"
-        verbose_name_plural = "Subseções"
+        verbose_name = "Criar Formulário ONA"
+        verbose_name_plural = "Criar Formulários ONA"
 
     def __str__(self):
         return self.subsection_title
@@ -87,7 +86,7 @@ class FormSection(models.Model):
     section_id = models.CharField(max_length=20)
     section_title = models.CharField(max_length=80)
     form_subsections = models.ManyToManyField(
-        FormSubsection, related_name="form_sections"
+        FormSubsection, related_name="form_subsections"
     )
     questions_level3 = models.ManyToManyField(Question, related_name="level3_questions")
 
@@ -97,17 +96,17 @@ class FormSection(models.Model):
 
     def __str__(self):
         return self.section_title
-
+    
 
 class ONAForm(models.Model):
-    ONA_sections = models.ManyToManyField(FormSection, related_name="ona_form_sections")
-    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
+    ONA_sections = models.ManyToManyField(FormSection, related_name="ona_form_sections", help_text='Selecione as seções que você quer ter no formulário. (A ordem importa!) --- ')
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, help_text='Indique o hospital ao qual este formulário está associado.')
     updated_at = models.DateTimeField(auto_now=True)
-    form_title = models.CharField(max_length=80)
+    form_title = models.CharField(max_length=80, help_text="Titulo para o formulário.")
 
     class Meta:
-        verbose_name = "Formulário ONA"
-        verbose_name_plural = "Formulários ONA"
+        verbose_name = "Formulário ONA para edição"
+        verbose_name_plural = "Formulários ONA para edição"
 
     def __str__(self):
         return self.form_title
