@@ -15,6 +15,7 @@ class QuestionAnswer(models.Model):
         Question, on_delete=models.CASCADE, related_name="question_answers"
     )
     answer = models.CharField(max_length=20, null=True, blank=True)  # For text answers should remove this
+    # core = models.BooleanField(default=False)
     comment = models.TextField(max_length=600, null=True)
 
     def __str__(self):

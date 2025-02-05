@@ -6,7 +6,7 @@ def serialize_question(question: Question) -> dict:
     Get a question from the Question model and convert to a dict.
     """
     return {
-        "question_id": question.id,
+        "question_id": question.question_id,
         "description": question.description,
         "guidance": question.guidance,
         "evidence": question.evidence,
