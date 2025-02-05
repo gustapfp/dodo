@@ -74,16 +74,16 @@ class FormSubsectionAdmin(ONAFormAdminHelper, DjangoObjectActions, admin.ModelAd
             del actions['delete_selected']
         return actions
 
-# class FormSectionAdmin(admin.ModelAdmin):
-#     list_display = (
-#         "section_id",
-#         "section_title",
-#     )
-#     search_fields = (
-#         "section_id",
-#         "section_title",
-#     )
-#     filter_horizontal = ["form_subsections", "questions_level3"]
+class FormSectionAdmin(admin.ModelAdmin):
+    list_display = (
+        "section_id",
+        "section_title",
+    )
+    search_fields = (
+        "section_id",
+        "section_title",
+    )
+    filter_horizontal = ["form_subsections", "questions_level3"]
 
 
 

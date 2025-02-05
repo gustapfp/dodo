@@ -37,7 +37,7 @@
                                 {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
                             </div>
                             <div class="mt-5 hidden" id="text-field-from-{{question.question_id}}">
-                                {% include "partials/forms/__textarea_input.html" %}
+                                {% include "partials/forms/__textarea_input.html" with answer_id=question.question_id %}
                             </div>
                         {% endfor %}
                     </section>
@@ -60,7 +60,7 @@
                                     {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
                                 </div>
                                 <div class="mt-5 hidden" id="text-field-from-{{question.question_id}}">
-                                    {% include "partials/forms/__textarea_input.html" %}
+                                    {% include "partials/forms/__textarea_input.html" with answer_id=question.question_id %}
                                 </div>
                             {% endfor %}
                         </section>
@@ -87,7 +87,7 @@
                                         {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
                                     </div>
                                     <div class="mt-5 hidden" id="text-field-from-{{question.question_id}}">
-                                        {% include "partials/forms/__textarea_input.html" %}
+                                        {% include "partials/forms/__textarea_input.html" with answer_id=question.question_id %}
                                     </div>
                                 {% endfor %}
                             </section>
@@ -142,29 +142,30 @@
 <script>
     const onaJsonForm = JSON.parse(document.getElementById('ona_json').textContent);
    
-    const checkNaoConformeValue = (question_id) => {
+    const checkNaoConformeValue = (questionId) => {
+       
 
-        const ratioInputs = document.getElementById(question_id).querySelectorAll('input[type="radio"]')
+        const ratioInputs = document.getElementById(questionId).querySelectorAll('input[type="radio"]')
         ratioInputs.forEach(
             (input) => {
                 if (input.checked && input.value === "não conforme") {
-                    showTextField(question_id)
+                    showTextField(questionId)
                 } else if (input.checked && input.value != "não conforme") {
-                    hideTextField( question_id)
+                    hideTextField( questionId)
                 }
             }
         )
     }
 
-    const showTextField = (question_id) => {
-        const textField = document.getElementById(`text-field-from-${question_id}`)
+    const showTextField = (questionId) => {
+        const textField = document.getElementById(`text-field-from-${questionId}`)
         textField.removeAttribute("class")
         textField.setAttribute('class', 'mt-5')
       
     }
 
-    const hideTextField = (question_id) => {
-        const textField = document.getElementById(`text-field-from-${question_id}`)
+    const hideTextField = (questionId) => {
+        const textField = document.getElementById(`text-field-from-${questionId}`)
         
         textField.removeAttribute("class")
         textField.setAttribute('class', 'mt-5 hidden')
@@ -204,7 +205,7 @@
     }
 
     const showSubmitButton = (currentIndex, queryAllList) => {
-        console.log('showSubmitButton')
+
         let submitButtons = document.getElementById('submit-buttons')
        
         queryAllList[currentIndex].classList.remove('visible');
@@ -260,7 +261,8 @@
         let subsectionsList = document.querySelectorAll('[class*="subsection"]')
         let { currentIndex, nextIndex, _ } = returnIndexes(subsectionsList, subSection)
         
- 
+        checkTextAreaNotEmpty()
+
         
         if (nextIndex !== null) {
             checkRatioInputsBySubsection(currentIndex, subsectionsList)
@@ -352,11 +354,13 @@
 
         ratioInputs.forEach(
             (inputGroup) => {
+               
+            
                 let inputs = inputGroup.querySelectorAll('input[type="radio"]')
                 let isAnyInputSelected = Array.from(inputs).some(
                     (inputValue) => (inputValue.checked)
                 )
-
+                checkTextAreaNotEmpty() 
                 if (!isAnyInputSelected) {
                   
                     let inputGroupPostionY = inputGroup.getBoundingClientRect().top + window.scrollY; 
@@ -368,6 +372,28 @@
             }
         )
     }
+
+    function checkTextAreaNotEmpty() {
+        const allTextAreas = document.querySelectorAll('textarea');
+    
+        // Iterate through each textarea to see if it's empty
+        for (let textarea of allTextAreas) {
+          if (!textarea.value && textarea.parentElement.className === 'mt-5') {
+            const elem = document.querySelector('textarea[placeholder="Escreva a explicação aqui..."]');
+         
+            let inputGroupPostionY = textarea.getBoundingClientRect().top + window.scrollY; 
+            window.scrollTo({ top: inputGroupPostionY - 400, behavior: 'smooth' });
+            alert(`Não esqueça de jusitficar sua resposta! Verifique os campos de justificativa!`);           
+                   
+            throw new Error('Selecione uma opção para continuar')
+            return ;  // Stop checking further
+          }
+        }
+        return false
+    
+    }
+
+    
 
 
 
