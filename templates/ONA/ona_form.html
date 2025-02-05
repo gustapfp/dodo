@@ -16,84 +16,104 @@
                     {{section.section_title}}</h5>
                 {% for subsection in section.form_subsections.all %}
                 
-                <section id="{{subsection.subsection_title}}" class="hidden subsection">
-                    
-                    <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">
-                        {{subsection.subsection_title}}</h5>
-                    <section id="L1-subsection-{{forloop.counter}}-questions-level-1" class="question-level-1">
-                    </section>
-                    {% for question in subsection.questions_level1.all %}
-                    <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
-                        ID: {{question.question_id}}</h5>
-                    <div class="flex flex-col">
-                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
-                         <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
-                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
-                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
-                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
-                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
-                    </div>
-                    {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
-                    {% endfor %}
-
-                    {% if ona_form.hospital.level == 2  or  ona_form.hospital.level == 3%}
-                    <section id="L2-subsection-{{forloop.counter}}-questions-level-2" class="questions-level-2">
-                        {% for question in subsection.questions_level2.all %}
-                        <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
-                        ID: {{question.question_id}}</h5>
-                    <div class="flex flex-col">
-                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
-                         <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
-                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
-                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
-                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
-                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
-                    </div>
-                    {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
+                    <section id="{{subsection.subsection_title}}" class="hidden subsection">
+                        
+                        <h5 class="mb-10 mt-5 text-lg font-semibold text-center text-gray-900 dark:text-white">
+                            {{subsection.subsection_title}}</h5>
+                        <section id="L1-subsection-{{forloop.counter}}-questions-level-1" class="question-level-1">
+                        
+                        {% for question in subsection.questions_level1.all %}
+                            <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
+                                ID: {{question.question_id}}</h5>
+                            <div class="flex flex-col">
+                                <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
+                                <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
+                                <h5 class=" mt-5 flex text-gray-900 dark:text-white">
+                                    <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
+                                <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
+                                    <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
+                            </div>
+                            <div onchange="checkNaoConformeValue('{{question.question_id}}')">
+                                {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
+                            </div>
+                            <div class="mt-5 hidden" id="text-field-from-{{question.question_id}}">
+                                {% include "partials/forms/__textarea_input.html" %}
+                            </div>
                         {% endfor %}
+                    </section>
+
+                        {% if ona_form.hospital.level == 2  or  ona_form.hospital.level == 3 %}
+                        <section id="L2-subsection-{{forloop.counter}}-questions-level-2" class="questions-level-2">
+                            {% for question in subsection.questions_level2.all %}
+                                    <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
+                                    ID: {{question.question_id}}</h5>
+                                <div class="flex flex-col">
+                                    <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
+                                    <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
+                                    <h5 class=" mt-5 flex text-gray-900 dark:text-white">
+                                        <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
+                                    <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
+                                        <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
+                                </div>
+                                <div onchange="checkNaoConformeValue('{{question.question_id}}')">
+
+                                    {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
+                                </div>
+                                <div class="mt-5 hidden" id="text-field-from-{{question.question_id}}">
+                                    {% include "partials/forms/__textarea_input.html" %}
+                                </div>
+                            {% endfor %}
+                        </section>
                         {% endif %}
-                    </section>
-                    {% if ona_form.hospital.level == 3 %}
-                    {% if forloop.last %}
 
-                    <section id="L3-subsection-{{forloop.counter}}-questions-level-3" class="question-level-3 ">
-                      
-                        {% for question in section.questions_level3.all %}
-                        <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
-                        ID: {{question.question_id}}</h5>
-                    <div class="flex flex-col">
-                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
-                         <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
-                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
-                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
-                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
-                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
-                    </div>
-                    {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
-                        {% endfor %}
-                    </section>
+                        {% if ona_form.hospital.level == 3 %}
+                            {% if forloop.last %}
+
+                            <section id="L3-subsection-{{forloop.counter}}-questions-level-3" class="question-level-3 ">
+                            
+                                {% for question in section.questions_level3.all %}
+                                    <h5 class="mt-5 flex  font-semibold text-center text-gray-900 dark:text-white">
+                                    ID: {{question.question_id}}</h5>
+                                    <div class="flex flex-col">
+                                        <h5 class=" mt-5 flex   text-gray-900 dark:text-white">
+                                        <strong class="px-1">Requisito:  </strong>   {{question.description}}</h5>
+                                        <h5 class=" mt-5 flex text-gray-900 dark:text-white">
+                                            <strong class="px-1">Descrição:  </strong>    {{question.guidance}}</h5>
+                                        <h5 class="mb-10 mt-5 flex text-gray-900 dark:text-white">
+                                            <strong class="px-1 text-center"> Evidencia: </strong> {{question.evidence}}</h5>
+                                    </div>
+                                    <div onchange="checkNaoConformeValue('{{question.question_id}}')">
+                                        
+                                        {% include "partials/forms/_ratio_input.html" with answer_id=question.question_id  subsection_title=subsection.subsection_title %}
+                                    </div>
+                                    <div class="mt-5 hidden" id="text-field-from-{{question.question_id}}">
+                                        {% include "partials/forms/__textarea_input.html" %}
+                                    </div>
+                                {% endfor %}
+                            </section>
 
 
-                    {% endif %}
-                    {% endif %}
-
-                    <div id="section-buttons" class="flex justify-center mt-10 iteems-center visible">
-                        <button id="previous-button" type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                            {% endif %}
+                        {% endif %}
+                    
+                        <div id="section-buttons" class="flex justify-center mt-10 iteems-center visible">
+                            <button id="previous-button" type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                             onclick="showPrevious('{{section.section_title}}', '{{subsection.subsection_title}}')">
                             Subseção Anterior
-                        </button>
-                        <button id="next-button" type="button" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
-                        focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600
-                         dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                            onclick="showNext('{{section.section_title}}', '{{subsection.subsection_title}}')">
-                            Próxima Subseção
-                        </button>
-                    </div>
-                    
-                    <div>
+                            </button>
+                            <button id="next-button" type="button" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
+                                focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600
+                                dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                onclick="showNext('{{section.section_title}}', '{{subsection.subsection_title}}')">
+                                Próxima Subseção
+                            </button>
+                        </div>
+            
+                        
+                        <div>
 
-                    </div>
-                </section>
+                        </div>
+                    </section>
 
                
 
@@ -102,6 +122,7 @@
 
 
             {% endfor %}
+
             <div id="submit-buttons"  class="flex justify-center mt-10 iteems-center hidden ">
                 <button id="previous-button" type="button" class="w-full  focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                     onclick="hideSubmitButton()">
@@ -121,7 +142,36 @@
 <script>
     const onaJsonForm = JSON.parse(document.getElementById('ona_json').textContent);
    
+    const checkNaoConformeValue = (question_id) => {
 
+        const ratioInputs = document.getElementById(question_id).querySelectorAll('input[type="radio"]')
+        ratioInputs.forEach(
+            (input) => {
+                if (input.checked && input.value === "não conforme") {
+                    showTextField(question_id)
+                } else if (input.checked && input.value != "não conforme") {
+                    hideTextField( question_id)
+                }
+            }
+        )
+    }
+
+    const showTextField = (question_id) => {
+        const textField = document.getElementById(`text-field-from-${question_id}`)
+        textField.removeAttribute("class")
+        textField.setAttribute('class', 'mt-5')
+      
+    }
+
+    const hideTextField = (question_id) => {
+        const textField = document.getElementById(`text-field-from-${question_id}`)
+        
+        textField.removeAttribute("class")
+        textField.setAttribute('class', 'mt-5 hidden')
+        
+    }
+    
+    
     
     const showFirstSection = () => {
         let firstSection = onaJsonForm['ONA_sections'][0]['section_title']
@@ -211,13 +261,12 @@
         let { currentIndex, nextIndex, _ } = returnIndexes(subsectionsList, subSection)
         
  
+        
         if (nextIndex !== null) {
             checkRatioInputsBySubsection(currentIndex, subsectionsList)
-            console.log(subsectionsList[currentIndex].id)
             let currentSection = String(subsectionsList[currentIndex].id)[0]
             let nextSection = String(subsectionsList[nextIndex].id)[0]
-            console.log(currentSection)
-            console.log(nextSection)
+            
             if (currentSection !== nextSection) {
 
                 
@@ -298,7 +347,7 @@
     const checkRatioInputsBySubsection = (currentIndex, subsectionsList) => {
         const curentSubsection = subsectionsList[currentIndex]
         let ratioInputs = curentSubsection.querySelectorAll('ul[id]');
-        console.log(ratioInputs)
+     
         
 
         ratioInputs.forEach(
@@ -311,7 +360,7 @@
                 if (!isAnyInputSelected) {
                   
                     let inputGroupPostionY = inputGroup.getBoundingClientRect().top + window.scrollY; 
-                    window.scrollTo({ top: inputGroupPostionY - 100, behavior: 'smooth' });
+                    window.scrollTo({ top: inputGroupPostionY - 400, behavior: 'smooth' });
                     alert(`Ops! Você esqueceu de selecionar uma opção para a questão com ID: ${inputGroup.id}`)
                     throw new Error('Selecione uma opção para continuar')
                 }
@@ -319,6 +368,7 @@
             }
         )
     }
+
 
 
     
