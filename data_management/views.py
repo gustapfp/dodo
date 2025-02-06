@@ -5,6 +5,7 @@ from report.models import ONAForm, ONAFormAnswered
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from data_management.models import Evaluator
 
 
 from .helpers.serialize_to_json import serialize_ona_form
@@ -25,12 +26,20 @@ class EvaluatorView(LoginRequiredMixin, View):
     def post(self, request):
         form = self.form_class(request.POST)
         try:
-            form.is_valid()
+            # form.is_valid()
             evaluator = form.save(commit=False)
-            evaluator.hospital = request.user.hospital
+            db_evaluator =  Evaluator.objects.filter(email=evaluator.email).first()
 
-            evaluator.save()
-            messages.success(request, "Evaluator successfully created.")
+            if  db_evaluator:
+                evaluator = db_evaluator
+
+                messages.success(request, "Bem vindo de volta!")
+            else:
+                evaluator.hospital = request.user.hospital
+                evaluator.save()
+                messages.success(request, "Avaliador cadastrado com sucesso")
+                
+
             return redirect(
                 "ona_form",
                 hospital_id=request.user.hospital.id,
