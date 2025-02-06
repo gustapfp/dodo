@@ -58,7 +58,7 @@ class Question(models.Model):
     description = models.TextField(max_length=400, null=True)
     guidance = models.TextField(max_length=400, null=True)
     evidence = models.TextField(max_length=400, null=True)
-    # core = models.BooleanField(default=False)
+    core = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Questão"

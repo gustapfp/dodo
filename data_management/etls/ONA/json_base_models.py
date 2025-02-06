@@ -7,21 +7,19 @@ class Question(BaseModel):
     description: str
     guidance: str
     evidence: str
-    # core: bool
-    # orientation: str
+    core: bool
+    orientation: str
 
 
 class Subsection(BaseModel):
-    # id: str
-    subsectionId: str
-    subsectionTitle: str
-    # title: str
+    id: str
+    title: str
     level1: List[Question]
     level2: List[Question]
 
 
 class Section(BaseModel):
-    # id: str
+    id: str
     sectionId: str
     sectionTitle: str
     subsections: List[Subsection]
