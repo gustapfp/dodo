@@ -8,7 +8,7 @@ import nested_admin
 
 from .models import (
     FormSubsection,
-    # FormSection,
+    FormSection,
     ONAForm,
     Evaluator,
     Hospital,
@@ -35,12 +35,12 @@ class FormSubsectionAdmin(ONAFormAdminHelper, DjangoObjectActions, admin.ModelAd
         description="Criar Baseado no template com filtros"  # optional
     )
     def create_based_on_template(self, request, queryset):
-        ona_template = ONAForm.objects.get(form_title="ONA TEMPLATE")
+        ona_template = ONAForm.objects.get(form_title="ONA - TEMPLATE")
         
-        self.make_sections_copys(removed_subsections=queryset)
+        sections_list = self.make_sections_copys(removed_subsections=queryset)
  
        
-        sections_list = list(ona_template.ONA_sections.all())
+        
         ona_template.pk = None
         date = self.get_current_time_formated_for_title()
         ona_template.form_title = f"Formulario a editar de {date}"
@@ -189,7 +189,7 @@ class HospitalAdmin(admin.ModelAdmin):
 
 # admin.site.register(Question, QuestionAdmin)
 admin.site.register(FormSubsection, FormSubsectionAdmin)
-# admin.site.register(FormSection, FormSectionAdmin)
+admin.site.register(FormSection, FormSectionAdmin)
 admin.site.register(ONAForm, ONAFormAdmin)
 admin.site.register(Evaluator)
 admin.site.register(Sector)

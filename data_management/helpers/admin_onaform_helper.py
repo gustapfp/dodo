@@ -36,16 +36,16 @@ class ONAFormAdminHelper:
 
 
     def make_sections_copys(self, removed_subsections: QuerySet) -> list[FormSection]:
-        secao_01 = FormSection.objects.get(section_title='SEÇÃO 01 - GESTÃO ORGANIZACIONAL - TEMPLATE')
+        secao_01 = FormSection.objects.get(section_title='1 SEÇÃO - GESTÃO ORGANIZACIONAL - TEMPLATE')
         self._copy_a_section(secao_01, removed_subsections)
 
-        secao_02 = FormSection.objects.get(section_title='SEÇÃO 02  - ATENÇÃO AO PACIENTE - TEMPLATE')
+        secao_02 = FormSection.objects.get(section_title='2 SEÇÃO - ATENÇÃO AO PACIENTE - TEMPLATE')
         self._copy_a_section(secao_02, removed_subsections)
 
-        secao_03 = FormSection.objects.get(section_title='SEÇÃO 03 - DIAGNÓSTICO E TERAPÊUTICA - TEMPLATE')
+        secao_03 = FormSection.objects.get(section_title='3 SEÇÃO - DIAGNÓSTICO E TERAPÊUTICA  - TEMPLATE')
         self._copy_a_section(secao_03, removed_subsections)
 
-        secao_04 = FormSection.objects.get(section_title='SEÇÃO 04 - GESTÃO DE APOIO - TEMPLATE')
+        secao_04 = FormSection.objects.get(section_title='4 SEÇÃO - GESTÃO DE APOIO  - TEMPLATE')
         self._copy_a_section(secao_04, removed_subsections)
 
         return [secao_01, secao_02, secao_03, secao_04]
