@@ -117,9 +117,9 @@ class ONAFormAdmin(nested_admin.NestedModelAdmin):
         )
     )
 
-    # def get_queryset(self, request):
-    #     queryset = super().get_queryset(request)
-    #     return queryset.exclude(form_title="ONA TEMPLATE")
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.exclude(form_title="ONA TEMPLATE")
 
 
     # def save_model(self, request, obj, form, change):
