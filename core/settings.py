@@ -57,6 +57,9 @@ LOCAL_APPS = [
 THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
+    "nested_admin",
+    "django_object_actions",
+
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -72,7 +75,7 @@ MIDDLEWARE = [
 ]
 ROOT_URLCONF = "core.urls"
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 4000
 
 
 # SITE_ID = 1

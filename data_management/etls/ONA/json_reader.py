@@ -16,17 +16,35 @@ class JSONReader:
         json_file = self.read_json()
         sections = []
         for section in json_file:
-            new_section = Section(**section)
+            section_dict = json_file[section]
+            new_section = Section(
+                id =  section_dict['id'],
+                title=section,
+                subsections =   section_dict['subsections'],
+                level3 =  section_dict['level3'],
+            )      
             sections.append(new_section)
-        return sections
+        return sorted(sections, key=lambda section: section.title)
 
     def get_subsections_list(self, section_list: list) -> List[Subsection]:
         subsections = []
         for section in section_list:
             nested_subsections = section.subsections
             for subsection in nested_subsections:
-                subsections.append(subsection)
-        return subsections
+
+                new_subsection = Subsection(
+                    id= subsection.id ,
+                    level1= subsection.level1 ,
+                    level2= subsection.level2 ,
+                    title= subsection.title ,
+
+                )
+                subsections.append(new_subsection)
+
+        # Sort by the number in front of the subsection title 
+        sorted_subsections = sorted(subsections, key=lambda sub: tuple(map(int, sub.title.split()[0].split('.')))) 
+
+        return sorted_subsections
 
     def extract_level_1_questions(self, subsections_list: list) -> List[Question]:
         level_1_questions = []
@@ -53,12 +71,12 @@ class JSONReader:
         level2_questions = self.extract_level_2_questions(subsections_list)
         level3_questions = self.extract_level_3_questions(sections_list)
         return level1_questions + level2_questions + level3_questions
-
+    
 
 if __name__ == "__main__":
-    json_reader = JSONReader("data_management//ONAformquerquirements//ona_form.json")
+    
+    json_reader = JSONReader("data_management//ona_form_as_json//sheets_data.json")
     sections = json_reader.get_sections_list()
     subsections = json_reader.get_subsections_list(sections)
     questions = json_reader.get_questions_list(sections, subsections)
-    for question in questions:
-        print(question.id)
+

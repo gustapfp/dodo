@@ -3,21 +3,23 @@ from typing import List
 
 
 class Question(BaseModel):
-    id: str
+    core: bool
     description: str
-    guidance: str
     evidence: str
+    id: str
+    orientation: str
+    level: int
 
 
 class Subsection(BaseModel):
-    subsectionId: str
-    subsectionTitle: str
+    id: str
     level1: List[Question]
     level2: List[Question]
+    title: str
 
 
 class Section(BaseModel):
-    sectionId: str
-    sectionTitle: str
+    id: str
+    title: str
     subsections: List[Subsection]
     level3: List[Question]

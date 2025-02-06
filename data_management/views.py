@@ -7,7 +7,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-from .utils import serialize_ona_form, create_section
+from .helpers.serialize_to_json import serialize_ona_form
+from .helpers.answers_organizer import create_section
 
 
 class EvaluatorView(LoginRequiredMixin, View):
@@ -62,6 +63,8 @@ class ONAFormView(LoginRequiredMixin, View):
         ona_form = ONAForm.objects.get(hospital=hospital_id)
 
         form_data = request.POST
+
+        print(form_data)
 
         new_ona_form = ONAFormAnswered.objects.create(
             ona_form=ona_form, evaluator_id=evaluator_id
