@@ -27,7 +27,14 @@ class Hospital(models.Model):
     last_service = models.DateTimeField(
         auto_now=True
     )  # TODO: I don't this this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
-    level = models.IntegerField(default=1)
+
+    
+    level_choices = [
+        (1, "1"),
+        (2, "2"),
+        (3, "3"),
+    ]    
+    level = models.IntegerField(default=1, choices=level_choices)
 
     class Meta:
         verbose_name = "Hospital"
@@ -59,6 +66,7 @@ class Question(models.Model):
     guidance = models.TextField(max_length=400, null=True)
     evidence = models.TextField(max_length=400, null=True)
     core = models.BooleanField(default=False)
+    level = models.IntegerField(null=True)
 
     class Meta:
         verbose_name = "Questão"

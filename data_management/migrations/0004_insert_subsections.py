@@ -3,54 +3,7 @@
 from django.db import migrations
 
 from ..etls.ONA.json_reader import JSONReader
-
-JSON_PATH = "data_management//ona_form_as_json//ona_form.json"
-json_reader = JSONReader(JSON_PATH)
-sections = json_reader.get_sections_list()
-subsections = json_reader.get_subsections_list(sections)
-
-
-def insert_subsections(apps, schema_editor):
-    SubsectionModel = apps.get_model("data_management", "FormSubsection")
-    QuestionModel = apps.get_model("data_management", "Question")
-
-    for subsection in subsections:
-        subsection_obj = SubsectionModel.objects.create(
-            subsection_id=subsection.subsectionId,
-            subsection_title=subsection.subsectionTitle,
-        )
-        # --- Questions Level 1 ---
-        q_level1 = subsection.level1
-        q_level1_id = [question.id for question in q_level1]
-
-        questions_level1 = []
-        for question_id in q_level1_id:
-            try:
-                question_object = QuestionModel.objects.get(question_id=question_id)
-                questions_level1.append(question_object)
-            except QuestionModel.DoesNotExist:
-                pass
-
-        subsection_obj.questions_level1.set(questions_level1)
-
-        # --- Questions Level 2 ---
-        q_level2 = subsection.level2
-        q_level2_id = [question.id for question in q_level2]
-        questions_level2 = []
-        for question_id in q_level2_id:
-            try:
-                question_object = QuestionModel.objects.get(question_id=question_id)
-                questions_level2.append(question_object)
-            except QuestionModel.DoesNotExist:
-                pass
-
-        subsection_obj.questions_level2.set(questions_level2)
-
-
-def remove_subsections(apps, schema_editor):
-    SubsectionModel = apps.get_model("data_management", "FormSubsection")
-
-    SubsectionModel.objects.all().delete()
+from data_management.etls.ONA.ONA_etls import insert_subsections, remove_subsections
 
 
 class Migration(migrations.Migration):

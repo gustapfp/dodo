@@ -17,7 +17,7 @@ services:
   db:
     image: postgres:16
     volumes:
-      - postgres_local:/var/lib/postgresql/data/
+      - postgres_local_dodo:/var/lib/postgresql/data/
     ports:
       - "5432:5432"
     environment:
@@ -26,4 +26,4 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
 
 volumes:
-  postgres_local:
+  postgres_local_dodo:

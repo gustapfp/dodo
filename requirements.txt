@@ -12,5 +12,6 @@ numpy==2.2.2
 pandas==2.2.3
 matplotlib==3.10.0
 seaborn==0.13.2
-python_pptx==1.0.2,
+python_pptx==1.0.2
 django_nested_admin==4.1.1
+django-object-actions==4.3.0

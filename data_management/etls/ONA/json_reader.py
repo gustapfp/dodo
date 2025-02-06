@@ -2,6 +2,7 @@ import json
 from typing import List
 from .json_base_models import Section, Subsection, Question
 
+
 class JSONReader:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -70,9 +71,10 @@ class JSONReader:
         level2_questions = self.extract_level_2_questions(subsections_list)
         level3_questions = self.extract_level_3_questions(sections_list)
         return level1_questions + level2_questions + level3_questions
-
+    
 
 if __name__ == "__main__":
+    
     json_reader = JSONReader("data_management//ona_form_as_json//sheets_data.json")
     sections = json_reader.get_sections_list()
     subsections = json_reader.get_subsections_list(sections)

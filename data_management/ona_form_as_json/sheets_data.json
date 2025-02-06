@@ -4042,7 +4042,7 @@
                         "core": false,
                         "description": "Cumpre diretrizes de transição de cuidado, bem como nas transferências internas e externas.",
                         "evidence": "Método(s) utilizado(s) para compartilhar informações nas transições de cuidados; Registros em prontuário das informações sobre uso de medicamentos e alergias.",
-                        "id": "002.005.1.025",
+                        "id": "002.005.1.026",
                         "level": 1,
                         "orientation": "Durante as transições de cuidados, informações relevantes sobre a farmacoterapia não podem ser perdidas (como por exemplo, o uso de medicamentos trazidos pelo paciente, alergias conhecidas a medicamentos, uso de medicamentos potencialmente perigosos e vias de acesso restritas)."
                     },
@@ -5810,7 +5810,7 @@
                         "core": false,
                         "description": "Dispõe de mecanismos e procedimentos para identificação, armazenamento, conservação, transporte e descarte de material biológico humano e a amostra de material biológico, visando a sua integridade e preservação.",
                         "evidence": "Metodologia que valide a condição da amostra de material biológico humano quanto ao armazenamento (tipos de recipientes, substância utilizada, temperatura (ex.: frasco de coleta, tubo de ensaio, formol, álcool, entre outros); transporte (ex.: caixa, malote, recipiente térmico), e dêscarte (necessidade de esterilização prévia ao descarte, rede de esgoto, rede específica, coleta por empresa especializada, contemplado no PGRSS).",
-                        "id": "002.009.1.035",
+                        "id": "002.009.1.036",
                         "level": 1,
                         "orientation": "Identificar os elementos que contemplem todas as etapas do processo envolvido no manejo de material biológico humano."
                     },
