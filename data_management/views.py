@@ -64,6 +64,8 @@ class ONAFormView(LoginRequiredMixin, View):
 
         form_data = request.POST
 
+        print(form_data)
+
         new_ona_form = ONAFormAnswered.objects.create(
             ona_form=ona_form, evaluator_id=evaluator_id
         )

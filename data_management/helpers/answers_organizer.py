@@ -7,9 +7,11 @@ def create_answered_questions(form_data:QueryDict, subsection_questions):
     questions = []
     for question in subsection_questions:
         if question.question_id in form_data:
+            
             answer = form_data.get(question.question_id, None)
+            comment = form_data.get(f"comment-{question.question_id}")
             new_question = QuestionAnswer.objects.create(
-                question=question, answer=answer
+                question=question, answer=answer, comment=comment
             )
             questions.append(new_question)
     return questions
