@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .forms import EvaluatorForm
 from django.views import View
 from report.models import ONAFormAnswered
-from data_management.models import ONAForm, FormSubsection, FormSection
+from data_management.models import ONAForm
 from django.contrib import messages
 from django.shortcuts import redirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,7 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from .helpers.serialize_to_json import serialize_ona_form
-from .helpers.views_helper import create_section, verify_evaluator
+from .helpers.views_helper import EvaluatorViewHelper, create_section
+from report.helpers.utils import PDFReportGeneator
 
 
 class EvaluatorView(LoginRequiredMixin, View):
@@ -26,49 +27,22 @@ class EvaluatorView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = self.form_class(request.POST)
+        helper = EvaluatorViewHelper()
         try:
             form.is_valid()
             evaluator = form.save(commit=False)
             
 
-            evaluator = verify_evaluator(
+            evaluator = helper.verify_evaluator(
                 form_evaluator=evaluator,
                 request=request
             )
-            ona_form_complete = ONAForm.objects.filter(hospital=request.user.hospital.id).first()
+
+            form_id = helper.get_form_id(
+                request=request,
+                evaluator=evaluator
+            )      
             
-            if evaluator.job_role == "001.002" or evaluator.job_role == "000.000": 
-                form_id = ona_form_complete.id 
-            else:
-                subsection = FormSubsection.objects.filter(
-                    subsection_id=evaluator.job_role
-                ).first()
-
-                section_id = evaluator.job_role[0:3]
-
-                section_complete = ona_form_complete.ONA_sections.filter(
-                    section_id=section_id
-                ).first()
-
-                section_simplified= FormSection.objects.create(
-                    section_id=section_complete.section_id,
-                    section_title=section_complete.section_title,
-
-                )
-                section_simplified.form_subsections.set([subsection])
-                section_simplified.questions_level3.set(section_complete.questions_level3.all())
-
-           
-
-
-                ona_form_simplified = ONAForm.objects.create(
-                    hospital=ona_form_complete.hospital,
-                    form_title=ona_form_complete.form_title
-                )
-                ona_form_simplified.ONA_sections.set([section_simplified])
-
-                form_id = ona_form_simplified.id
-                print('---criou---')
 
 
 
@@ -102,6 +76,7 @@ class ONAFormView(LoginRequiredMixin, View):
         )
 
     def post(self, request, form_id, evaluator_id):
+        pdf = PDFReportGeneator(filename="Relatório do formulário",)
         ona_form = ONAForm.objects.get(id=form_id)
 
         form_data = request.POST
@@ -111,10 +86,17 @@ class ONAFormView(LoginRequiredMixin, View):
             ona_form=ona_form, evaluator_id=evaluator_id
         )
 
+
+
         section_list = create_section(
             form_data=form_data, sections=ona_form.ONA_sections.all()
         )
 
         new_ona_form.answered_sections.set(section_list)
-
+        # pdf.create_pdf_report_for_subsection(
+                
+        #         evaluator_name=new_ona_form.evaluator.name,
+        #         answers=new_ona_form,
+        #     )
+  
         return redirect("evaluator_form")

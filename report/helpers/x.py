@@ -1,10 +1,15 @@
-from pptx import Presentation
-from pptx.util import Inches
+
 from collections import Counter
 import matplotlib.pyplot as plt
+from datetime import datetime
 import seaborn as sns
 import pandas as pd
 from io import BytesIO
+from pptx import Presentation
+from pptx.util import Inches
+from django.core.mail import EmailMessage
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 class GraphsGenerator:
@@ -363,8 +368,94 @@ class GraphsGenerator:
 
         return sections_distribution
 
+class PDFReportGeneator:
+    def __init__(self, filename):
+        self.width, self.height = letter
+        self.pdf_canvas = canvas.Canvas(
+            filename=filename,
+            pagesize=letter
+        )
+        self.font = "Helverica"
 
-class ReportGenerator:
+    def create_pdf_report_for_subsection(self, filename:str, evaluator_name:str, answers):
+        self.add_title(
+            filename=filename,
+            evaluator_name=evaluator_name
+        )
+
+        metrics = answers
+        # MetricsCalculator.get_ona_form_average_distribution(
+        #     ona_form=answers
+        # )
+
+        form_distribution_img = GraphsGenerator.plot_bar_plot(
+            data=metrics["ONA answer Distribution"],
+            title="Distribuição das Respostas no formulario",
+        )
+
+        self.insert_image_center(
+            image=form_distribution_img
+        )
+
+        self.display_answers_with_comments(
+            questions_answers=metrics["Answers with comments"]
+        )
+
+        self.pdf_canvas.save()
+
+
+    def add_title(self, filename:str, evaluator_name:str) -> None:
+        title = f"Relatório de Preenchimento do Formulário por {evaluator_name}"
+        title_width = self.pdf_canvas.stringWidth(title, "Helverica", 12)
+
+        title_x_coord = (self.width - title_width)/2
+        title_y_coord = self.height - 100
+
+        self.pdf_canvas.drawString(
+            title_x_coord,
+            title_y_coord,
+            self.font
+        )
+
+    def display_answers_with_comments(self, questions_answers, y_position):
+        for question_with_comment in questions_answers:
+            #  Description
+            question_desc = f"Question Description: {question_with_comment.question.description}"
+            self.pdf_canvas.drawString(100, y_position, question_desc)
+            y_position -= 15
+
+            # Core 
+            core_info = f"Core: {question_with_comment.question.core}"
+            self.pdf_canvas.drawString(100, y_position, core_info)
+            y_position -= 15
+            
+            # Answer to the Question
+            question_answer = f"Answer: {question_with_comment.answer}"
+            self.pdf_canvas.drawString(100, y_position, question_answer)
+            y_position -= 15
+            
+            # Comment
+            question_comment = f"Comment: {question_with_comment.comment}"
+            self.pdf_canvas.drawString(100, y_position, question_comment)
+            y_position -= 30 
+
+       
+            if y_position < 60:
+                self.pdf_canvas.showPage() 
+                y_position = self.height - 40 
+
+
+
+    
+    def insert_image_center(self, image:BytesIO) -> None:
+        img_width, img_height = 200, 200  # You can adjust these dimensions as needed
+        img_x_coord = (self.width - img_width) / 2
+        img_y_coord = (self.height - img_height) / 2
+
+        # Draw the image (adjust the width, height, and position as needed)
+        self.pdf_canvas.drawImage(image, img_x_coord, img_y_coord, width=img_width, height=img_height)
+
+class PowerPointReportGenerator:
     def __init__(self):
         self.template_ona_path = "report/helpers/template-ona-report.pptx"
         self.section_indexes = {
@@ -423,11 +514,138 @@ class ReportGenerator:
     def make_report(self, data, report_name):
         subsections = data["Subsections Distribution"]
         sections = data["Sections Distribution"]
-        (self.add_section_images(sections),)
+        self.add_section_images(sections)
         self.add_subsection_images(subsections)
-        self.presentation.save(report_name)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = f"report/presentations_report/{report_name}_{timestamp}.pptx"
+        self.presentation.save(path)
+        self.send_email(path, "gustavopfpereira30@gmail.com")
+
+    def send_email(self, report_path, recipient_email):
+        subject = "Generated Report"
+        body = "Please find attached the generated report."
+
+        # Create the email message
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email="gustavopfpereira30@gmail.com",  # Use the sender email from settings
+            to=["gustavopfpereira30@gmail.com"],
+        )
+
+        # Attach the report file
+        with open(report_path, "rb") as file:
+            email.attach_file(report_path)
+
+        # Send the email
+        try:
+            email.send()  # This sends the email using Django's configured email backend
+            print(f"Email sent to {recipient_email}")
+        except Exception as e:
+            print(f"Error sending email: {e}")
 
 
+class MetricsCalculator:
+    def __get_subsection_questions(
+        self, subsection
+    ):
+        leve1_questions = subsection.answered_questions_level_1.all()
+        level2_questions = subsection.answered_questions_level_2.all()
+
+        questions_answers = leve1_questions.union(level2_questions)
+        return questions_answers
+
+    def __get_questions_average_distribution(
+        self, questions_list
+    ) -> dict[str, int]:
+        questions_answers = [question.answer for question in questions_list]
+        answers_distribution = Counter(questions_answers)
+        return answers_distribution
+
+    def __get_subsection_average_distribution(
+        self, subsection_questions
+    ) -> dict[str, dict[str, int]]:
+        subsection_distribution = self.__get_questions_average_distribution(
+            questions_list=subsection_questions
+        )
+        return dict(subsection_distribution)
+
+    def __get_section_and_subsection_answers_distribution(
+        self, section
+    ) -> dict[str, int]:
+        subsections = section.answered_subsections.all()
+        level3_questions = section.answered_questions_level_3.all()
+
+        section_answers = level3_questions
+        section_answers_with_comments = self.get_awnsers_with_comments(section_answers=section_answers)
+        subsection_distribution = {}
+        for subsction in subsections:
+            subsection_title = subsction.form_subsection.subsection_title
+            subsection_questions_level_1_and_level_2 = self.__get_subsection_questions(
+                subsction
+            )
+            subsection_distribution[subsection_title] = (
+                self.__get_subsection_average_distribution(
+                    subsection_questions_level_1_and_level_2
+                )
+            )
+
+            section_answers = section_answers.union(
+                subsection_questions_level_1_and_level_2
+            )
+
+        section_distribution = self.__get_questions_average_distribution(
+            section_answers
+        )
+
+        return section_distribution, subsection_distribution, section_answers_with_comments
+
+    def __get_ona_form_total_metrics(
+        self, distribution_by_section: dict
+    ) -> dict[str, int]:
+        total_counts = Counter()
+        for section, counts in distribution_by_section.items():
+            total_counts.update(counts)
+        return dict(total_counts)
+
+    def get_ona_form_average_distribution(
+        self, ona_form
+    ) -> dict[str, dict[str, int]]:
+        sections = ona_form.answered_sections.all()
+
+        distribution_by_section = {}
+        distribution_by_subsections = {}
+        for section in sections:
+            section_name = section.form_section.section_title
+            section_distribution, subsection_distribution, section_answers_with_comments = (
+                self.__get_section_and_subsection_answers_distribution(section)
+            )
+
+            distribution_by_section[section_name] = dict(section_distribution)
+
+            distribution_by_subsections[section_name] = dict(subsection_distribution)
+
+        total_distribution = self.__get_ona_form_total_metrics(distribution_by_section)
+
+        metrics = {
+            "Subsections Distribution": distribution_by_subsections,
+            "Sections Distribution": distribution_by_section,
+            "ONA answer Distribution": total_distribution,
+            "Answers with comments" : list(section_answers_with_comments)
+        }
+
+        return metrics
+    
+    def get_awnsers_with_comments(
+            section_answers
+    ):
+        answers_with_comments = []
+        for answerd_question in section_answers:
+            if answerd_question.comment:
+                print(answerd_question.comment)
+                answers_with_comments.append(answerd_question.comment)
+        return answers_with_comments
+   
 # Example usage:
 if __name__ == "__main__":
     data = {
@@ -758,6 +976,13 @@ if __name__ == "__main__":
     ona_awnser = data["ONA awnser Distribution"]
     # graph = GraphsGenerator()
     # bar_plot_img = graph.plot_bar_plot(sections['SEÇÃO 01 - GESTÃO ORGANIZACIONAL'], 'SEÇÃO 01 - GESTÃO ORGANIZACIONAL')
-
-    rg = ReportGenerator()
-    prs = rg.make_report(data, "TEST06.pptx")
+    
+    # rg = ReportGenerator()
+    # prs = rg.make_report(data, "TEST06.pptx")
+    
+    pdf = PDFReportGeneator
+    pdf.create_pdf_report_for_subsection(
+        filename="TEST",
+        evaluator_name="TESTAOZAO",
+        answers=sections[0]
+    )

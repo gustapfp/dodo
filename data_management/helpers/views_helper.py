@@ -1,6 +1,6 @@
 from report.models import QuestionAnswer, FormSubsectionAnswered, FormSectionAnswered
 from django.http import QueryDict
-from data_management.models import Evaluator
+from data_management.models import Evaluator,  FormSubsection, FormSection, ONAForm
 from django.contrib import messages
 
 def create_answered_questions(form_data:QueryDict, subsection_questions):
@@ -37,7 +37,60 @@ def create_subsections(form_data:QueryDict, subsections):
         subsection_list.append(new_subsection)
     return subsection_list
 
+class EvaluatorViewHelper:
 
+   
+
+
+    def verify_evaluator(self, form_evaluator, request):
+        db_evaluator = Evaluator.objects.filter(email=form_evaluator.email).first()
+        if  db_evaluator:
+
+            messages.success(request, "Bem vindo de volta!")
+
+            return db_evaluator
+        else:
+            form_evaluator.hospital = request.user.hospital
+            form_evaluator.save()
+            messages.success(request, "Avaliador cadastrado com sucesso")
+            return form_evaluator
+        
+
+    def get_form_id(self, request, evaluator):
+        ona_form_complete = ONAForm.objects.filter(hospital=request.user.hospital.id).first()
+        if evaluator.job_role == "001.002" or evaluator.job_role == "000.000": 
+                form_id = ona_form_complete.id 
+        else:
+            subsection = FormSubsection.objects.filter(
+                subsection_id=evaluator.job_role
+            ).first()
+
+            section_id = evaluator.job_role[0:3]
+
+            section_complete = ona_form_complete.ONA_sections.filter(
+                section_id=section_id
+            ).first()
+
+            section_simplified= FormSection.objects.create(
+                section_id=section_complete.section_id,
+                section_title=section_complete.section_title,
+
+            )
+            section_simplified.form_subsections.set([subsection])
+            section_simplified.questions_level3.set(section_complete.questions_level3.all())
+
+        
+
+
+            ona_form_simplified = ONAForm.objects.create(
+                hospital=ona_form_complete.hospital,
+                form_title=ona_form_complete.form_title
+            )
+            ona_form_simplified.ONA_sections.set([section_simplified])
+
+            form_id = ona_form_simplified.id
+        return form_id
+    
 def create_section(form_data:QueryDict, sections):
     section_list = []
     for section in sections:
@@ -54,17 +107,3 @@ def create_section(form_data:QueryDict, sections):
         section_list.append(new_section)
 
     return section_list
-
-
-def verify_evaluator(form_evaluator, request):
-    db_evaluator = Evaluator.objects.filter(email=form_evaluator.email).first()
-    if  db_evaluator:
-
-        messages.success(request, "Bem vindo de volta!")
-
-        return db_evaluator
-    else:
-        form_evaluator.hospital = request.user.hospital
-        form_evaluator.save()
-        messages.success(request, "Avaliador cadastrado com sucesso")
-        return form_evaluator
