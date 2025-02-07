@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-# import dj_database_url
+import dj_database_url
 
 
 load_dotenv()
@@ -131,7 +131,9 @@ WSGI_APPLICATION = "core.wsgi.application"
 #     },
 # }
 DATABASES = {
-    'default': os.getenv('DATABASE_URL')
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL')
+    )
 }
 
 # Password validation

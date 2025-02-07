@@ -18,3 +18,4 @@ django-object-actions==4.3.0
 reportlab==4.3.0
 whitenoise==6.1.0
 gunicorn==20.1.0
+dj-database-url==2.1.0
