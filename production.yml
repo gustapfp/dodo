@@ -5,7 +5,8 @@ services:
     build: .
     ports:
       - "8000:8000"
-    command: gunicorn django_project.wsgi-b 0.0.0.0:8000     volumes:
+    command: gunicorn django_project.wsgi-b 0.0.0.0:8000     
+    volumes:
       - .:/Dodo/dodo
       - /Dodo/dodo/__pycache__/
     depends_on:
