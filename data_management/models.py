@@ -49,7 +49,7 @@ class Evaluator(models.Model):
     hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     job_role = models.CharField(max_length=7, choices=JOB_DESCRIPTION_CHOICES)
     evaluation_date = models.DateTimeField(auto_now_add=True)
-    email = models.EmailField(max_length=80, unique=True)
+    email = models.EmailField(max_length=80)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
 
     class Meta:
@@ -111,6 +111,7 @@ class ONAForm(models.Model):
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, help_text='Indique o hospital ao qual este formulário está associado.')
     updated_at = models.DateTimeField(auto_now=True)
     form_title = models.CharField(max_length=80, help_text="Titulo para o formulário.")
+
 
     class Meta:
         verbose_name = "Formulário ONA para edição"

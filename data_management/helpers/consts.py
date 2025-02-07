@@ -41,4 +41,5 @@ JOB_DESCRIPTION_CHOICES = [
     ("001.003", "Prev. Controle De Infecção"),
     ("001.002", "Gestão Da Qualidade"),
     ("001.001", "Liderança Organizacional"),
+    ("000.000", "Avaliador Externo"),
 ]

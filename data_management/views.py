@@ -1,14 +1,17 @@
 from django.shortcuts import render
 from .forms import EvaluatorForm
 from django.views import View
-from report.models import ONAForm, ONAFormAnswered
+from report.models import ONAFormAnswered
+from data_management.models import ONAForm
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+
 from .helpers.serialize_to_json import serialize_ona_form
-from .helpers.answers_organizer import create_section
+from .helpers.views_helper import EvaluatorViewHelper, create_section
+from report.helpers.utils import PDFReportGeneator
 
 
 class EvaluatorView(LoginRequiredMixin, View):
@@ -24,22 +27,35 @@ class EvaluatorView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = self.form_class(request.POST)
+        helper = EvaluatorViewHelper()
         try:
             form.is_valid()
             evaluator = form.save(commit=False)
-            evaluator.hospital = request.user.hospital
+            
 
-            evaluator.save()
-            messages.success(request, "Evaluator successfully created.")
+            evaluator = helper.verify_evaluator(
+                form_evaluator=evaluator,
+                request=request
+            )
+
+            form_id = helper.get_form_id(
+                request=request,
+                evaluator=evaluator
+            )      
+            
+
+
+
+     
             return redirect(
                 "ona_form",
-                hospital_id=request.user.hospital.id,
-                evaluator_id=evaluator.id,
+                form_id= form_id ,
+                evaluator_id=evaluator.id
             )
-        except:
+        except Exception as e:
             messages.error(
                 request,
-                f"Formulário Invalido. Você adicionou informações fora do padrão esperado. {form.errors}",
+                f"Formulário Invalido. Você adicionou informações fora do padrão esperado. Error: {str(e)}",
             )
             return redirect("evaluator_form")
 
@@ -47,8 +63,8 @@ class EvaluatorView(LoginRequiredMixin, View):
 class ONAFormView(LoginRequiredMixin, View):
     template_name = "ONA/ona_form.html"
 
-    def get(self, request, hospital_id, evaluator_id):
-        ona_form = ONAForm.objects.get(hospital=hospital_id)
+    def get(self, request, form_id, evaluator_id):
+        ona_form = ONAForm.objects.get(id=form_id)
 
         return render(
             request=request,
@@ -59,21 +75,28 @@ class ONAFormView(LoginRequiredMixin, View):
             },
         )
 
-    def post(self, request, hospital_id, evaluator_id):
-        ona_form = ONAForm.objects.get(hospital=hospital_id)
+    def post(self, request, form_id, evaluator_id):
+        pdf = PDFReportGeneator(filename="Relatório do formulário",)
+        ona_form = ONAForm.objects.get(id=form_id)
 
         form_data = request.POST
 
-        print(form_data)
-
+   
         new_ona_form = ONAFormAnswered.objects.create(
             ona_form=ona_form, evaluator_id=evaluator_id
         )
+
+
 
         section_list = create_section(
             form_data=form_data, sections=ona_form.ONA_sections.all()
         )
 
         new_ona_form.answered_sections.set(section_list)
-
+        # pdf.create_pdf_report_for_subsection(
+                
+        #         evaluator_name=new_ona_form.evaluator.name,
+        #         answers=new_ona_form,
+        #     )
+  
         return redirect("evaluator_form")
