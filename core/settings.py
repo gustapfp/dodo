@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["mighty-lake-25684.herokuapp.com", "mighty-lake-25684-4fb32f28dedb.herokuapp.com" "3.145.46.89", "localhost", "127.0.0.1", "0.0.0.0" ]
+ALLOWED_HOSTS = ["mighty-lake-25684-4fb32f28dedb.herokuapp.com", "3.145.46.89", "localhost", "127.0.0.1", "0.0.0.0" ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 LOGIN_REDIRECT_URL = "evaluator_form"
