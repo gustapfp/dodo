@@ -189,7 +189,7 @@ class HospitalAdmin(admin.ModelAdmin):
 
 # admin.site.register(Question, QuestionAdmin)
 admin.site.register(FormSubsection, FormSubsectionAdmin)
-# admin.site.register(FormSection, FormSectionAdmin)
+admin.site.register(FormSection, FormSectionAdmin)
 admin.site.register(ONAForm, ONAFormAdmin)
 admin.site.register(Evaluator)
 admin.site.register(Sector)
