@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["3.145.46.89", "localhost", "127.0.0.1", "0.0.0.0" ]
 
 
 LOGIN_REDIRECT_URL = "evaluator_form"
