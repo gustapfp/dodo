@@ -112,6 +112,7 @@ class ONAForm(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     form_title = models.CharField(max_length=80, help_text="Titulo para o formulário.")
 
+
     class Meta:
         verbose_name = "Formulário ONA para edição"
         verbose_name_plural = "Formulários ONA para edição"

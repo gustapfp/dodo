@@ -1,15 +1,16 @@
 from django.shortcuts import render
 from .forms import EvaluatorForm
 from django.views import View
-from report.models import ONAForm, ONAFormAnswered
+from report.models import ONAFormAnswered
+from data_management.models import ONAForm, FormSubsection, FormSection
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from data_management.models import Evaluator
+
 
 
 from .helpers.serialize_to_json import serialize_ona_form
-from .helpers.answers_organizer import create_section
+from .helpers.views_helper import create_section, verify_evaluator
 
 
 class EvaluatorView(LoginRequiredMixin, View):
@@ -26,29 +27,61 @@ class EvaluatorView(LoginRequiredMixin, View):
     def post(self, request):
         form = self.form_class(request.POST)
         try:
-            # form.is_valid()
+            form.is_valid()
             evaluator = form.save(commit=False)
-            db_evaluator =  Evaluator.objects.filter(email=evaluator.email).first()
+            
 
-            if  db_evaluator:
-                evaluator = db_evaluator
-
-                messages.success(request, "Bem vindo de volta!")
+            evaluator = verify_evaluator(
+                form_evaluator=evaluator,
+                request=request
+            )
+            ona_form_complete = ONAForm.objects.filter(hospital=request.user.hospital.id).first()
+            
+            if evaluator.job_role == "001.002" or evaluator.job_role == "000.000": 
+                form_id = ona_form_complete.id 
             else:
-                evaluator.hospital = request.user.hospital
-                evaluator.save()
-                messages.success(request, "Avaliador cadastrado com sucesso")
-                
+                subsection = FormSubsection.objects.filter(
+                    subsection_id=evaluator.job_role
+                ).first()
 
+                section_id = evaluator.job_role[0:3]
+
+                section_complete = ona_form_complete.ONA_sections.filter(
+                    section_id=section_id
+                ).first()
+
+                section_simplified= FormSection.objects.create(
+                    section_id=section_complete.section_id,
+                    section_title=section_complete.section_title,
+
+                )
+                section_simplified.form_subsections.set([subsection])
+                section_simplified.questions_level3.set(section_complete.questions_level3.all())
+
+           
+
+
+                ona_form_simplified = ONAForm.objects.create(
+                    hospital=ona_form_complete.hospital,
+                    form_title=ona_form_complete.form_title
+                )
+                ona_form_simplified.ONA_sections.set([section_simplified])
+
+                form_id = ona_form_simplified.id
+                print('---criou---')
+
+
+
+     
             return redirect(
                 "ona_form",
-                hospital_id=request.user.hospital.id,
-                evaluator_id=evaluator.id,
+                form_id= form_id ,
+                evaluator_id=evaluator.id
             )
-        except:
+        except Exception as e:
             messages.error(
                 request,
-                f"Formulário Invalido. Você adicionou informações fora do padrão esperado. {form.errors}",
+                f"Formulário Invalido. Você adicionou informações fora do padrão esperado. Error: {str(e)}",
             )
             return redirect("evaluator_form")
 
@@ -56,8 +89,8 @@ class EvaluatorView(LoginRequiredMixin, View):
 class ONAFormView(LoginRequiredMixin, View):
     template_name = "ONA/ona_form.html"
 
-    def get(self, request, hospital_id, evaluator_id):
-        ona_form = ONAForm.objects.get(hospital=hospital_id)
+    def get(self, request, form_id, evaluator_id):
+        ona_form = ONAForm.objects.get(id=form_id)
 
         return render(
             request=request,
@@ -68,13 +101,12 @@ class ONAFormView(LoginRequiredMixin, View):
             },
         )
 
-    def post(self, request, hospital_id, evaluator_id):
-        ona_form = ONAForm.objects.get(hospital=hospital_id)
+    def post(self, request, form_id, evaluator_id):
+        ona_form = ONAForm.objects.get(id=form_id)
 
         form_data = request.POST
 
-        print(form_data)
-
+   
         new_ona_form = ONAFormAnswered.objects.create(
             ona_form=ona_form, evaluator_id=evaluator_id
         )

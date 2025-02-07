@@ -1,7 +1,7 @@
 from report.models import QuestionAnswer, FormSubsectionAnswered, FormSectionAnswered
 from django.http import QueryDict
-
-
+from data_management.models import Evaluator
+from django.contrib import messages
 
 def create_answered_questions(form_data:QueryDict, subsection_questions):
     questions = []
@@ -54,3 +54,17 @@ def create_section(form_data:QueryDict, sections):
         section_list.append(new_section)
 
     return section_list
+
+
+def verify_evaluator(form_evaluator, request):
+    db_evaluator = Evaluator.objects.filter(email=form_evaluator.email).first()
+    if  db_evaluator:
+
+        messages.success(request, "Bem vindo de volta!")
+
+        return db_evaluator
+    else:
+        form_evaluator.hospital = request.user.hospital
+        form_evaluator.save()
+        messages.success(request, "Avaliador cadastrado com sucesso")
+        return form_evaluator
