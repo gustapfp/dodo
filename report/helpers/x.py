@@ -375,7 +375,9 @@ class PDFReportGeneator:
             filename=filename,
             pagesize=letter
         )
-        self.font = "Helverica"
+        self.graphs = GraphsGenerator()
+        self.metrics  = MetricsCalculator()
+        # self.font = "Helverica"
 
     def create_pdf_report_for_subsection(self, filename:str, evaluator_name:str, answers):
         self.add_title(
@@ -387,8 +389,9 @@ class PDFReportGeneator:
         # MetricsCalculator.get_ona_form_average_distribution(
         #     ona_form=answers
         # )
-
-        form_distribution_img = GraphsGenerator.plot_bar_plot(
+        print(metrics)
+        
+        form_distribution_img = self.graphs.plot_bar_plot(
             data=metrics["ONA answer Distribution"],
             title="Distribuição das Respostas no formulario",
         )
@@ -406,7 +409,7 @@ class PDFReportGeneator:
 
     def add_title(self, filename:str, evaluator_name:str) -> None:
         title = f"Relatório de Preenchimento do Formulário por {evaluator_name}"
-        title_width = self.pdf_canvas.stringWidth(title, "Helverica", 12)
+        title_width = self.pdf_canvas.stringWidth(title)
 
         title_x_coord = (self.width - title_width)/2
         title_y_coord = self.height - 100
@@ -414,7 +417,7 @@ class PDFReportGeneator:
         self.pdf_canvas.drawString(
             title_x_coord,
             title_y_coord,
-            self.font
+            filename
         )
 
     def display_answers_with_comments(self, questions_answers, y_position):
@@ -963,7 +966,7 @@ if __name__ == "__main__":
                 "supera": 5,
             },
         },
-        "ONA awnser Distribution": {
+        "ONA answer Distribution": {
             "não aplicável": 108,
             "conforme": 559,
             "não conforme": 411,
@@ -973,16 +976,18 @@ if __name__ == "__main__":
     }
     subsections = data["Subsections Distribution"]
     sections = data["Sections Distribution"]
-    ona_awnser = data["ONA awnser Distribution"]
+    ona_awnser = data["ONA answer Distribution"]
     # graph = GraphsGenerator()
     # bar_plot_img = graph.plot_bar_plot(sections['SEÇÃO 01 - GESTÃO ORGANIZACIONAL'], 'SEÇÃO 01 - GESTÃO ORGANIZACIONAL')
     
     # rg = ReportGenerator()
     # prs = rg.make_report(data, "TEST06.pptx")
-    
-    pdf = PDFReportGeneator
+    section01 = sections['SEÇÃO 01 - GESTÃO ORGANIZACIONAL']
+    pdf = PDFReportGeneator(
+        filename="test"
+    )
     pdf.create_pdf_report_for_subsection(
         filename="TEST",
         evaluator_name="TESTAOZAO",
-        answers=sections[0]
+        answers=data
     )

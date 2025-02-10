@@ -133,10 +133,10 @@ def create_template(apps, schema_editor):
         'email': 'test@example.com',  
     })
 
-    # Step 2: Get all sections from the database
+    
     sections = FormSection.objects.all()
 
-    # Step 3: Create copies of each section and append "- Template" to the title
+    
     copied_sections = []
     for section in sections:
         # Copy the section
