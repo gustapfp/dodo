@@ -122,15 +122,15 @@ def remove_sections(apps, schema_editor):
 
 
 def create_template(apps, schema_editor):
-    FormSubsection = apps.get_model("data_management", "ONAForm")
     Hospital = apps.get_model('data_management', 'Hospital')
+    FormSubsection = apps.get_model("data_management", "FormSubsection")
     FormSection = apps.get_model('data_management', 'FormSection')
     ONAForm = apps.get_model('data_management', 'ONAForm')
 
-    # Step 1: Create or get the 'test' hospital
+    
     test_hospital, created = Hospital.objects.get_or_create(name="test", defaults={
-        'username': None,  # Adjust this if necessary
-        'email': 'test@example.com',  # Adjust this if necessary
+        'username': None, 
+        'email': 'test@example.com',  
     })
 
     # Step 2: Get all sections from the database
