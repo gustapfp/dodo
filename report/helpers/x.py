@@ -10,7 +10,7 @@ from pptx.util import Inches
 from django.core.mail import EmailMessage
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+from reportlab.lib.utils import ImageReader
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
@@ -386,10 +386,10 @@ class PDFReportGeneator:
         )
 
         metrics = answers
-        # MetricsCalculator.get_ona_form_average_distribution(
+        # self.metrics.get_ona_form_average_distribution(
         #     ona_form=answers
         # )
-        print(metrics)
+    
         
         form_distribution_img = self.graphs.plot_bar_plot(
             data=metrics["ONA answer Distribution"],
@@ -401,7 +401,8 @@ class PDFReportGeneator:
         )
 
         self.display_answers_with_comments(
-            questions_answers=metrics["Answers with comments"]
+            questions_answers=metrics["Answers with comments"],
+            y_position = 300
         )
 
         self.pdf_canvas.save()
@@ -422,23 +423,25 @@ class PDFReportGeneator:
 
     def display_answers_with_comments(self, questions_answers, y_position):
         for question_with_comment in questions_answers:
+
+            
             #  Description
-            question_desc = f"Question Description: {question_with_comment.question.description}"
+            question_desc = f"Question Description: {question_with_comment['question']}"
             self.pdf_canvas.drawString(100, y_position, question_desc)
             y_position -= 15
 
             # Core 
-            core_info = f"Core: {question_with_comment.question.core}"
+            core_info = f"Core: {question_with_comment['question']}"
             self.pdf_canvas.drawString(100, y_position, core_info)
             y_position -= 15
             
             # Answer to the Question
-            question_answer = f"Answer: {question_with_comment.answer}"
+            question_answer = f"Answer: {question_with_comment['answer']}"
             self.pdf_canvas.drawString(100, y_position, question_answer)
             y_position -= 15
             
             # Comment
-            question_comment = f"Comment: {question_with_comment.comment}"
+            question_comment = f"Comment: {question_with_comment['comment']}"
             self.pdf_canvas.drawString(100, y_position, question_comment)
             y_position -= 30 
 
@@ -454,7 +457,8 @@ class PDFReportGeneator:
         img_width, img_height = 200, 200  # You can adjust these dimensions as needed
         img_x_coord = (self.width - img_width) / 2
         img_y_coord = (self.height - img_height) / 2
-
+        
+        image = ImageReader(image)
         # Draw the image (adjust the width, height, and position as needed)
         self.pdf_canvas.drawImage(image, img_x_coord, img_y_coord, width=img_width, height=img_height)
 
@@ -651,329 +655,7 @@ class MetricsCalculator:
    
 # Example usage:
 if __name__ == "__main__":
-    data = {
-        "Subsections Distribution": {
-            "SEÇÃO 01 - GESTÃO ORGANIZACIONAL": {
-                "1.1 LIDERANÇA ORGANIZACIONAL": {
-                    "conforme": 21,
-                    "não aplicável": 10,
-                    "não conforme": 6,
-                    "supera": 5,
-                    "parcial conforme": 3,
-                },
-                "1.2 GESTÃO DA QUALIDADE": {
-                    "parcial conforme": 5,
-                    "não conforme": 7,
-                    "conforme": 14,
-                    "não aplicável": 2,
-                    "supera": 2,
-                },
-                "1.3 PREV. CONTROLE DE INFECÇÃO": {
-                    "conforme": 15,
-                    "não conforme": 7,
-                    "supera": 2,
-                    "não aplicável": 6,
-                    "parcial conforme": 2,
-                },
-                "1.4 GESTÃO ADM FINANCEIRA": {
-                    "conforme": 10,
-                    "não aplicável": 5,
-                    "não conforme": 3,
-                    "supera": 2,
-                },
-                "1.5 GESTÃO DE PESSOAS": {
-                    "conforme": 13,
-                    "não conforme": 4,
-                    "supera": 7,
-                    "não aplicável": 5,
-                    "parcial conforme": 2,
-                },
-                "1.6 GESTÃO DE SUPRIMENTOS": {
-                    "não conforme": 9,
-                    "conforme": 9,
-                    "supera": 3,
-                },
-                "1.7 GESTÃO DA TEC. DA INF.": {
-                    "não conforme": 8,
-                    "parcial conforme": 3,
-                    "supera": 3,
-                    "conforme": 10,
-                },
-                "1.8 GESTÃO DO ACESSO": {
-                    "conforme": 10,
-                    "parcial conforme": 1,
-                    "não conforme": 6,
-                    "não aplicável": 3,
-                    "supera": 1,
-                },
-                "1.9 GESTÃO DA SEGURANÇA": {
-                    "conforme": 7,
-                    "não conforme": 5,
-                    "não aplicável": 2,
-                    "supera": 5,
-                    "parcial conforme": 1,
-                },
-                "1.10 GESTÃO DA COMUNICAÇÃO": {
-                    "não conforme": 6,
-                    "conforme": 9,
-                    "não aplicável": 1,
-                    "parcial conforme": 1,
-                    "supera": 3,
-                },
-            },
-            "SEÇÃO 02  - ATENÇÃO AO PACIENTE": {
-                "2.1 INTERNAÇÃO": {
-                    "não aplicável": 3,
-                    "conforme": 15,
-                    "não conforme": 10,
-                    "parcial conforme": 7,
-                    "supera": 2,
-                },
-                "2.2 ATENDIMENTO AMBULATORIAL": {
-                    "supera": 3,
-                    "conforme": 12,
-                    "parcial conforme": 11,
-                    "não conforme": 11,
-                    "não aplicável": 2,
-                },
-                "2.3 ATENDIMENTO EMERGENCIAL": {
-                    "não aplicável": 5,
-                    "supera": 6,
-                    "conforme": 15,
-                    "não conforme": 6,
-                    "parcial conforme": 5,
-                },
-                "2.4 ATENDIMENTO CIRÚRGICO": {
-                    "conforme": 14,
-                    "não conforme": 13,
-                    "parcial conforme": 16,
-                    "supera": 4,
-                    "não aplicável": 2,
-                },
-                "2.5 ATENDIMENTO OBSTÉTRICO": {
-                    "supera": 5,
-                    "conforme": 15,
-                    "parcial conforme": 23,
-                    "não conforme": 11,
-                },
-                "2.6 ATENDIMENTO NEONATAL": {
-                    "não conforme": 11,
-                    "parcial conforme": 12,
-                    "supera": 6,
-                    "conforme": 11,
-                    "não aplicável": 4,
-                },
-                "2.7 CUIDADOS INTENSIVOS": {
-                    "não conforme": 6,
-                    "parcial conforme": 13,
-                    "conforme": 10,
-                    "supera": 6,
-                    "não aplicável": 3,
-                },
-                "2.8 ASSISTÊNCIA HEMOTERÁPICA": {
-                    "parcial conforme": 24,
-                    "não conforme": 19,
-                    "conforme": 12,
-                    "supera": 1,
-                    "não aplicável": 8,
-                },
-                "2.9 ASSISTÊNCIA NEFROLÓGICA": {
-                    "parcial conforme": 18,
-                    "conforme": 15,
-                    "não conforme": 10,
-                    "supera": 1,
-                    "não aplicável": 3,
-                },
-                "2.10 ASSISTÊNCIA ONCOLÓGICA": {
-                    "parcial conforme": 17,
-                    "não conforme": 13,
-                    "não aplicável": 4,
-                    "conforme": 12,
-                    "supera": 2,
-                },
-                "2.11 RADIOTERAPIA": {
-                    "parcial conforme": 24,
-                    "conforme": 11,
-                    "não conforme": 4,
-                    "supera": 2,
-                },
-                "2.12 MED. HIPERBÁRICA": {
-                    "conforme": 11,
-                    "parcial conforme": 12,
-                    "não aplicável": 3,
-                    "não conforme": 8,
-                    "supera": 2,
-                },
-                "2.13 ASSISTÊNCIA FARMACÊUTICA": {
-                    "parcial conforme": 13,
-                    "conforme": 18,
-                    "supera": 6,
-                    "não conforme": 7,
-                },
-                "2.14 ASSISTÊNCIA NUTRICIONAL ": {
-                    "parcial conforme": 24,
-                    "conforme": 19,
-                    "não conforme": 15,
-                    "supera": 2,
-                    "não aplicável": 2,
-                },
-                "2.15 ATENDIMENTO OFTALMOLÓGICO": {
-                    "parcial conforme": 21,
-                    "conforme": 14,
-                    "supera": 3,
-                    "não aplicável": 5,
-                    "não conforme": 13,
-                },
-                "2.16 ATEND. PRÉ HOSPITALAR": {
-                    "parcial conforme": 15,
-                    "conforme": 17,
-                    "não conforme": 5,
-                    "supera": 3,
-                    "não aplicável": 1,
-                },
-                "2.17 ODONTOLOGIA": {
-                    "conforme": 17,
-                    "parcial conforme": 19,
-                    "não conforme": 13,
-                },
-                "2.18 TELEMEDICINA": {
-                    "não conforme": 13,
-                    "conforme": 8,
-                    "parcial conforme": 12,
-                    "não aplicável": 2,
-                    "supera": 1,
-                },
-                "2.19 ATENÇÃO PRIMÁRIA": {
-                    "conforme": 28,
-                    "não conforme": 9,
-                    "supera": 7,
-                    "parcial conforme": 10,
-                },
-                "2.20 ATENÇÃO DOMICILIAR": {
-                    "conforme": 9,
-                    "não conforme": 9,
-                    "parcial conforme": 22,
-                    "não aplicável": 1,
-                },
-            },
-            "SEÇÃO 03 - DIAGNÓSTICO E TERAPÊUTICA": {
-                "3.1 Análises clínicas": {
-                    "conforme": 9,
-                    "não conforme": 22,
-                    "parcial conforme": 20,
-                },
-                "3.2 Anatomia Patológica e Citop": {
-                    "conforme": 20,
-                    "parcial conforme": 11,
-                    "não conforme": 11,
-                    "supera": 2,
-                },
-                "3.3 Met. Diagósticos. e Terap.": {
-                    "conforme": 14,
-                    "não conforme": 5,
-                    "parcial conforme": 14,
-                    "supera": 2,
-                },
-                "3.4 Diagósticos por imagem": {
-                    "parcial conforme": 13,
-                    "conforme": 15,
-                    "não conforme": 9,
-                    "não aplicável": 2,
-                },
-                "3.5 Medicina Nuclear": {
-                    "conforme": 14,
-                    "não conforme": 16,
-                    "parcial conforme": 13,
-                    "não aplicável": 5,
-                    "supera": 2,
-                },
-                "3.6 Radiologia Interv.": {
-                    "parcial conforme": 20,
-                    "não aplicável": 2,
-                    "não conforme": 14,
-                    "conforme": 7,
-                    "supera": 1,
-                },
-                "3.7 Mét. endoscópicos e vid.": {
-                    "não aplicável": 3,
-                    "parcial conforme": 14,
-                    "conforme": 14,
-                    "não conforme": 14,
-                    "supera": 1,
-                },
-            },
-            "SEÇÃO 04 - GESTÃO DE APOIO": {
-                "4.1 Gestão de equipamentos": {
-                    "parcial conforme": 13,
-                    "conforme": 7,
-                    "não conforme": 11,
-                    "não aplicável": 2,
-                },
-                "4.2 Gestão de Infraestrutura": {
-                    "parcial conforme": 6,
-                    "não conforme": 7,
-                    "conforme": 6,
-                    "supera": 1,
-                    "não aplicável": 1,
-                },
-                "4.3 Limpeza e Desinf. de superf": {
-                    "conforme": 7,
-                    "parcial conforme": 6,
-                    "não conforme": 8,
-                },
-                "4.4 Process. de produtos ": {
-                    "parcial conforme": 11,
-                    "supera": 3,
-                    "não conforme": 6,
-                    "conforme": 12,
-                    "não aplicável": 2,
-                },
-                "4.5 Process. de Roupas": {
-                    "conforme": 11,
-                    "parcial conforme": 12,
-                    "supera": 1,
-                    "não conforme": 3,
-                },
-            },
-        },
-        "Sections Distribution": {
-            "SEÇÃO 01 - GESTÃO ORGANIZACIONAL": {
-                "não aplicável": 37,
-                "conforme": 125,
-                "não conforme": 66,
-                "supera": 36,
-                "parcial conforme": 18,
-            },
-            "SEÇÃO 02  - ATENÇÃO AO PACIENTE": {
-                "parcial conforme": 325,
-                "não conforme": 209,
-                "supera": 64,
-                "conforme": 289,
-                "não aplicável": 48,
-            },
-            "SEÇÃO 03 - DIAGNÓSTICO E TERAPÊUTICA": {
-                "conforme": 96,
-                "não conforme": 96,
-                "parcial conforme": 108,
-                "supera": 9,
-                "não aplicável": 18,
-            },
-            "SEÇÃO 04 - GESTÃO DE APOIO": {
-                "não conforme": 40,
-                "parcial conforme": 55,
-                "conforme": 49,
-                "não aplicável": 5,
-                "supera": 5,
-            },
-        },
-        "ONA answer Distribution": {
-            "não aplicável": 108,
-            "conforme": 559,
-            "não conforme": 411,
-            "supera": 114,
-            "parcial conforme": 506,
-        },
-    }
+    data = {'Subsections Distribution': {'2 SEÇÃO - ATENÇÃO AO PACIENTE': {'2.4 ATENDIMENTO CIRÚRGICO': {'parcial conforme': 14, 'conforme': 18, 'supera': 8, 'não conforme': 9}}}, 'Sections Distribution': {'2 SEÇÃO - ATENÇÃO AO PACIENTE': {'parcial conforme': 14, 'conforme': 18, 'supera': 8, 'não conforme': 9}}, 'ONA answer Distribution': {'parcial conforme': 14, 'conforme': 18, 'supera': 8, 'não conforme': 9}, 'Answers with comments': [{'id': 7, 'question': 266, 'answer': 'não conforme', 'comment': '\\sdf\\sdf\\sdfwecswdr4eysc dxz\\sdf\\sdf\\sdfwecswdr4eysc dxz\\sdf\\sdf\\sdfwecswdr4eysc dxz\\sdf\\sdf\\sdfwecswdr4eysc dxzVSDDSVCVCXVCX XCVFFB VCFD \\sdf\\sdf\\sdfwecswdr4eysc dxz'}, {'id': 1, 'question': 260, 'answer': 'não conforme', 'comment': 'dsfzsdzsdf'}, {'id': 25, 'question': 284, 'answer': 'não conforme', 'comment': 'vcbcvbbbcvbcvbc'}, {'id': 14, 'question': 273, 'answer': 'não conforme', 'comment': 'vbxcvbndeae'}, {'id': 6, 'question': 265, 'answer': 'não conforme', 'comment': '\\sdf\\sdf\\sdfwecswdr4eysc dxz'}, {'id': 41, 'question': 1380, 'answer': 'não conforme', 'comment': 'bzdfbzdfbxvc'}, {'id': 12, 'question': 271, 'answer': 'não conforme', 'comment': 'cvbdzfgreczxcvxcvcvzcfd'}, {'id': 31, 'question': 290, 'answer': 'não conforme', 'comment': 'cxvbcbcvbcvb'}, {'id': 21, 'question': 280, 'answer': 'não conforme', 'comment': 'cxzdfbrdhgercxcbcvbvc'}]}
     subsections = data["Subsections Distribution"]
     sections = data["Sections Distribution"]
     ona_awnser = data["ONA answer Distribution"]
@@ -982,9 +664,9 @@ if __name__ == "__main__":
     
     # rg = ReportGenerator()
     # prs = rg.make_report(data, "TEST06.pptx")
-    section01 = sections['SEÇÃO 01 - GESTÃO ORGANIZACIONAL']
+    # section01 = sections['SEÇÃO 01 - GESTÃO ORGANIZACIONAL']
     pdf = PDFReportGeneator(
-        filename="test"
+        filename="test.pdf"
     )
     pdf.create_pdf_report_for_subsection(
         filename="TEST",
