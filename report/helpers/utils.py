@@ -3,6 +3,7 @@ from report.models import (
     FormSubsectionAnswered,
     FormSectionAnswered,
     QuestionAnswer,
+    ONAFormDistribution
 )
 from collections import Counter
 import matplotlib.pyplot as plt
@@ -22,6 +23,8 @@ from django.db.models import QuerySet, Q
 from reportlab.platypus import Image
 from reportlab.platypus import Table, TableStyle, PageBreak
 from django.forms.models import model_to_dict
+
+import matplotlib.dates as mdates
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
@@ -354,6 +357,77 @@ class GraphsGenerator:
 
         # Adjust layout
         plt.tight_layout()
+        buf = BytesIO()
+        plt.savefig(buf, format="png")
+        plt.close()  # Close the figure to free memory
+        buf.seek(0)
+        return buf
+
+    def plot_line_graph_from_queryset(self, queryset, title):
+        # Define the hard-coded colors from the Set1 palette
+        colors = ['#E41A1C', '#377EB8', '#4DAF4A', '#FF7F00']  # Set1 colors: red, blue, green, orange
+
+        # Prepare data containers
+        dates = []
+        conforme = []
+        nao_conforme = []
+        parcial_conforme = []
+        supera = []
+  
+
+        # Collect data from the queryset
+        for record in queryset:
+            dates.append(record.date)
+            distribution = self.awnser_distribution_by_percentage(record.ona_answer_total_distribution)
+            conforme.append(distribution.get('conforme', 0))
+            nao_conforme.append(distribution.get('não conforme', 0))
+            parcial_conforme.append(distribution.get('parcial conforme', 0))
+            supera.append(distribution.get('supera', 0))
+
+
+        # Create a DataFrame from the data
+        df = pd.DataFrame({
+            "Date": dates,
+            "Conforme": conforme,
+            "Não conforme": nao_conforme,
+            "Parcial conforme": parcial_conforme,
+            "Supera": supera,
+
+        })
+
+        # Set up the figure
+        plt.figure(figsize=(12, 6))
+
+        # Plot each category as a line with dots at the data points
+        plt.plot(df['Date'], df['Conforme'], label='Conforme', marker='o', linestyle='-', color=colors[1])
+        plt.plot(df['Date'], df['Não conforme'], label='Não conforme', marker='o', linestyle='-', color=colors[0])
+        plt.plot(df['Date'], df['Parcial conforme'], label='Parcial conforme', marker='o', linestyle='-', color=colors[2])
+        plt.plot(df['Date'], df['Supera'], label='Supera', marker='o', linestyle='-', color=colors[3])
+
+        # Customize the plot
+        plt.title(title, fontsize=16)
+        plt.xlabel('Data', fontsize=14)
+        plt.ylabel('Quantidade de Respostas', fontsize=14)
+
+
+
+        # Set the x-axis ticks to only show the dates where data exists
+        plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator())  # Optional: to show ticks for each week
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%y'))
+
+        # Set the x-ticks to only display the dates in the dataset
+        plt.xticks(df['Date'], rotation=45)
+
+        plt.grid(True)
+
+        # Create custom legend handles
+        handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=colors[i], markersize=10, label=status.capitalize())
+                for i, status in enumerate(['supera', 'conforme', 'parcial conforme', 'não conforme'])]
+
+        # Add the custom legend
+        plt.legend(handles=handles, title='Categorias', loc='upper right')
+
+        # Show the plot
         plt.tight_layout()
         buf = BytesIO()
         plt.savefig(buf, format="png")
@@ -488,9 +562,9 @@ class PowerPointReportGenerator:
         self.template_ona_path = "report/helpers/template-ona-report.pptx"
         self.section_indexes = {
             "1 SEÇÃO - GESTÃO ORGANIZACIONAL": 1,
-            "2 SEÇÃO - ATENÇÃO AO PACIENTE": 3,
-            "3 SEÇÃO - DIAGNÓSTICO E TERAPÊUTICA": 5,
-            "4 SEÇÃO - GESTÃO DE APOIO": 7,
+            "2 SEÇÃO - ATENÇÃO AO PACIENTE": 4,
+            "3 SEÇÃO - DIAGNÓSTICO E TERAPÊUTICA": 7,
+            "4 SEÇÃO - GESTÃO DE APOIO": 10,
         }
         self.presentation = Presentation(self.template_ona_path)
         self.graphs = GraphsGenerator()
@@ -502,20 +576,14 @@ class PowerPointReportGenerator:
         return self.presentation
 
     def generate_images_coords(self, image_type):
-        if image_type == "section":
-            left = Inches(5.5)
-            top = Inches(1)
-            width = Inches(7)
-            height = Inches(5)
-        else:
-            left = Inches(1.5)
-            top = Inches(1.3)
-            width = Inches(10)
-            height = Inches(6)
+        
+        left = Inches(1.5)
+        top = Inches(1.3)
+        width = Inches(10)
+        height = Inches(6)
         return left, top, width, height
 
     def add_section_images(self, sections_data):
-        print(sections_data)
         for section, resuls in sections_data.items():
             bar_plot_img = self.graphs.plot_bar_plot(resuls, section)
             section = section.strip()
@@ -527,12 +595,12 @@ class PowerPointReportGenerator:
 
     def add_subsection_images(self, subsection_data):
         for subsection, results in subsection_data.items():
-            slide_index = self.section_indexes[subsection] + 1
-            if slide_index == 2:
+            slide_index = self.section_indexes[subsection] + 2
+            if slide_index == 3:
                 grouped_bar_img = self.graphs.plot_grouped_bar_split_section_1(
                     results, subsection
                 )
-            elif slide_index == 4:
+            elif slide_index == 6:
                 grouped_bar_img = self.graphs.plot_grouped_bar_split_section_2(
                     results, subsection
                 )
@@ -543,15 +611,38 @@ class PowerPointReportGenerator:
             )
         return prs
 
-    def make_report(self, data, report_name):
+    def add_plot_line_image(self, hospital):
+        queryset = ONAFormDistribution.objects.filter(
+            hospital=hospital
+        )
+        self.graphs.plot_line_graph_from_queryset(
+            queryset=queryset,
+            title="Evolução das Respostas"
+        )
+        plot_line_img = self.graphs.plot_line_graph_from_queryset(
+            queryset=queryset,
+            title="Evolução das Respostas"
+        )
+        prs = self.insert_plot_image_in_slide(
+            image_buffer=plot_line_img,
+            slide_index=13,
+            image_type="plot-line"
+        )
+        return prs
+
+
+        
+
+    def make_report(self, data, report_name, hospital):
         subsections = data["Subsections Distribution"]
         sections = data["Sections Distribution"]
         self.add_section_images(sections)
         self.add_subsection_images(subsections)
+        self.add_plot_line_image(hospital)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         path = f"report/presentations_report/{report_name}_{timestamp}.pptx"
         self.presentation.save(path)
-        self.send_email(path, "gustavopfpereira30@gmail.com")
+        # self.send_email(path, "gustavopfpereira30@gmail.com")
 
     def send_email(self, report_path, recipient_email):
         subject = "Generated Report"
