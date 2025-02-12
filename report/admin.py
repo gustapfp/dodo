@@ -13,12 +13,19 @@ class ONAFormansweredAdmin(admin.ModelAdmin):
     @admin.action(description="Criar Relatório")
     def test_admin(self, request, queryset):
         mc = MetricsCalculator()
-        # rp = PowerPointReportGenerator()
-        for form in queryset:
-            metrics_data = mc.get_ona_form_average_distribution(form)
-            print(metrics_data)
-            print(metrics_data)
-            # rp.make_report(data=metrics_data, report_name=form.ona_form.form_title)
+        mc_data1 = mc.get_ona_form_average_distribution(queryset[1])
+        mc_data0 = mc.get_ona_form_average_distribution(queryset[0])
+        form = mc.create_unified_form(ona_form_queryset=queryset)
+        
+        # metrics_data = mc.get_ona_form_average_distribution(form)
+        print("--------------------")
+        print(mc_data1["Sections Distribution"])
+        print("--------------------")
+        print(mc_data0["Sections Distribution"])
+        print("--------------------")
+        print(form)
+        print("--------------------")
+        # rp.make_report(data=metrics_data, report_name=form.ona_form.form_title)
 
 
 # admin.site.register()

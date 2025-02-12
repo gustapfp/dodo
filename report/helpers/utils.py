@@ -18,9 +18,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
-
+from django.db.models import QuerySet, Q
 from reportlab.platypus import Image
 from reportlab.platypus import Table, TableStyle, PageBreak
+from django.forms.models import model_to_dict
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
@@ -598,9 +599,10 @@ class MetricsCalculator:
         self, section: FormSectionAnswered
     ) -> dict[str, int]:
         subsections = section.answered_subsections.all()
+   
         level3_questions = section.answered_questions_level_3.all()
 
-        section_answers = level3_questions
+        subsection_answers = level3_questions
         
         subsection_distribution = {}
         for subsction in subsections:
@@ -614,15 +616,15 @@ class MetricsCalculator:
                 )
             )
 
-            section_answers = section_answers.union(
+            subsection_answers = subsection_answers.union(
                 subsection_questions_level_1_and_level_2
             )
-        section_answers_with_comments = section_answers
+        subsection_answers_with_comments = subsection_answers
         section_distribution = self.__get_questions_average_distribution(
-            section_answers
+            subsection_answers
         )
 
-        return section_distribution, subsection_distribution, section_answers_with_comments
+        return section_distribution, subsection_distribution, subsection_answers_with_comments
 
     def __get_ona_form_total_metrics(
         self, distribution_by_section: dict
@@ -660,52 +662,47 @@ class MetricsCalculator:
 
         return metrics
     
-    def get_awnsers_with_comments(
-            self,
-            section_answers: list[QuestionAnswer]
-    ) -> list[QuestionAnswer]:
-        answers_with_comments = []
-        for answerd_question in section_answers:
-            if answerd_question.comment:
+
+    def create_unified_form(self, ona_form_queryset: QuerySet):
+        combined_distribution = {
+            'não conforme': 0,
+            'parcial conforme': 0,
+            'conforme': 0,
+            'supera': 0
+        }
+        combined_sections_distribution = {}
+        for ona_form in ona_form_queryset:
+          
+            metrics = self.get_ona_form_average_distribution(ona_form)
+            combined_distribution = self.update_combined_distribution(
+                ona_answer_distribution=metrics['ONA answer Distribution'],
+                combined_distribution=combined_distribution
+            )
+            combined_sections_distribution = self.update_combine_sections_distribution(
+                sections_distribution=metrics["Sections Distribution"],
+                combined_sections_distribution=combined_sections_distribution,
+            )
+
+        return  combined_sections_distribution#, combined_distribution
             
-                answers_with_comments.append(answerd_question)
-        return answers_with_comments
-        
-    # from pydantic import BaseModel, Field
-    # from typing import List, Optional
-    # from datetime import datetime
+    def update_combined_distribution(self, ona_answer_distribution: dict, combined_distribution:dict) -> dict:
+        for key, value in ona_answer_distribution.items():
+            if key in combined_distribution:
+                combined_distribution[key] += value
+            else:
+                combined_distribution[key] = value
+        return combined_distribution
+    
+    def update_combine_sections_distribution(self,  sections_distribution:dict, combined_sections_distribution:dict):
+        for section_name, distribution in sections_distribution.items():
+            if section_name in combined_sections_distribution.keys():
+                
+                combined_sections_distribution[section_name] = dict(Counter(distribution) +Counter(combined_sections_distribution[section_name]))
+            else:
+                combined_sections_distribution[section_name] = distribution
+        return combined_sections_distribution
 
-    # # Simulating related models (FormSectionAnswered, ONAForm, Evaluator)
-    # class FormSectionAnswered(BaseModel):
-    #     section_name: str
 
-    # class ONAForm(BaseModel):
-    #     form_name: str
 
-    # class Evaluator(BaseModel):
-    #     name: str
-    #     email: str
 
-    # # The main model - ONAFormAnswered
-    # class ONAFormAnswered(BaseModel):
-    #     answered_sections: List[FormSectionAnswered] = Field(..., description="List of answered sections")
-    #     ona_form: ONAForm
-    #     evaluator: Evaluator
-    #     answered_at: Optional[datetime] = Field(default_factory=datetime.now)
 
-    # # Example of creating some objects
-    # form_section_1 = FormSectionAnswered(section_name="Section 1")
-    # form_section_2 = FormSectionAnswered(section_name="Section 2")
-
-    # ona_form_instance = ONAForm(form_name="Form 1")
-    # evaluator_instance = Evaluator(name="Evaluator 1", email="evaluator1@example.com")
-
-    # # Create an ONAFormAnswered instance
-    # ona_form_answered = ONAFormAnswered(
-    #     ona_form=ona_form_instance,
-    #     evaluator=evaluator_instance,
-    #     answered_sections=[form_section_1, form_section_2]
-    # )
-
-    # # Output the instance
-    # print(ona_form_answered)

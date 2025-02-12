@@ -139,25 +139,25 @@ def create_template(apps, schema_editor):
     
     copied_sections = []
     for section in sections:
-        # Copy the section
+
         copied_section = FormSection.objects.create(
             section_id=section.section_id,
             section_title=f"{section.section_title} - TEMPLATE"
         )
 
-        # Copy level 3 questions (assuming questions are associated via ManyToManyField)
+
         copied_section.questions_level3.set(section.questions_level3.all())
         copied_section.form_subsections.set(section.form_subsections.all())
        
         copied_sections.append(copied_section)
 
-    # Step 4: Create the ONAForm for the 'test' hospital
+
     ona_form = ONAForm.objects.create(
         hospital=test_hospital,
         form_title="ONA - TEMPLATE"
     )
 
-    # Step 5: Associate the copied sections with the new ONAForm
+
     ona_form.ONA_sections.set(copied_sections)
 
     print(f"ONAForm 'ONA - Template' created with {len(copied_sections)} sections.")
