@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ONAFormAnswered
+from .models import ONAFormAnswered, ONAFormDistribution
 from .helpers.utils import MetricsCalculator, PowerPointReportGenerator
 # Register your models here.
 
@@ -8,24 +8,36 @@ from .helpers.utils import MetricsCalculator, PowerPointReportGenerator
 class ONAFormansweredAdmin(admin.ModelAdmin):
     list_display = ("ona_form", "evaluator")
     filter_horizontal = ["answered_sections"]
-    actions = ["test_admin"]
+    actions = ["make_presentation"]
 
     @admin.action(description="Criar Relatório")
-    def test_admin(self, request, queryset):
+    def make_presentation(self, request, queryset):
         mc = MetricsCalculator()
-        mc_data1 = mc.get_ona_form_average_distribution(queryset[1])
-        mc_data0 = mc.get_ona_form_average_distribution(queryset[0])
-        form = mc.create_unified_form(ona_form_queryset=queryset)
+        pprp = PowerPointReportGenerator()
+
+
+        if len(queryset) > 1:
+            metrics_data = mc.create_unified_form_metrics(
+                ona_form_queryset=queryset
+            )
+            ona_form = queryset[0].ona_form
+            ONAFormDistribution.objects.create(
+                ona_form=ona_form,
+                distribution_by_subsection=metrics_data["distribution_by_subsection"],
+                distribution_by_section=metrics_data["distribution_by_section"],
+                ona_answer_total_distribution=metrics_data["ona_answer_total_distribution"],
+                score=None,
+                hospital=ona_form.hospital,
+            )
+        else:
+            metrics_data = mc.get_ona_form_average_distribution(
+                ona_form=queryset[0]
+            )
+
         
-        # metrics_data = mc.get_ona_form_average_distribution(form)
-        print("--------------------")
-        print(mc_data1["Subsections Distribution"])
-        print("--------------------")
-        print(mc_data0["Subsections Distribution"])
-        print("--------------------")
-        print(form)
-        print("--------------------")
-        # rp.make_report(data=metrics_data, report_name=form.ona_form.form_title)
+             
+        
+        pprp.make_report(data=metrics_data, report_name=queryset[0].ona_form.form_title)
 
 
 # admin.site.register()

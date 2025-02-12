@@ -19,9 +19,7 @@ class ONAFormAdminHelper:
         """
         template_string_index = len(" - TEMPLATE")
         removed_subsections = list(removed_subsections.all())
-        has_a_filter = self._has_a_filter(
-            removed_subsections=removed_subsections
-        )
+
         
         subsections_list = list(obj.form_subsections.all())
         filtered_subsections = list(filter(
@@ -33,6 +31,7 @@ class ONAFormAdminHelper:
         obj.pk = None
         obj.section_id = obj.section_id
         obj.section_title = obj.section_title[:-template_string_index]
+        obj.section_title = obj.section_title.strip()
         obj.save()
         obj.form_subsections.set(filtered_subsections)
         obj.questions_level3.set(level_3_questions)

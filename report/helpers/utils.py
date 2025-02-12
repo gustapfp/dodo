@@ -25,6 +25,7 @@ from django.forms.models import model_to_dict
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
+       
         data = self.awnser_distribution_by_percentage(data)
 
         colors = ["#E41A1C", "#377EB8", "#4DAF4A", "#FF7F00"]
@@ -366,6 +367,7 @@ class GraphsGenerator:
             del answer_distribution["não aplicável"]
 
         # Calculate the percentage distribution
+        print(answer_distribution)
         total = sum(answer_distribution.values())
         for key, value in answer_distribution.items():
             answer_distribution[key] = round((value / total) * 100, 2)
@@ -374,6 +376,7 @@ class GraphsGenerator:
 
     def sections_distribution_by_percentage(self, sections_distribution: dict) -> dict:
         # For each section, apply the answer distribution function
+
         for key, value in sections_distribution.items():
             sections_distribution[key] = self.awnser_distribution_by_percentage(value)
 
@@ -484,10 +487,10 @@ class PowerPointReportGenerator:
     def __init__(self):
         self.template_ona_path = "report/helpers/template-ona-report.pptx"
         self.section_indexes = {
-            "SEÇÃO 01 - GESTÃO ORGANIZACIONAL": 1,
-            "SEÇÃO 02  - ATENÇÃO AO PACIENTE": 3,
-            "SEÇÃO 03 - DIAGNÓSTICO E TERAPÊUTICA": 5,
-            "SEÇÃO 04 - GESTÃO DE APOIO": 7,
+            "1 SEÇÃO - GESTÃO ORGANIZACIONAL": 1,
+            "2 SEÇÃO - ATENÇÃO AO PACIENTE": 3,
+            "3 SEÇÃO - DIAGNÓSTICO E TERAPÊUTICA": 5,
+            "4 SEÇÃO - GESTÃO DE APOIO": 7,
         }
         self.presentation = Presentation(self.template_ona_path)
         self.graphs = GraphsGenerator()
@@ -512,9 +515,13 @@ class PowerPointReportGenerator:
         return left, top, width, height
 
     def add_section_images(self, sections_data):
+        print(sections_data)
         for section, resuls in sections_data.items():
             bar_plot_img = self.graphs.plot_bar_plot(resuls, section)
+            section = section.strip()
+            
             slide_index = self.section_indexes[section]
+ 
             prs = self.insert_plot_image_in_slide(bar_plot_img, slide_index, "section")
         return prs
 
@@ -663,7 +670,7 @@ class MetricsCalculator:
         return metrics
     
 
-    def create_unified_form(self, ona_form_queryset: QuerySet):
+    def create_unified_form_metrics(self, ona_form_queryset: QuerySet):
         combined_distribution = {
             'não conforme': 0,
             'parcial conforme': 0,
@@ -687,7 +694,12 @@ class MetricsCalculator:
                 subsections_distribution_by_sections = metrics["Subsections Distribution"],
                 combined_sections_distribution = combined_subsections_distribution
             )
-        return combined_subsections_distribution #,combined_subsections_distribution#, combined_distribution
+        combined_metrics = {
+            "Subsections Distribution": dict(sorted(combined_subsections_distribution.items())),
+            "Sections Distribution": dict(sorted(combined_sections_distribution.items())),
+            "ONA answer Distribution": dict(sorted(combined_distribution.items())),
+        }
+        return combined_metrics 
             
     def update_combined_distribution(self, ona_answer_distribution: dict, combined_distribution:dict) -> dict:
         for key, value in ona_answer_distribution.items():
