@@ -19,9 +19,9 @@ class ONAFormansweredAdmin(admin.ModelAdmin):
         
         # metrics_data = mc.get_ona_form_average_distribution(form)
         print("--------------------")
-        print(mc_data1["Sections Distribution"])
+        print(mc_data1["Subsections Distribution"])
         print("--------------------")
-        print(mc_data0["Sections Distribution"])
+        print(mc_data0["Subsections Distribution"])
         print("--------------------")
         print(form)
         print("--------------------")

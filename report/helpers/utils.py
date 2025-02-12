@@ -671,8 +671,9 @@ class MetricsCalculator:
             'supera': 0
         }
         combined_sections_distribution = {}
+        combined_subsections_distribution = {}
         for ona_form in ona_form_queryset:
-          
+        
             metrics = self.get_ona_form_average_distribution(ona_form)
             combined_distribution = self.update_combined_distribution(
                 ona_answer_distribution=metrics['ONA answer Distribution'],
@@ -682,8 +683,11 @@ class MetricsCalculator:
                 sections_distribution=metrics["Sections Distribution"],
                 combined_sections_distribution=combined_sections_distribution,
             )
-
-        return  combined_sections_distribution#, combined_distribution
+            combined_subsections_distribution = self.update_combine_subsections_distribution(
+                subsections_distribution_by_sections = metrics["Subsections Distribution"],
+                combined_sections_distribution = combined_subsections_distribution
+            )
+        return combined_subsections_distribution #,combined_subsections_distribution#, combined_distribution
             
     def update_combined_distribution(self, ona_answer_distribution: dict, combined_distribution:dict) -> dict:
         for key, value in ona_answer_distribution.items():
@@ -700,6 +704,25 @@ class MetricsCalculator:
                 combined_sections_distribution[section_name] = dict(Counter(distribution) +Counter(combined_sections_distribution[section_name]))
             else:
                 combined_sections_distribution[section_name] = distribution
+        return combined_sections_distribution
+    
+    def update_combine_subsections_distribution(self, subsections_distribution_by_sections: dict, combined_sections_distribution: dict):
+        for section_name, subsection_distribution in subsections_distribution_by_sections.items():
+            if section_name in combined_sections_distribution:
+                # If the section exists in the combined dictionary, update its subsections
+                for subsection_name, distribution in subsection_distribution.items():
+                    if subsection_name in combined_sections_distribution[section_name]:
+                        # Use Counter to sum the values of matching subsections
+                        combined_sections_distribution[section_name][subsection_name] = dict(
+                            Counter(combined_sections_distribution[section_name][subsection_name]) + Counter(distribution)
+                        )
+                    else:
+                        # If the subsection does not exist in the combined section, add it
+                        combined_sections_distribution[section_name][subsection_name] = distribution
+            else:
+                # If the section does not exist in the combined dictionary, add it directly
+                combined_sections_distribution[section_name] = subsection_distribution
+
         return combined_sections_distribution
 
 
