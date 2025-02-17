@@ -28,29 +28,44 @@ import matplotlib.dates as mdates
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
-        print('---data---')
-        print(data)
+        # Assuming `data` is a dictionary that returns a distribution by percentage
         data = self.awnser_distribution_by_percentage(data)
 
-        colors = ["#E41A1C", "#377EB8", "#4DAF4A", "#FF7F00"]
+        # Define the colors and their corresponding categories
+        color_map = {
+            "Não conforme": "#E41A1C",  # Red
+            "Parcial conforme": "#377EB8",  # Blue
+            "Conforme": "#4DAF4A",  # Green
+            "Supera": "#FF7F00"  # Orange
+        }
 
+        # Convert data to a DataFrame
         df = pd.DataFrame(list(data.items()), columns=["Status", "Percentage"])
         df["Status"] = df["Status"].str.capitalize()
 
+        # Sort the DataFrame if needed (optional)
+        df = df.set_index('Status').reindex(["Não conforme", "Parcial conforme", "Conforme", "Supera"]).reset_index()
+
+        # Set up the plot
         plt.figure(figsize=(10, 6))
 
-        ax = sns.barplot(
-            x="Status", y="Percentage", data=df, palette=colors, edgecolor="black"
-        )
+        # Use a list comprehension to assign colors based on the Status
+        colors = [color_map[status] for status in df["Status"]]
 
+        # Create the bar plot
+        ax = sns.barplot(x="Status", y="Percentage", data=df, palette=colors, edgecolor="black")
+
+        # Customize the plot
         plt.ylabel("Conformidade (%)")
         plt.xlabel("Respostas", labelpad=15)
         plt.title(title)
 
         plt.grid(True, axis="y", linestyle="--", alpha=0.7)
 
+        # Set y-axis range
         plt.ylim(0, 100)
 
+        # Annotate bars with percentages
         for p in ax.patches:
             ax.annotate(
                 f"{p.get_height():.1f}%",
@@ -64,25 +79,28 @@ class GraphsGenerator:
                 textcoords="offset points",
             )
 
-        colors = ax.patches
-
+        # Create custom legend
         handles = []
-        categories = df["Status"].tolist()
-        for color, status in zip(colors, categories):
+        for status, color in color_map.items():
             handles.append(
                 plt.Line2D(
                     [0],
                     [0],
                     marker="o",
                     color="w",
-                    markerfacecolor=color.get_facecolor(),
+                    markerfacecolor=color,
                     markersize=10,
                     label=status,
                 )
             )
 
+        # Display the legend with the correct order
         plt.legend(handles=handles, title="Legenda")
+
+        # Adjust layout
         plt.tight_layout()
+
+        # Save the figure to a buffer (for embedding in PowerPoint or other purposes)
         buf = BytesIO()
         plt.savefig(buf, format="png")
         plt.close()  # Close the figure to free memory
@@ -90,18 +108,23 @@ class GraphsGenerator:
         return buf
 
     def plot_grouped_bar(self, data, title):
+        # Assuming `data` is already processed and distributed by percentage
         data = self.sections_distribution_by_percentage(data)
-        colors = [
-            "#E41A1C",
-            "#377EB8",
-            "#4DAF4A",
-            "#FF7F00",
-        ]  # Red, Blue, Green, Orange
 
+        # Define the color map for the categories
+        color_map = {
+            "não conforme": "#E41A1C",  # Red
+            "parcial conforme": "#377EB8",  # Blue
+            "conforme": "#4DAF4A",  # Green
+            "supera": "#FF7F00"  # Orange
+        }
+
+        # Convert data to DataFrame and transpose
         df = pd.DataFrame(data).T
-        df = df[["conforme", "não conforme", "supera", "parcial conforme"]]
+        df = df[["supera", "conforme", "parcial conforme", "não conforme"]]
         df = df.reset_index()
 
+        # Melt the DataFrame to long format for plotting
         df_melted = df.melt(
             id_vars=["index"],
             value_vars=["supera", "conforme", "parcial conforme", "não conforme"],
@@ -109,34 +132,35 @@ class GraphsGenerator:
             value_name="Quantidade",
         )
 
+        # Rename the columns for clarity
         df_melted = df_melted.rename(columns={"index": "Setor"})
 
+        # Set up the plot
         plt.figure(figsize=(18, 6))
 
+        # Use color map to assign colors dynamically based on the category
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=df_melted,
-            palette=colors,
+            palette=color_map,  # Use the custom color map
             edgecolor="black",
         )
-        plt.grid(True, axis="y", linestyle="--", alpha=0.7)
 
         # Customize the plot
+        plt.grid(True, axis="y", linestyle="--", alpha=0.7)
         plt.title(title, fontsize=16)
-        plt.ylabel("Quantidade de Respostas")
+        plt.ylabel("Distribuição de Respostas")
         plt.xlabel("Seção")
 
-        # Create custom legend handles using plt.Line2D with hard-coded colors
+        # Create custom legend handles to match the color map
         handles = []
         categories = ["supera", "conforme", "parcial conforme", "não conforme"]
 
-        # Iterate through the bars and create a custom legend entry for each
-        for i, status in enumerate(categories):
-            # Use the corresponding color from the hard-coded colors list
-            color = colors[i]
-            # Create the legend entry using a square marker ('o')
+        # Create a legend entry for each category in the predefined order
+        for status in categories:
+            color = color_map[status]
             handles.append(
                 plt.Line2D(
                     [0],
@@ -149,11 +173,13 @@ class GraphsGenerator:
                 )
             )
 
-        # Add the custom legend
+        # Add the custom legend to the plot
         plt.legend(handles=handles, title="Categorias", loc="upper right")
 
         # Adjust layout for better spacing
         plt.tight_layout()
+
+        # Save the figure to a buffer
         buf = BytesIO()
         plt.savefig(buf, format="png")
         plt.close()  # Close the figure to free memory
@@ -161,19 +187,17 @@ class GraphsGenerator:
         return buf
 
     def plot_grouped_bar_split_section_1(self, data, title):
-        # Define the hard-coded colors from the Set1 palette
-        colors = [
-            "#E41A1C",
-            "#377EB8",
-            "#4DAF4A",
-            "#FF7F00",
-        ]  # Set1 colors: red, blue, green, orange
+        # Define the fixed color map for the categories
+        color_map = {
+            "não conforme": "#E41A1C",  # Red
+            "parcial conforme": "#377EB8",  # Blue
+            "conforme": "#4DAF4A",  # Green
+            "supera": "#FF7F00"  # Orange
+        }
 
         # Convert the dictionary into a DataFrame
         df = pd.DataFrame(data).T  # Transpose to have sections as rows
-        df = df[
-            ["conforme", "não conforme", "supera", "parcial conforme"]
-        ]  # Ensure correct column order
+        df = df[["supera", "conforme", "parcial conforme", "não conforme"]]  # Ensure correct column order
         df = df.reset_index()  # Reset the index to have a 'Setor' column for seaborn
 
         # Melt the dataframe for seaborn
@@ -201,7 +225,7 @@ class GraphsGenerator:
             y="Quantidade",
             hue="Categoria",
             data=first_half,
-            palette=colors,
+            palette=color_map,  # Use the custom color map
             edgecolor="black",
             ax=axes[0],
         )
@@ -216,7 +240,7 @@ class GraphsGenerator:
             y="Quantidade",
             hue="Categoria",
             data=second_half,
-            palette=colors,
+            palette=color_map,  # Use the custom color map
             edgecolor="black",
             ax=axes[1],
         )
@@ -225,47 +249,46 @@ class GraphsGenerator:
         axes[1].set_ylabel("Quantidade de Respostas")
         axes[1].set_xlabel("Seção")
 
-        # Create custom legend handles
+        # Create custom legend handles using the fixed color map
         handles = [
             plt.Line2D(
                 [0],
                 [0],
                 marker="o",
                 color="w",
-                markerfacecolor=colors[i],
+                markerfacecolor=color_map[status],
                 markersize=10,
                 label=status.capitalize(),
             )
-            for i, status in enumerate(
-                ["supera", "conforme", "parcial conforme", "não conforme"]
-            )
+            for status in ["supera", "conforme", "parcial conforme", "não conforme"]
         ]
 
-        # Add the custom legend to the first plot only
+        # Add the custom legend to both plots
         axes[0].legend(handles=handles, title="Legenda", loc="upper right")
         axes[1].legend(handles=handles, title="Legenda", loc="upper right")
 
+        # Adjust layout for better spacing
         plt.tight_layout()
+
+        # Save the figure to a buffer
         buf = BytesIO()
         plt.savefig(buf, format="png")
         plt.close()  # Close the figure to free memory
         buf.seek(0)
-        return buf
 
+        return buf
     def plot_grouped_bar_split_section_2(self, data, title):
-        # Define the hard-coded colors from the Set1 palette
-        colors = [
-            "#E41A1C",
-            "#377EB8",
-            "#4DAF4A",
-            "#FF7F00",
-        ]  # Set1 colors: red, blue, green, orange
+        # Define the fixed color map for the categories
+        color_map = {
+            "não conforme": "#E41A1C",  # Red
+            "parcial conforme": "#377EB8",  # Blue
+            "conforme": "#4DAF4A",  # Green
+            "supera": "#FF7F00"  # Orange
+        }
 
         # Convert the dictionary into a DataFrame
         df = pd.DataFrame(data).T  # Transpose to have sections as rows
-        df = df[
-            ["conforme", "não conforme", "supera", "parcial conforme"]
-        ]  # Ensure correct column order
+        df = df[["supera", "conforme", "parcial conforme", "não conforme"]]  # Ensure correct column order
         df = df.reset_index()  # Reset the index to have a 'Setor' column for seaborn
 
         # Melt the dataframe for seaborn
@@ -279,16 +302,14 @@ class GraphsGenerator:
         # Rename 'index' column to 'Setor'
         df_melted = df_melted.rename(columns={"index": "Setor"})
 
-        # Split the dataset into two halves
+        # Split the dataset into three parts
         first_point = len(df_melted["Setor"].unique()) // 3
         second_point = first_point * 2 + 1
         first_part = df_melted[df_melted["Setor"].isin(df["index"][:first_point])]
-        second_part = df_melted[
-            df_melted["Setor"].isin(df["index"][first_point:second_point])
-        ]
+        second_part = df_melted[df_melted["Setor"].isin(df["index"][first_point:second_point])]
         third_part = df_melted[df_melted["Setor"].isin(df["index"][second_point:])]
 
-        # Set up the figure with two subplots
+        # Set up the figure with three subplots
         fig, axes = plt.subplots(3, 1, figsize=(20, 10), sharey=True)
 
         # First subplot
@@ -297,7 +318,7 @@ class GraphsGenerator:
             y="Quantidade",
             hue="Categoria",
             data=first_part,
-            palette=colors,
+            palette=color_map,  # Use the custom color map
             edgecolor="black",
             ax=axes[0],
         )
@@ -312,7 +333,7 @@ class GraphsGenerator:
             y="Quantidade",
             hue="Categoria",
             data=second_part,
-            palette=colors,
+            palette=color_map,  # Use the custom color map
             edgecolor="black",
             ax=axes[1],
         )
@@ -321,52 +342,59 @@ class GraphsGenerator:
         axes[1].set_ylabel("Quantidade de Respostas")
         axes[1].set_xlabel("Seção")
 
-        # Second subplot
+        # Third subplot
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=third_part,
-            palette=colors,
+            palette=color_map,  # Use the custom color map
             edgecolor="black",
             ax=axes[2],
         )
         axes[2].grid(True, axis="y", linestyle="--", alpha=0.7)
-        axes[2].set_title(title + " (Parte 2)", fontsize=16)
+        axes[2].set_title(title + " (Parte 3)", fontsize=16)
         axes[2].set_ylabel("Quantidade de Respostas")
         axes[2].set_xlabel("Seção")
-        # Create custom legend handles
+
+        # Create custom legend handles using the fixed color map
         handles = [
             plt.Line2D(
                 [0],
                 [0],
                 marker="o",
                 color="w",
-                markerfacecolor=colors[i],
+                markerfacecolor=color_map[status],
                 markersize=10,
                 label=status.capitalize(),
             )
-            for i, status in enumerate(
-                ["supera", "conforme", "parcial conforme", "não conforme"]
-            )
+            for status in  ["supera", "conforme", "parcial conforme", "não conforme"]
         ]
 
-        # Add the custom legend to the first plot only
+        # Add the custom legend to all subplots
         axes[0].legend(handles=handles, title="Legenda", loc="upper right")
         axes[1].legend(handles=handles, title="Legenda", loc="upper right")
         axes[2].legend(handles=handles, title="Legenda", loc="upper right")
 
-        # Adjust layout
+        # Adjust layout for better spacing
         plt.tight_layout()
+
+        # Save the figure to a buffer
         buf = BytesIO()
         plt.savefig(buf, format="png")
         plt.close()  # Close the figure to free memory
         buf.seek(0)
+
         return buf
 
     def plot_line_graph_from_queryset(self, queryset, title):
-        # Define the hard-coded colors from the Set1 palette
-        colors = ['#E41A1C', '#377EB8', '#4DAF4A', '#FF7F00']  # Set1 colors: red, blue, green, orange
+        # Define the fixed color map for the categories
+        color_map = {
+            "não conforme": "#E41A1C",  # Red
+            "parcial conforme": "#377EB8",  # Blue
+            "conforme": "#4DAF4A",  # Green
+            "supera": "#FF7F00"  # Orange
+        }
 
         # Prepare data containers
         dates = []
@@ -374,7 +402,6 @@ class GraphsGenerator:
         nao_conforme = []
         parcial_conforme = []
         supera = []
-  
 
         # Collect data from the queryset
         for record in queryset:
@@ -385,7 +412,6 @@ class GraphsGenerator:
             parcial_conforme.append(distribution.get('parcial conforme', 0))
             supera.append(distribution.get('supera', 0))
 
-
         # Create a DataFrame from the data
         df = pd.DataFrame({
             "Date": dates,
@@ -393,24 +419,21 @@ class GraphsGenerator:
             "Não conforme": nao_conforme,
             "Parcial conforme": parcial_conforme,
             "Supera": supera,
-
         })
 
         # Set up the figure
         plt.figure(figsize=(12, 6))
 
-        # Plot each category as a line with dots at the data points
-        plt.plot(df['Date'], df['Conforme'], label='Conforme', marker='o', linestyle='-', color=colors[1])
-        plt.plot(df['Date'], df['Não conforme'], label='Não conforme', marker='o', linestyle='-', color=colors[0])
-        plt.plot(df['Date'], df['Parcial conforme'], label='Parcial conforme', marker='o', linestyle='-', color=colors[2])
-        plt.plot(df['Date'], df['Supera'], label='Supera', marker='o', linestyle='-', color=colors[3])
+        # Plot each category as a line with dots at the data points using the color_map
+        plt.plot(df['Date'], df['Conforme'], label='Conforme', marker='o', linestyle='-', color=color_map["conforme"])
+        plt.plot(df['Date'], df['Não conforme'], label='Não conforme', marker='o', linestyle='-', color=color_map["não conforme"])
+        plt.plot(df['Date'], df['Parcial conforme'], label='Parcial conforme', marker='o', linestyle='-', color=color_map["parcial conforme"])
+        plt.plot(df['Date'], df['Supera'], label='Supera', marker='o', linestyle='-', color=color_map["supera"])
 
         # Customize the plot
         plt.title(title, fontsize=16)
         plt.xlabel('Data', fontsize=14)
         plt.ylabel('Quantidade de Respostas', fontsize=14)
-
-
 
         # Set the x-axis ticks to only show the dates where data exists
         plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator())  # Optional: to show ticks for each week
@@ -419,13 +442,16 @@ class GraphsGenerator:
         # Set the x-ticks to only display the dates in the dataset
         plt.xticks(df['Date'], rotation=45)
 
+        # Show grid lines
         plt.grid(True)
 
-        # Create custom legend handles
-        handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=colors[i], markersize=10, label=status.capitalize())
-                for i, status in enumerate(['supera', 'conforme', 'parcial conforme', 'não conforme'])]
+        # Create custom legend handles using the fixed color map
+        handles = [
+            plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_map[status], markersize=10, label=status)
+            for status in  ["supera", "conforme", "parcial conforme", "não conforme"]
+        ]
 
-        # Add the custom legend
+        # Add the custom legend to the plot
         plt.legend(handles=handles, title='Categorias', loc='upper right')
 
         # Show the plot
@@ -435,13 +461,13 @@ class GraphsGenerator:
         plt.close()  # Close the figure to free memory
         buf.seek(0)
         return buf
-
+    
     def awnser_distribution_by_percentage(self, answer_distribution: dict) -> dict:
-        # Remove 'não aplicável' if it exists
+
         if "não aplicável" in answer_distribution.keys():
             del answer_distribution["não aplicável"]
 
-        # Calculate the percentage distribution
+
         print(answer_distribution)
         total = sum(answer_distribution.values())
         for key, value in answer_distribution.items():
