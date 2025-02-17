@@ -19,7 +19,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet
 from reportlab.platypus import Image
 from reportlab.platypus import Table, TableStyle, PageBreak
 from django.forms.models import model_to_dict
@@ -692,7 +692,14 @@ class MetricsCalculator:
             questions_list=subsection_questions
         )
         return dict(subsection_distribution)
-
+    
+    def __get_core_questions(self, questions_list: list[QuestionAnswer]) -> list[QuestionAnswer]:
+        core_questions = []
+        for question in questions_list:
+            if question.question.core: 
+                core_questions.append(question)
+        return core_questions 
+                
     def __get_section_and_subsection_answers_distribution(
         self, section: FormSectionAnswered
     ) -> dict[str, int]:
@@ -717,12 +724,20 @@ class MetricsCalculator:
             subsection_answers = subsection_answers.union(
                 subsection_questions_level_1_and_level_2
             )
-        subsection_answers_with_comments = subsection_answers
+
+        core_questions = self.__get_core_questions(subsection_answers)
+        
         section_distribution = self.__get_questions_average_distribution(
             subsection_answers
         )
+        core_questions_distribution = self.__get_questions_average_distribution(
+            core_questions
+        )
+        
 
-        return section_distribution, subsection_distribution, subsection_answers_with_comments
+
+
+        return section_distribution, subsection_distribution, subsection_answers, core_questions_distribution
 
     def __get_ona_form_total_metrics(
         self, distribution_by_section: dict
@@ -739,15 +754,17 @@ class MetricsCalculator:
 
         distribution_by_section = {}
         distribution_by_subsections = {}
+        distribution_by_core = {}
         for section in sections:
             section_name = section.form_section.section_title
-            section_distribution, subsection_distribution, section_answers_with_comments = (
+            section_distribution, subsection_distribution, section_answers_with_comments, core_questions_distribution = (
                 self.__get_section_and_subsection_answers_distribution(section)
             )
 
             distribution_by_section[section_name] = dict(section_distribution)
 
             distribution_by_subsections[section_name] = dict(subsection_distribution)
+            distribution_by_core[section_name] = dict(core_questions_distribution)
 
         total_distribution = self.__get_ona_form_total_metrics(distribution_by_section)
 
@@ -755,9 +772,11 @@ class MetricsCalculator:
             "Subsections Distribution": distribution_by_subsections,
             "Sections Distribution": distribution_by_section,
             "ONA answer Distribution": total_distribution,
-            "Answers with comments" : section_answers_with_comments
+            "Answers with comments" : section_answers_with_comments,
+            "Core questions Distribution" : distribution_by_core
         }
-
+        # print(metrics["Core questions Distribution"])
+        # print(metrics["Sections Distribution"])
         return metrics
     
 
