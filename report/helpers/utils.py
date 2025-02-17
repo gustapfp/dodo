@@ -28,7 +28,8 @@ import matplotlib.dates as mdates
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
-       
+        print('---data---')
+        print(data)
         data = self.awnser_distribution_by_percentage(data)
 
         colors = ["#E41A1C", "#377EB8", "#4DAF4A", "#FF7F00"]
@@ -629,6 +630,20 @@ class PowerPointReportGenerator:
             image_type="plot-line"
         )
         return prs
+    
+    def add_core_distributin_image(self, core_ditribution):
+
+        for section, resuls in core_ditribution.items():
+            
+            bar_plot_img = self.graphs.plot_bar_plot(resuls, section)
+            section = section.strip()
+            
+            slide_index = self.section_indexes[section] +1
+ 
+            prs = self.insert_plot_image_in_slide(bar_plot_img, slide_index, "section")
+        return prs
+
+
 
 
         
@@ -636,7 +651,11 @@ class PowerPointReportGenerator:
     def make_report(self, data, report_name, hospital):
         subsections = data["Subsections Distribution"]
         sections = data["Sections Distribution"]
+        core_distribution = data['Core Questions Distribution']
+        print('--------------core----------------')
+        print(core_distribution)
         self.add_section_images(sections)
+        self.add_core_distributin_image(core_distribution)
         self.add_subsection_images(subsections)
         self.add_plot_line_image(hospital)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -733,6 +752,7 @@ class MetricsCalculator:
         core_questions_distribution = self.__get_questions_average_distribution(
             core_questions
         )
+       
         
 
 
@@ -773,10 +793,12 @@ class MetricsCalculator:
             "Sections Distribution": distribution_by_section,
             "ONA answer Distribution": total_distribution,
             "Answers with comments" : section_answers_with_comments,
-            "Core questions Distribution" : distribution_by_core
+            "Core Questions Distribution" : distribution_by_core
         }
-        # print(metrics["Core questions Distribution"])
-        # print(metrics["Sections Distribution"])
+ 
+
+       
+    
         return metrics
     
 
@@ -789,6 +811,7 @@ class MetricsCalculator:
         }
         combined_sections_distribution = {}
         combined_subsections_distribution = {}
+        combined_core_distribution = {}
         for ona_form in ona_form_queryset:
         
             metrics = self.get_ona_form_average_distribution(ona_form)
@@ -804,10 +827,18 @@ class MetricsCalculator:
                 subsections_distribution_by_sections = metrics["Subsections Distribution"],
                 combined_sections_distribution = combined_subsections_distribution
             )
+       
+            combined_core_distribution = self.update_combine_sections_distribution(
+                sections_distribution = metrics['Core Questions Distribution'],
+                combined_sections_distribution = combined_core_distribution
+            )
+
+         
         combined_metrics = {
             "Subsections Distribution": dict(sorted(combined_subsections_distribution.items())),
             "Sections Distribution": dict(sorted(combined_sections_distribution.items())),
             "ONA answer Distribution": dict(sorted(combined_distribution.items())),
+            "Core Questions Distribution": dict(sorted(combined_core_distribution.items()))
         }
         return combined_metrics 
             
@@ -820,13 +851,29 @@ class MetricsCalculator:
         return combined_distribution
     
     def update_combine_sections_distribution(self,  sections_distribution:dict, combined_sections_distribution:dict):
+
         for section_name, distribution in sections_distribution.items():
-            if section_name in combined_sections_distribution.keys():
-                
-                combined_sections_distribution[section_name] = dict(Counter(distribution) +Counter(combined_sections_distribution[section_name]))
+            if section_name in combined_sections_distribution:
+                # Use Counter to add the counts from both dictionaries
+                combined_sections_distribution[section_name] = dict(
+                    Counter(distribution) + Counter(combined_sections_distribution[section_name])
+                )
             else:
-                combined_sections_distribution[section_name] = distribution
+                # If the section doesn't exist, just add it.
+                combined_sections_distribution[section_name] = distribution.copy()  # copy to avoid mutating the input
+
         return combined_sections_distribution
+    
+    # def update_combined_core_distribution(self, ona_answer_distribution: dict, combined_distribution: dict) -> dict:
+    #     for section, distribution in ona_answer_distribution.items():
+    #         if section in combined_distribution:
+    #             ona_answer_distribution[section] =   Counter(distribution) + Counter(ona_answer_distribution[section])
+               
+    #         else:
+    #             # Use a copy of counts to avoid aliasing issues if the caller reuses the dictionary
+    #             combined_distribution[section] = distribution.copy()
+    #     return combined_distribution
+
     
     def update_combine_subsections_distribution(self, subsections_distribution_by_sections: dict, combined_sections_distribution: dict):
         for section_name, subsection_distribution in subsections_distribution_by_sections.items():

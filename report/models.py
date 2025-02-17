@@ -110,6 +110,7 @@ class ONAFormDistribution(models.Model):
     distribution_by_subsection = models.JSONField(default=dict)
     distribution_by_section = models.JSONField(default=dict)
     ona_answer_total_distribution = models.JSONField(default=dict)
+    # ona_answer_core_distribution = models.JSONField(default=dict)
     score = models.FloatField(default=0.0, null=True)
     date = models.DateTimeField(auto_now_add=True, null=True)
     hospital = models.ForeignKey(

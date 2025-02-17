@@ -14,34 +14,35 @@ class ONAFormansweredAdmin(admin.ModelAdmin):
     def make_presentation(self, request, queryset):
         mc = MetricsCalculator()
         pprp = PowerPointReportGenerator()
-        mc.get_ona_form_average_distribution(
-            ona_form=queryset[0]
-        )
-        # ona_form = queryset[0].ona_form
-        # if len(queryset) > 1:
-        #     metrics_data = mc.create_unified_form_metrics(
-        #         ona_form_queryset=queryset
-        #     )
+   
+        ona_form = queryset[0].ona_form
+        if len(queryset) > 1:
+            metrics_data = mc.create_unified_form_metrics(
+                ona_form_queryset=queryset
+            )
             
-        #     ONAFormDistribution.objects.create(
-        #         ona_form=queryset[0],
-        #         distribution_by_subsection=metrics_data["Subsections Distribution"],
-        #         distribution_by_section=metrics_data["Sections Distribution"],
-        #         ona_answer_total_distribution=metrics_data["ONA answer Distribution"],
-        #         score=None,
-        #         hospital=ona_form.hospital,
-        #     )
-        # else:
-        #     metrics_data = mc.get_ona_form_average_distribution(
-        #         ona_form=queryset[0]
-        #     )     
+            ONAFormDistribution.objects.create(
+                ona_form=queryset[0],
+                distribution_by_subsection=metrics_data["Subsections Distribution"],
+                distribution_by_section=metrics_data["Sections Distribution"],
+                ona_answer_total_distribution=metrics_data["ONA answer Distribution"],
+                score=None,
+                hospital=ona_form.hospital,
+            )
+        else:
+            metrics_data = mc.get_ona_form_average_distribution(
+                ona_form=queryset[0]
+            )     
         
+   
+
+
   
-        # pprp.make_report(
-        #     data=metrics_data, 
-        #     report_name=queryset[0].ona_form.form_title,
-        #     hospital=ona_form.hospital
-        #     )
+        pprp.make_report(
+            data=metrics_data, 
+            report_name=queryset[0].ona_form.form_title,
+            hospital=ona_form.hospital
+            )
 
 
 
