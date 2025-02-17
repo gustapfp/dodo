@@ -3,7 +3,7 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from .forms import HospitalCreationForm, HospitalChangeForm
 from django_object_actions import DjangoObjectActions, action
-from .helpers.admin_onaform_helper import ONAFormAdminHelper
+from .helpers.onaform_admin_helper import ONAFormAdminHelper
 import nested_admin
 
 from .models import (
@@ -106,15 +106,15 @@ class ONAFormAdmin(nested_admin.NestedModelAdmin):
             )
           },
         ),
-        # (
+        (
 
-        #     "Seleção de Seções",
-        #     {
-        #         "fields" : (
-        #         "ONA_sections",
-        #     )
-        #     }
-        # )
+            "Seleção de Seções",
+            {
+                "fields" : (
+                "ONA_sections",
+            )
+            }
+        )
     )
 
     def get_queryset(self, request):

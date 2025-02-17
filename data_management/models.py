@@ -26,8 +26,7 @@ class Hospital(models.Model):
     sectors = models.ManyToManyField(Sector, related_name="hospital_sectors")
     last_service = models.DateTimeField(
         auto_now=True
-    )  # TODO: I don't if this is the best way to do this, WE NEED TO find a way to change this field everytime something related to the hospital happerns
-
+    )  
     
     level_choices = [
         (1, "1"),
