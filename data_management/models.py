@@ -12,6 +12,16 @@ class Sector(models.Model):
 
     def __str__(self):
         return self.name
+    
+class JobRole(models.Model):
+    name = models.CharField(max_length=80, unique=True)
+
+    class Meta:
+        verbose_name = "Cargo"
+        verbose_name_plural = "Cargos"
+
+    def __str__(self):
+        return self.name
 
 
 class Hospital(models.Model):
@@ -45,8 +55,8 @@ class Hospital(models.Model):
 
 class Evaluator(models.Model):
     name = models.CharField(max_length=150)
-    hospital_sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
-    job_role = models.CharField(max_length=7, choices=JOB_DESCRIPTION_CHOICES)
+    hospital_sector = models.ManyToManyField(Sector, related_name="evaluator_sectors")
+    job_role = models.ManyToManyField(JobRole, related_name="evaluator_job_role")
     evaluation_date = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(max_length=80)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)

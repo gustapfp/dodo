@@ -1,4 +1,4 @@
-JOB_DESCRIPTION_CHOICES = [
+SECTOR_CHOICES = [
     ("004.005", "Process. de Roupas"),
     ("004.004", "Process. de produtos"),
     ("004.003", "Limpeza e Desinf. de superf"),
@@ -42,4 +42,17 @@ JOB_DESCRIPTION_CHOICES = [
     ("001.002", "Gestão Da Qualidade"),
     ("001.001", "Liderança Organizacional"),
     ("000.000", "Avaliador Externo"),
+]
+
+JOB_DESCRIPTION_CHOICES = [
+    ("1", "Diretor "),
+    ("2", "Gerente"),
+    ("3", "Coordenador do Setor (Apoio / Administrativo)"),
+    ("3", "Coordenador Médico"),
+    ("4", "Coordenador enfermeiro"),
+    ("5", "Supervisor do Setor"),
+    ("6", "Enfermeiro Diarista"),
+    ("7", "Médico Rotina"),
+    ("8", "Avaliador Consultor Externo"),
+    ("9", "Avaliador Interno da Qualidade")
 ]

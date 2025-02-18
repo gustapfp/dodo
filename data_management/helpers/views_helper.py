@@ -58,37 +58,34 @@ class EvaluatorViewHelper:
 
     def get_form_id(self, request, evaluator):
         ona_form_complete = ONAForm.objects.filter(hospital=request.user.hospital.id).first()
-        if evaluator.job_role == "001.002" or evaluator.job_role == "000.000": 
-                form_id = ona_form_complete.id 
-        else:
-            subsection = FormSubsection.objects.filter(
-                subsection_id=evaluator.job_role
-            ).first()
+        subsection = FormSubsection.objects.filter(
+            subsection_id=evaluator.job_role
+        ).first()
 
-            section_id = evaluator.job_role[0:3]
+        section_id = evaluator.job_role[0:3]
 
-            section_complete = ona_form_complete.ONA_sections.filter(
-                section_id=section_id
-            ).first()
+        section_complete = ona_form_complete.ONA_sections.filter(
+            section_id=section_id
+        ).first()
 
-            section_simplified= FormSection.objects.create(
-                section_id=section_complete.section_id,
-                section_title=section_complete.section_title,
+        section_simplified= FormSection.objects.create(
+            section_id=section_complete.section_id,
+            section_title=section_complete.section_title,
 
-            )
-            section_simplified.form_subsections.set([subsection])
-            section_simplified.questions_level3.set(section_complete.questions_level3.all())
+        )
+        section_simplified.form_subsections.set([subsection])
+        section_simplified.questions_level3.set(section_complete.questions_level3.all())
 
-        
+    
 
 
-            ona_form_simplified = ONAForm.objects.create(
-                hospital=ona_form_complete.hospital,
-                form_title=ona_form_complete.form_title
-            )
-            ona_form_simplified.ONA_sections.set([section_simplified])
+        ona_form_simplified = ONAForm.objects.create(
+            hospital=ona_form_complete.hospital,
+            form_title=ona_form_complete.form_title
+        )
+        ona_form_simplified.ONA_sections.set([section_simplified])
 
-            form_id = ona_form_simplified.id
+        form_id = ona_form_simplified.id
         return form_id
     
 def create_section(form_data:QueryDict, sections):
