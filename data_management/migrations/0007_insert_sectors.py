@@ -45,10 +45,10 @@ def create_sectors(apps, schema_editor):
         ("001.003", "Prev. Controle De Infecção"),
         ("001.002", "Gestão Da Qualidade"),
         ("001.001", "Liderança Organizacional"),
-        ("000.000", "Avaliador Externo"),
+    
     ]
     
-    for code, description in sectors:
+    for id, description in sectors:
         # Store only the description as the Sector's name.
         Sector.objects.create(name=description)
 
@@ -106,7 +106,7 @@ def remove_sectors(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0010_jobrole_remove_evaluator_hospital_sector_and_more'),
+        ('data_management', '0006_create_template'),
     ]
     
     operations = [

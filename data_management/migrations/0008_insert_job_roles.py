@@ -5,7 +5,7 @@ from django.db import migrations
 from django.db import migrations
 
 def create_job_roles(apps, schema_editor):
-    JobRole = apps.get_model('data_management', 'JobRole')
+    JobRole = apps.get_model('data_management', 'JobRoles')
     job_roles = [
         ("1", "Diretor "),
         ("2", "Gerente"),
@@ -24,7 +24,7 @@ def create_job_roles(apps, schema_editor):
         JobRole.objects.create(name=description)
 
 def remove_job_roles(apps, schema_editor):
-    JobRole = apps.get_model('data_management', 'JobRole')
+    JobRole = apps.get_model('data_management', 'JobRoles')
     job_role_names = [
         "Diretor ",
         "Gerente",
@@ -43,7 +43,7 @@ def remove_job_roles(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_management', '0011_insert_sectors'),
+        ('data_management', '0007_insert_sectors'),
     ]
 
     operations = [

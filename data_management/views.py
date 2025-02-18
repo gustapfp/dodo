@@ -32,10 +32,10 @@ class EvaluatorView(LoginRequiredMixin, View):
             form.is_valid()
             evaluator = form.save(commit=False)
 
-            evaluator = helper.verify_evaluator(
-                form_evaluator=evaluator,
-                request=request
-            )
+            # evaluator = helper.verify_evaluator(
+            #     form_evaluator=evaluator,
+            #     request=request
+            # )
 
             form_id = helper.get_form_id(
                 request=request,

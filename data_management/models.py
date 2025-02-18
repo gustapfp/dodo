@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import ForeignKey
 from users.models import CustomUser
-from data_management.helpers.consts import JOB_DESCRIPTION_CHOICES
+
 
 class Sector(models.Model):
     name = models.CharField(max_length=80, unique=True)
@@ -13,7 +13,7 @@ class Sector(models.Model):
     def __str__(self):
         return self.name
     
-class JobRole(models.Model):
+class JobRoles(models.Model):
     name = models.CharField(max_length=80, unique=True)
 
     class Meta:
@@ -55,8 +55,8 @@ class Hospital(models.Model):
 
 class Evaluator(models.Model):
     name = models.CharField(max_length=150)
-    hospital_sector = models.ManyToManyField(Sector, related_name="evaluator_sectors")
-    job_role = models.ManyToManyField(JobRole, related_name="evaluator_job_role")
+    hospital_sector = models.ForeignKey(Sector, related_name="evaluator_sectors", on_delete=models.CASCADE, default=None,)
+    job_role = models.ForeignKey(JobRoles, related_name="evaluator_job_role", on_delete=models.CASCADE, default=None,)
     evaluation_date = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(max_length=80)
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)

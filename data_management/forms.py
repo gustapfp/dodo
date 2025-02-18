@@ -1,18 +1,18 @@
 from django import forms
-from .models import Evaluator, Hospital, ONAForm
-from django import forms
+from .models import Evaluator, Hospital
+
 
 
 class EvaluatorForm(forms.ModelForm):
     class Meta:
         model = Evaluator
-        fields = "__all__"
+    
         exclude = ("hospital", "evaluation_date")
-        error_messages = {
-            "email": {
-                "unique": "Esse Email já está em uso. Por favor, preencha o formulário de novo com outro email"
-            }
-        }
+        # error_messages = {
+        #     "email": {
+        #         "unique": "Esse Email já está em uso. Por favor, preencha o formulário de novo com outro email"
+        #     }
+        # }
         widgets = {
             "name": forms.TextInput(
                 attrs={
