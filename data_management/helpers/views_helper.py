@@ -69,9 +69,7 @@ class EvaluatorViewHelper:
         ).first()
 
         section_id = sector_id[0:3]
-        print(sector_id)
-        print(section_id)
-
+      
         section_complete = ona_form_complete.ONA_sections.filter(
             section_id=section_id
         ).first()

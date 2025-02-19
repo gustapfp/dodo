@@ -6,7 +6,7 @@ from .helpers.utils import MetricsCalculator, PowerPointReportGenerator
 
 @admin.register(ONAFormAnswered)
 class ONAFormansweredAdmin(admin.ModelAdmin):
-    list_display = ("ona_form", "evaluator")
+    list_display = ("ona_form", "evaluator", "answered_at")
     filter_horizontal = ["answered_sections"]
     actions = ["make_presentation"]
 

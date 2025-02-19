@@ -74,6 +74,9 @@ class ONAFormAnswered(models.Model):
     class Meta:
         verbose_name = "Formulário ONA Respondido"
         verbose_name_plural = "Formulários ONA Respondidos"
+        
+    def __str__(self):
+        return f"{self.ona_form.form_title}-respondido por: {self.evaluator.name} - na data: {self.answered_at}"
 
 
 class AnswerDistribution(BaseModel):

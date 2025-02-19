@@ -43,10 +43,6 @@ class EvaluatorView(LoginRequiredMixin, View):
                 evaluator=evaluator
             )      
             
-
-
-
-     
             return redirect(
                 "ona_form",
                 form_id= form_id ,
