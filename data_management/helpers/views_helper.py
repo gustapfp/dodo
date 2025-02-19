@@ -1,7 +1,8 @@
 from report.models import QuestionAnswer, FormSubsectionAnswered, FormSectionAnswered
 from django.http import QueryDict
-from data_management.models import Evaluator,  FormSubsection, FormSection, ONAForm
+from data_management.models import Evaluator,  FormSubsection, FormSection, ONAForm, Sector
 from django.contrib import messages
+from django.forms import model_to_dict
 
 def create_answered_questions(form_data:QueryDict, subsection_questions):
     questions = []
@@ -58,11 +59,18 @@ class EvaluatorViewHelper:
 
     def get_form_id(self, request, evaluator):
         ona_form_complete = ONAForm.objects.filter(hospital=request.user.hospital.id).first()
+        request_sector_id = request.POST.dict()["hospital_sector"]
+        sector = Sector.objects.filter(
+            id=request_sector_id
+        ).first()
+        sector_id =sector.sector_id
         subsection = FormSubsection.objects.filter(
-            subsection_id=evaluator.job_role
+            subsection_id=sector_id
         ).first()
 
-        section_id = evaluator.job_role[0:3]
+        section_id = sector_id[0:3]
+        print(sector_id)
+        print(section_id)
 
         section_complete = ona_form_complete.ONA_sections.filter(
             section_id=section_id

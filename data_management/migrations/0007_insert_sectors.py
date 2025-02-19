@@ -50,7 +50,7 @@ def create_sectors(apps, schema_editor):
     
     for id, description in sectors:
         # Store only the description as the Sector's name.
-        Sector.objects.create(name=description)
+        Sector.objects.create(name=description, sector_id=id)
 
 def remove_sectors(apps, schema_editor):
     Sector = apps.get_model('data_management', 'Sector')

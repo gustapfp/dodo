@@ -5,6 +5,8 @@ from users.models import CustomUser
 
 class Sector(models.Model):
     name = models.CharField(max_length=80, unique=True)
+    sector_id = models.CharField(max_length=80, default=None, null=True)
+    
 
     class Meta:
         verbose_name = "Setor"

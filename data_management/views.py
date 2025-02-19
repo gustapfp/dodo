@@ -31,11 +31,12 @@ class EvaluatorView(LoginRequiredMixin, View):
         try:
             form.is_valid()
             evaluator = form.save(commit=False)
+            
 
-            # evaluator = helper.verify_evaluator(
-            #     form_evaluator=evaluator,
-            #     request=request
-            # )
+            evaluator = helper.verify_evaluator(
+                form_evaluator=evaluator,
+                request=request
+            )
 
             form_id = helper.get_form_id(
                 request=request,
@@ -48,7 +49,7 @@ class EvaluatorView(LoginRequiredMixin, View):
      
             return redirect(
                 "ona_form",
-                form_id= form_id,
+                form_id= form_id ,
                 evaluator_id=evaluator.id
             )
         except Exception as e:

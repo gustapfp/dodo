@@ -92,7 +92,7 @@ class ONAFormAdmin(nested_admin.NestedModelAdmin):
     save_as = True
     save_as_continue  = True
     list_display = ("form_title",)
-    # filter_horizontal = ["ONA_sections", ]
+    filter_horizontal = ["ONA_sections", ]
     # inlines = [ONAInline,]
     fieldsets = (
         (
