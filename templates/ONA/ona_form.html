@@ -148,9 +148,9 @@
         const ratioInputs = document.getElementById(questionId).querySelectorAll('input[type="radio"]')
         ratioInputs.forEach(
             (input) => {
-                if (input.checked && input.value === "não conforme") {
+                if (input.checked &&( input.value === "não conforme" || input.value === "parcial conforme")) {
                     showTextField(questionId)
-                } else if (input.checked && input.value != "não conforme") {
+                } else if (input.checked && ( input.value != "não conforme" || input.value != "parcial conforme")) {
                     hideTextField( questionId)
                 }
             }

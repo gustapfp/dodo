@@ -5,7 +5,7 @@ from data_management.etls.ONA.ONA_etls import insert_questions,remove_questions
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("data_management", "0001_initial"),
+        ("data_management", "0002_initial"),
     ]
 
     operations = [migrations.RunPython(insert_questions, reverse_code=remove_questions)]
