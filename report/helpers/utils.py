@@ -23,8 +23,9 @@ from django.db.models import QuerySet
 from reportlab.platypus import Image
 from reportlab.platypus import Table, TableStyle, PageBreak
 from django.forms.models import model_to_dict
-
+import os
 import matplotlib.dates as mdates
+from django.utils import timezone
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
@@ -486,36 +487,65 @@ class GraphsGenerator:
 class PDFReportGenerator:
     def __init__(self, filename):
         self.filename = filename
+        self.save_path = f"report/subsection_reports/relator_formulario_{timezone.now()}.pdf"
         self.doc = SimpleDocTemplate(
-            filename=f"{filename}.pdf", 
+            self.save_path,
             pagesize=letter
         )
         self.story = []  # This will hold the content of the PDF
         self.metrics = MetricsCalculator()
         self.graphs = GraphsGenerator()
-
+    
     def create_pdf_report_for_subsection(self, evaluator_name: str, answers: ONAFormAnswered):
-        # Add title to the PDF
+    # Build the PDF content
         self.add_title(evaluator_name)
-
-        # Get metrics for the form
         metrics = self.metrics.get_ona_form_average_distribution(ona_form=answers)
-
-        # Add the plot image for the form distribution
+        
         form_distribution_img = self.graphs.plot_bar_plot(
             data=metrics["ONA answer Distribution"],
             title="Distribuição das Respostas no formulario",
         )
-        
-        # Insert the image into the PDF
         self.insert_image_center(image=form_distribution_img)
-
-        # Display answers with comments
         self.display_answers_with_comments(questions_answers=metrics["Answers with comments"])
-
-        # Build the PDF
+        
+        # Generate a timestamped save path
+       
+      
+        
+        
+        # Reinitialize self.doc with the save path so that build() writes directly to this file
+     
         self.doc.build(self.story)
+        
+        # Send the email with the generated PDF attached
+        self.send_email_report(report_path=self.save_path)
 
+    def send_email_report(self, report_path):
+        subject = "Generated Report"
+        body = "Segue em anexo o relatório completo da avaliação."
+        email_list = [
+            email.strip() 
+            for email in os.getenv("EMAIL_LIST", "").split(",") 
+            if email.strip()
+        ]
+        
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email=os.getenv("EMAIL_HOST_USER"),
+            to=email_list,
+        )
+        
+        with open(report_path, "rb") as file:
+            email.attach_file(report_path)
+        
+        try:
+            email.send()
+            print(f"Email sent to {email_list}")
+        except Exception as e:
+            print(f"Failed to send email: {str(e)}")
+            raise
+            
     def add_title(self, evaluator_name: str) -> None:
         title = f"Relatório de Preenchimento do Formulário por {evaluator_name}"
         styles = getSampleStyleSheet()
@@ -678,8 +708,7 @@ class PowerPointReportGenerator:
         subsections = data["Subsections Distribution"]
         sections = data["Sections Distribution"]
         core_distribution = data['Core Questions Distribution']
-        print('--------------core----------------')
-        print(core_distribution)
+   
         self.add_section_images(sections)
         self.add_core_distributin_image(core_distribution)
         self.add_subsection_images(subsections)
@@ -687,18 +716,23 @@ class PowerPointReportGenerator:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         path = f"report/presentations_report/{report_name}_{timestamp}.pptx"
         self.presentation.save(path)
-        # self.send_email(path, "gustavopfpereira30@gmail.com")
+        self.send_email(path)
 
-    def send_email(self, report_path, recipient_email):
+    def send_email(self, report_path):
         subject = "Generated Report"
-        body = "Please find attached the generated report."
-
+        body = "Segue em anexo o relatório completo da avaliação."
+        email_list = [
+            email.strip() 
+            for email in os.getenv("EMAIL_LIST", "").split(",") 
+            if email.strip()
+        ]
+        
         # Create the email message
         email = EmailMessage(
             subject=subject,
             body=body,
-            from_email="gustavopfpereira30@gmail.com",  # Use the sender email from settings
-            to=["gustavopfpereira30@gmail.com"],
+            from_email=os.getenv("EMAIL_HOST_USER"),  # Use the sender email from settings
+            to=email_list,
         )
 
         # Attach the report file
@@ -708,7 +742,7 @@ class PowerPointReportGenerator:
         # Send the email
         try:
             email.send()  # This sends the email using Django's configured email backend
-            print(f"Email sent to {recipient_email}")
+            print(f"Email sent to {email_list}")
         except Exception as e:
             print(f"Error sending email: {e}")
 

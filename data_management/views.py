@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .helpers.serialize_to_json import serialize_ona_form
 from .helpers.views_helper import EvaluatorViewHelper, create_section
 from report.helpers.utils import PDFReportGenerator
+from django.utils import timezone
 
 
 class EvaluatorView(LoginRequiredMixin, View):
@@ -72,7 +73,7 @@ class ONAFormView(LoginRequiredMixin, View):
         )
 
     def post(self, request, form_id, evaluator_id):
-        pdf = PDFReportGenerator(filename="Relatório do formulário",)
+        pdf = PDFReportGenerator(filename=f"Relatório do formulário-{evaluator_id}-{timezone.now()}",)
         ona_form = ONAForm.objects.get(id=form_id)
 
         form_data = request.POST
@@ -83,14 +84,12 @@ class ONAFormView(LoginRequiredMixin, View):
         )
 
 
-
         section_list = create_section(
             form_data=form_data, sections=ona_form.ONA_sections.all()
         )
 
         new_ona_form.answered_sections.set(section_list)
         pdf.create_pdf_report_for_subsection(
-                
                 evaluator_name=new_ona_form.evaluator.name,
                 answers=new_ona_form,
             )
