@@ -96,6 +96,7 @@ class ONAFormView(LoginRequiredMixin, View):
         pdf.create_pdf_report_for_subsection(
                 evaluator_name=new_ona_form.evaluator.name,
                 answers=new_ona_form,
+                evaluator_id=evaluator_id
             )
   
         return redirect("evaluator_form")

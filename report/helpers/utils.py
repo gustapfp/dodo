@@ -15,7 +15,7 @@ from pptx import Presentation
 from pptx.util import Inches
 from django.core.mail import EmailMessage
 from reportlab.lib.pagesizes import letter
-
+from data_management.models import Evaluator
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
@@ -487,7 +487,8 @@ class GraphsGenerator:
 class PDFReportGenerator:
     def __init__(self, filename):
         self.filename = filename
-        self.save_path = f"report/subsection_reports/relator_formulario_{timezone.now()}.pdf"
+
+        self.save_path = f"/tmp/relator_formulario_{timezone.now()}.pdf"
         self.doc = SimpleDocTemplate(
             self.save_path,
             pagesize=letter
@@ -496,7 +497,7 @@ class PDFReportGenerator:
         self.metrics = MetricsCalculator()
         self.graphs = GraphsGenerator()
     
-    def create_pdf_report_for_subsection(self, evaluator_name: str, answers: ONAFormAnswered):
+    def create_pdf_report_for_subsection(self, evaluator_name: str, answers: ONAFormAnswered, evaluator_id: int):
     # Build the PDF content
         self.add_title(evaluator_name)
         metrics = self.metrics.get_ona_form_average_distribution(ona_form=answers)
@@ -516,11 +517,14 @@ class PDFReportGenerator:
         # Reinitialize self.doc with the save path so that build() writes directly to this file
      
         self.doc.build(self.story)
-        
+        evaluator = Evaluator.objects.filter(
+            id=evaluator_id
+        ).first()
+        evaluator_email=evaluator.email
         # Send the email with the generated PDF attached
-        self.send_email_report(report_path=self.save_path)
+        self.send_email_report(report_path=self.save_path, evaluator_email = evaluator_email)
 
-    def send_email_report(self, report_path):
+    def send_email_report(self, report_path, evaluator_email):
         subject = "Generated Report"
         body = "Segue em anexo o relatório completo da avaliação."
         email_list = [
@@ -532,10 +536,12 @@ class PDFReportGenerator:
         email = EmailMessage(
             subject=subject,
             body=body,
-            from_email=os.getenv("EMAIL_HOST_USER"),
+            from_email=os.getenv("EMAIL_HOST_USER"), #+ evaluator_email,
             to=email_list,
         )
-        
+       
+# Save your file to temp_file_path and attach it to your email
+
         with open(report_path, "rb") as file:
             email.attach_file(report_path)
         
@@ -714,7 +720,8 @@ class PowerPointReportGenerator:
         self.add_subsection_images(subsections)
         self.add_plot_line_image(hospital)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        path = f"report/presentations_report/{report_name}_{timestamp}.pptx"
+        
+        path = f"/tmp/presentations_report/{report_name}_{timestamp}.pptx"
         self.presentation.save(path)
         self.send_email(path)
 
