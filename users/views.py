@@ -14,6 +14,8 @@ def login_view(request):
             login(request, user)
         else:
             messages.error(request, "Invalid username or password")
+            
+            
     return render(
         request=request,
         template_name="templates/registration/login.html",

@@ -50,11 +50,15 @@ class EvaluatorView(LoginRequiredMixin, View):
                 evaluator_id=evaluator.id
             )
         except Exception as e:
-            messages.error(
-                request,
+            return HttpResponse(
                 f"Formulário Invalido. Você adicionou informações fora do padrão esperado. Error: {str(e)}",
+                status=400
             )
-            return redirect("evaluator_form")
+            # messages.error(
+            #     request,
+            #     f"Formulário Invalido. Você adicionou informações fora do padrão esperado. Error: {str(e)}",
+            # )
+            # return redirect("evaluator_form")
 
 
 class ONAFormView(LoginRequiredMixin, View):

@@ -47,13 +47,13 @@ class EvaluatorViewHelper:
         db_evaluator = Evaluator.objects.filter(email=form_evaluator.email).first()
         if  db_evaluator:
 
-            messages.success(request, "Bem vindo de volta!")
+            # messages.success(request, "Bem vindo de volta!")
 
             return db_evaluator
         else:
             form_evaluator.hospital = request.user.hospital
             form_evaluator.save()
-            messages.success(request, "Avaliador cadastrado com sucesso")
+            # messages.success(request, "Avaliador cadastrado com sucesso")
             return form_evaluator
         
 
