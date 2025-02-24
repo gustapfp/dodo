@@ -488,7 +488,7 @@ class PDFReportGenerator:
     def __init__(self, filename):
         self.filename = filename
 
-        self.save_path = f"/tmp/relator_formulario_{timezone.now()}.pdf"
+        self.save_path = f"/tmp/relatorio_formulario_{timezone.now()}.pdf"
         self.doc = SimpleDocTemplate(
             self.save_path,
             pagesize=letter
@@ -721,7 +721,7 @@ class PowerPointReportGenerator:
         self.add_plot_line_image(hospital)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        path = f"/tmp/presentations_report/{report_name}_{timestamp}.pptx"
+        path = f"/tmp/apresentacao_do_dia_{timestamp}.pptx"
         self.presentation.save(path)
         self.send_email(path)
 
