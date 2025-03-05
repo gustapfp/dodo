@@ -26,6 +26,11 @@ from django.forms.models import model_to_dict
 import os
 import matplotlib.dates as mdates
 from django.utils import timezone
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.styles import getSampleStyleSheet
+
+
 
 class GraphsGenerator:
     def plot_bar_plot(self, data, title):
@@ -496,10 +501,24 @@ class PDFReportGenerator:
         self.story = []  # This will hold the content of the PDF
         self.metrics = MetricsCalculator()
         self.graphs = GraphsGenerator()
+        
+      
+        
     
     def create_pdf_report_for_subsection(self, evaluator_name: str, answers: ONAFormAnswered, evaluator_id: int):
+        
     # Build the PDF content
-        self.add_title(evaluator_name)
+        sections = answers.ona_form.ONA_sections.all()
+        section_title = sections[0].section_title    
+        subsections = answers.answered_sections.all()
+        subsections = subsections[0].answered_subsections.all()
+        subsection_title = subsections[0].form_subsection.subsection_title    
+        
+        self.add_title(
+            evaluator_name=evaluator_name,
+            section_title=section_title,
+            subsection_title=subsection_title,
+        )
         metrics = self.metrics.get_ona_form_average_distribution(ona_form=answers)
         
         form_distribution_img = self.graphs.plot_bar_plot(
@@ -552,10 +571,25 @@ class PDFReportGenerator:
             print(f"Failed to send email: {str(e)}")
             raise
             
-    def add_title(self, evaluator_name: str) -> None:
-        title = f"Relatório de Preenchimento do Formulário por {evaluator_name}"
+    def add_title(self, evaluator_name: str, section_title: str, subsection_title: str) -> None:
+        # Register the DejaVuSans font (supports extended Latin characters)
+        pdfmetrics.registerFont(TTFont('DejaVuSans', 'report/helpers/DejaVuSans-Bold.ttf'))
+        
+        # Get default styles and set their font to DejaVuSans
         styles = getSampleStyleSheet()
+        styles['Normal'].fontName = 'DejaVuSans'
+        styles['Title'].fontName = 'DejaVuSans'
+        
+        # Build the title text
+        title = (
+            f"Relatório de preenchimento da subseção {subsection_title} "
+            f"na seção {section_title}, feito por {evaluator_name}"
+        )
+        
+        # Create a Paragraph using the updated 'Title' style
         title_paragraph = Paragraph(title, styles['Title'])
+        
+        # Add the title paragraph to your story
         self.story.append(title_paragraph)
 
     def display_answers_with_comments(self, questions_answers):
