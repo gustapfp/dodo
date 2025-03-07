@@ -125,15 +125,18 @@ class GraphsGenerator:
             "supera": "#FF7F00"  # Orange
         }
 
-        # Convert data to DataFrame and transpose
+        # Convert data to DataFrame and transposedf = df[["supera", "conforme", "parcial conforme", "não conforme"]]
         df = pd.DataFrame(data).T
-        df = df[["supera", "conforme", "parcial conforme", "não conforme"]]
-        df = df.reset_index()
+        
+        desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
+        existing_cols = [col for col in desired_cols if col in df.columns]
+        df = df[existing_cols]
 
+        df = df.reset_index()
         # Melt the DataFrame to long format for plotting
         df_melted = df.melt(
             id_vars=["index"],
-            value_vars=["supera", "conforme", "parcial conforme", "não conforme"],
+            value_vars=existing_cols,
             var_name="Categoria",
             value_name="Quantidade",
         )
@@ -162,7 +165,7 @@ class GraphsGenerator:
 
         # Create custom legend handles to match the color map
         handles = []
-        categories = ["supera", "conforme", "parcial conforme", "não conforme"]
+        categories = existing_cols
 
         # Create a legend entry for each category in the predefined order
         for status in categories:
@@ -203,13 +206,15 @@ class GraphsGenerator:
 
         # Convert the dictionary into a DataFrame
         df = pd.DataFrame(data).T  # Transpose to have sections as rows
-        df = df[["supera", "conforme", "parcial conforme", "não conforme"]]  # Ensure correct column order
+        desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
+        existing_cols = [col for col in desired_cols if col in df.columns]
+    
         df = df.reset_index()  # Reset the index to have a 'Setor' column for seaborn
 
         # Melt the dataframe for seaborn
         df_melted = df.melt(
             id_vars=["index"],
-            value_vars=["supera", "conforme", "parcial conforme", "não conforme"],
+            value_vars=existing_cols,
             var_name="Categoria",
             value_name="Quantidade",
         )
@@ -294,13 +299,15 @@ class GraphsGenerator:
 
         # Convert the dictionary into a DataFrame
         df = pd.DataFrame(data).T  # Transpose to have sections as rows
-        df = df[["supera", "conforme", "parcial conforme", "não conforme"]]  # Ensure correct column order
+        desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
+        existing_cols = [col for col in desired_cols if col in df.columns]
+        df = df[existing_cols] # Ensure correct column order
         df = df.reset_index()  # Reset the index to have a 'Setor' column for seaborn
 
         # Melt the dataframe for seaborn
         df_melted = df.melt(
             id_vars=["index"],
-            value_vars=["supera", "conforme", "parcial conforme", "não conforme"],
+            value_vars=existing_cols,
             var_name="Categoria",
             value_name="Quantidade",
         )
@@ -374,7 +381,7 @@ class GraphsGenerator:
                 markersize=10,
                 label=status.capitalize(),
             )
-            for status in  ["supera", "conforme", "parcial conforme", "não conforme"]
+            for status in  existing_cols
         ]
 
         # Add the custom legend to all subplots
@@ -450,11 +457,12 @@ class GraphsGenerator:
 
         # Show grid lines
         plt.grid(True)
-
+        desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
+        existing_cols = [col for col in desired_cols if col in df.columns]
         # Create custom legend handles using the fixed color map
         handles = [
             plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_map[status], markersize=10, label=status)
-            for status in  ["supera", "conforme", "parcial conforme", "não conforme"]
+            for status in  existing_cols
         ]
 
         # Add the custom legend to the plot
