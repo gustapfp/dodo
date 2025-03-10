@@ -8,7 +8,6 @@ from django.shortcuts import redirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-
 from .helpers.serialize_to_json import serialize_ona_form
 from .helpers.views_helper import EvaluatorViewHelper, create_section
 from report.helpers.utils import PDFReportGenerator

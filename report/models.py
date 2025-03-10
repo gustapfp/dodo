@@ -8,7 +8,7 @@ from data_management.models import (
     Hospital,
 )
 from pydantic import BaseModel
-
+from django.utils import timezone
 
 class QuestionAnswer(models.Model):
     question = models.ForeignKey(
@@ -115,7 +115,7 @@ class ONAFormDistribution(models.Model):
     ona_answer_total_distribution = models.JSONField(default=dict)
     # ona_answer_core_distribution = models.JSONField(default=dict)
     score = models.FloatField(default=0.0, null=True)
-    date = models.DateTimeField(auto_now_add=True, null=True)
+    date = models.DateTimeField(default=timezone.now, null=True, blank=True)
     hospital = models.ForeignKey(
         Hospital,
         on_delete=models.CASCADE,
