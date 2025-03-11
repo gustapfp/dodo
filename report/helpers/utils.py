@@ -22,13 +22,13 @@ from reportlab.lib.styles import getSampleStyleSheet
 from django.db.models import QuerySet
 from reportlab.platypus import Image
 from reportlab.platypus import Table, TableStyle, PageBreak
-from django.forms.models import model_to_dict
+
 import os
 import matplotlib.dates as mdates
 from django.utils import timezone
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.styles import getSampleStyleSheet
+
 
 
 
@@ -73,6 +73,9 @@ class GraphsGenerator:
 
         # Annotate bars with percentages
         for p in ax.patches:
+            height = p.get_height()
+            if height == 0:
+                continue
             ax.annotate(
                 f"{p.get_height():.1f}%",
                 (p.get_x() + p.get_width() / 2.0, p.get_height()),
@@ -125,9 +128,9 @@ class GraphsGenerator:
             "supera": "#FF7F00"  # Orange
         }
 
-        # Convert data to DataFrame and transposedf = df[["supera", "conforme", "parcial conforme", "não conforme"]]
+        # Convert data to DataFrame and transpose
         df = pd.DataFrame(data).T
-        
+
         desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
         existing_cols = [col for col in desired_cols if col in df.columns]
         df = df[existing_cols]
@@ -147,8 +150,8 @@ class GraphsGenerator:
         # Set up the plot
         plt.figure(figsize=(18, 6))
 
-        # Use color map to assign colors dynamically based on the category
-        sns.barplot(
+        # Create the grouped bar plot and capture the axis object
+        ax = sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
@@ -156,6 +159,23 @@ class GraphsGenerator:
             palette=color_map,  # Use the custom color map
             edgecolor="black",
         )
+
+        # Annotate bars with percentages
+        for p in ax.patches:
+            height = p.get_height()
+            if height == 0:
+                continue
+            ax.annotate(
+                f"{p.get_height():.1f}%",
+                (p.get_x() + p.get_width() / 2.0, p.get_height()),
+                ha="center",
+                va="center",
+                fontsize=12,
+                color="black",
+                fontweight="bold",
+                xytext=(0, 10),
+                textcoords="offset points",
+            )
 
         # Customize the plot
         plt.grid(True, axis="y", linestyle="--", alpha=0.7)
@@ -165,10 +185,7 @@ class GraphsGenerator:
 
         # Create custom legend handles to match the color map
         handles = []
-        categories = existing_cols
-
-        # Create a legend entry for each category in the predefined order
-        for status in categories:
+        for status in existing_cols:
             color = color_map[status]
             handles.append(
                 plt.Line2D(
@@ -195,70 +212,126 @@ class GraphsGenerator:
         buf.seek(0)
         return buf
 
+
     def plot_grouped_bar_split_section_1(self, data, title):
         # Define the fixed color map for the categories
         color_map = {
             "não conforme": "#E41A1C",  # Red
             "parcial conforme": "#377EB8",  # Blue
-            "conforme": "#4DAF4A",  # Green
-            "supera": "#FF7F00"  # Orange
+            "conforme": "#4DAF4A",      # Green
+            "supera": "#FF7F00"         # Orange
         }
 
-        # Convert the dictionary into a DataFrame
-        df = pd.DataFrame(data).T  # Transpose to have sections as rows
+        # Convert the dictionary into a DataFrame (transpose to have sections as rows)
+        df = pd.DataFrame(data).T
         desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
         existing_cols = [col for col in desired_cols if col in df.columns]
-    
-        df = df.reset_index()  # Reset the index to have a 'Setor' column for seaborn
 
-        # Melt the dataframe for seaborn
+        # Reset index so that the index becomes a column; later, we rename it to "Setor"
+        df = df.reset_index()
+
+        # Melt the DataFrame for Seaborn
         df_melted = df.melt(
             id_vars=["index"],
             value_vars=existing_cols,
             var_name="Categoria",
             value_name="Quantidade",
         )
-
-        # Rename 'index' column to 'Setor'
+        # Rename 'index' to 'Setor'
         df_melted = df_melted.rename(columns={"index": "Setor"})
 
-        # Split the dataset into two halves
-        mid_point = len(df_melted["Setor"].unique()) // 2
-        first_half = df_melted[df_melted["Setor"].isin(df["index"][:mid_point])]
-        second_half = df_melted[df_melted["Setor"].isin(df["index"][mid_point:])]
+        # Split the dataset into two halves based on unique "Setor" values
+        unique_setors = df_melted["Setor"].unique()
+        mid_point = len(unique_setors) // 2
+        first_half_setors = unique_setors[:mid_point]
+        second_half_setors = unique_setors[mid_point:]
+
+        first_half = df_melted[df_melted["Setor"].isin(first_half_setors)]
+        second_half = df_melted[df_melted["Setor"].isin(second_half_setors)]
+
+        # Precompute the total "Quantidade" for each Setor in both halves
+        group_sums_first = first_half.groupby("Setor")["Quantidade"].sum().to_dict()
+        group_sums_second = second_half.groupby("Setor")["Quantidade"].sum().to_dict()
 
         # Set up the figure with two subplots
         fig, axes = plt.subplots(2, 1, figsize=(15, 10), sharey=True)
 
-        # First subplot
+        # --- FIRST SUBPLOT ---
+        # Enforce order for x (Setor) and hue (Categoria) to match our DataFrame order
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=first_half,
-            palette=color_map,  # Use the custom color map
+            palette=color_map,
             edgecolor="black",
             ax=axes[0],
+            order=first_half["Setor"].unique(),  # fixed x order
+            hue_order=existing_cols,             # fixed hue order
         )
         axes[0].grid(True, axis="y", linestyle="--", alpha=0.7)
         axes[0].set_title(title + " (Parte 1)", fontsize=16)
         axes[0].set_ylabel("Quantidade de Respostas")
         axes[0].set_xlabel("Seção")
 
-        # Second subplot
+        # Annotate each bar relative to its group total (skip if value is zero)
+        for i, patch in enumerate(axes[0].patches):
+            height = patch.get_height()
+            if height == 0:
+                continue
+            # The order of patches corresponds to the order of rows in first_half
+            row = first_half.iloc[i]
+            setor = row["Setor"]
+            total = group_sums_first[setor]
+            percent = (height / total) * 100 if total else 0
+            axes[0].annotate(
+                f"{percent:.1f}%",
+                (patch.get_x() + patch.get_width() / 2.0, height),
+                ha="center",
+                va="center",
+                fontsize=12,
+                color="black",
+                fontweight="bold",
+                xytext=(0, 10),
+                textcoords="offset points",
+            )
+
+        # --- SECOND SUBPLOT ---
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=second_half,
-            palette=color_map,  # Use the custom color map
+            palette=color_map,
             edgecolor="black",
             ax=axes[1],
+            order=second_half["Setor"].unique(),
+            hue_order=existing_cols,
         )
         axes[1].grid(True, axis="y", linestyle="--", alpha=0.7)
         axes[1].set_title(title + " (Parte 2)", fontsize=16)
         axes[1].set_ylabel("Quantidade de Respostas")
         axes[1].set_xlabel("Seção")
+
+        for i, patch in enumerate(axes[1].patches):
+            height = patch.get_height()
+            if height == 0:
+                continue
+            row = second_half.iloc[i]
+            setor = row["Setor"]
+            total = group_sums_second[setor]
+            percent = (height / total) * 100 if total else 0
+            axes[1].annotate(
+                f"{percent:.1f}%",
+                (patch.get_x() + patch.get_width() / 2.0, height),
+                ha="center",
+                va="center",
+                fontsize=12,
+                color="black",
+                fontweight="bold",
+                xytext=(0, 10),
+                textcoords="offset points",
+            )   
 
         # Create custom legend handles using the fixed color map
         handles = [
@@ -274,7 +347,7 @@ class GraphsGenerator:
             for status in ["supera", "conforme", "parcial conforme", "não conforme"]
         ]
 
-        # Add the custom legend to both plots
+        # Add the custom legend to both subplots
         axes[0].legend(handles=handles, title="Legenda", loc="upper right")
         axes[1].legend(handles=handles, title="Legenda", loc="upper right")
 
@@ -288,23 +361,30 @@ class GraphsGenerator:
         buf.seek(0)
 
         return buf
+
+
+
+    # Rename 'index' column to 'Set
+
     def plot_grouped_bar_split_section_2(self, data, title):
         # Define the fixed color map for the categories
         color_map = {
-            "não conforme": "#E41A1C",  # Red
+            "não conforme": "#E41A1C",   # Red
             "parcial conforme": "#377EB8",  # Blue
-            "conforme": "#4DAF4A",  # Green
-            "supera": "#FF7F00"  # Orange
+            "conforme": "#4DAF4A",      # Green
+            "supera": "#FF7F00"         # Orange
         }
 
-        # Convert the dictionary into a DataFrame
-        df = pd.DataFrame(data).T  # Transpose to have sections as rows
+        # Convert the dictionary into a DataFrame (transpose to have sections as rows)
+        df = pd.DataFrame(data).T
         desired_cols = ["supera", "conforme", "parcial conforme", "não conforme"]
         existing_cols = [col for col in desired_cols if col in df.columns]
-        df = df[existing_cols] # Ensure correct column order
-        df = df.reset_index()  # Reset the index to have a 'Setor' column for seaborn
 
-        # Melt the dataframe for seaborn
+        # Reorder columns (just to keep them in a known order) and reset index
+        df = df[existing_cols]
+        df = df.reset_index()  # 'index' will become the "Setor" column
+
+        # Melt the DataFrame for Seaborn
         df_melted = df.melt(
             id_vars=["index"],
             value_vars=existing_cols,
@@ -315,60 +395,149 @@ class GraphsGenerator:
         # Rename 'index' column to 'Setor'
         df_melted = df_melted.rename(columns={"index": "Setor"})
 
-        # Split the dataset into three parts
-        first_point = len(df_melted["Setor"].unique()) // 3
-        second_point = first_point * 2 + 1
-        first_part = df_melted[df_melted["Setor"].isin(df["index"][:first_point])]
-        second_part = df_melted[df_melted["Setor"].isin(df["index"][first_point:second_point])]
-        third_part = df_melted[df_melted["Setor"].isin(df["index"][second_point:])]
+        # Split the dataset into three parts (roughly equal, or as needed)
+        unique_setors = df_melted["Setor"].unique()
+        first_point = len(unique_setors) // 3
+        second_point = first_point * 2
+
+        # Make sure slicing is correct even if there's a remainder
+        first_part_setors = unique_setors[:first_point]
+        second_part_setors = unique_setors[first_point:second_point]
+        third_part_setors = unique_setors[second_point:]
+
+        first_part = df_melted[df_melted["Setor"].isin(first_part_setors)]
+        second_part = df_melted[df_melted["Setor"].isin(second_part_setors)]
+        third_part = df_melted[df_melted["Setor"].isin(third_part_setors)]
+
+        # Precompute sums for each part by "Setor" so we know how to calculate percentages
+        group_sums_first = first_part.groupby("Setor")["Quantidade"].sum().to_dict()
+        group_sums_second = second_part.groupby("Setor")["Quantidade"].sum().to_dict()
+        group_sums_third = third_part.groupby("Setor")["Quantidade"].sum().to_dict()
 
         # Set up the figure with three subplots
         fig, axes = plt.subplots(3, 1, figsize=(20, 10), sharey=True)
 
-        # First subplot
+        # --- FIRST SUBPLOT ---
+        # We fix the order of x (Setor) and hue (Categoria) so that
+        # the order of patches matches the order of rows in first_part.
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=first_part,
-            palette=color_map,  # Use the custom color map
+            palette=color_map,
             edgecolor="black",
             ax=axes[0],
+            order=first_part["Setor"].unique(),  # ensures consistent x ordering
+            hue_order=existing_cols,            # ensures consistent hue ordering
         )
         axes[0].grid(True, axis="y", linestyle="--", alpha=0.7)
         axes[0].set_title(title + " (Parte 1)", fontsize=16)
         axes[0].set_ylabel("Quantidade de Respostas")
         axes[0].set_xlabel("Seção")
 
-        # Second subplot
+        # Annotate bars for the first subplot (relative to each Setor)
+        # We rely on the fact that seaborn plots in the same order we specified.
+        for i, patch in enumerate(axes[0].patches):
+            height = patch.get_height()
+            if height == 0:
+                continue
+
+            # Find the corresponding row in first_part
+            row = first_part.iloc[i]
+            setor = row["Setor"]
+            total_for_setor = group_sums_first[setor]
+            percent = (height / total_for_setor) * 100
+
+            axes[0].annotate(
+                f"{percent:.1f}%",
+                (patch.get_x() + patch.get_width() / 2.0, height),
+                ha="center",
+                va="center",
+                fontsize=12,
+                color="black",
+                fontweight="bold",
+                xytext=(0, 10),
+                textcoords="offset points",
+            )
+
+        # --- SECOND SUBPLOT ---
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=second_part,
-            palette=color_map,  # Use the custom color map
+            palette=color_map,
             edgecolor="black",
             ax=axes[1],
+            order=second_part["Setor"].unique(),
+            hue_order=existing_cols,
         )
         axes[1].grid(True, axis="y", linestyle="--", alpha=0.7)
         axes[1].set_title(title + " (Parte 2)", fontsize=16)
         axes[1].set_ylabel("Quantidade de Respostas")
         axes[1].set_xlabel("Seção")
 
-        # Third subplot
+        for i, patch in enumerate(axes[1].patches):
+            height = patch.get_height()
+            if height == 0:
+                continue
+
+            row = second_part.iloc[i]
+            setor = row["Setor"]
+            total_for_setor = group_sums_second[setor]
+            percent = (height / total_for_setor) * 100
+
+            axes[1].annotate(
+                f"{percent:.1f}%",
+                (patch.get_x() + patch.get_width() / 2.0, height),
+                ha="center",
+                va="center",
+                fontsize=12,
+                color="black",
+                fontweight="bold",
+                xytext=(0, 10),
+                textcoords="offset points",
+            )
+
+        # --- THIRD SUBPLOT ---
         sns.barplot(
             x="Setor",
             y="Quantidade",
             hue="Categoria",
             data=third_part,
-            palette=color_map,  # Use the custom color map
+            palette=color_map,
             edgecolor="black",
             ax=axes[2],
+            order=third_part["Setor"].unique(),
+            hue_order=existing_cols,
         )
         axes[2].grid(True, axis="y", linestyle="--", alpha=0.7)
         axes[2].set_title(title + " (Parte 3)", fontsize=16)
         axes[2].set_ylabel("Quantidade de Respostas")
         axes[2].set_xlabel("Seção")
+
+        for i, patch in enumerate(axes[2].patches):
+            height = patch.get_height()
+            if height == 0:
+                continue
+
+            row = third_part.iloc[i]
+            setor = row["Setor"]
+            total_for_setor = group_sums_third[setor]
+            percent = (height / total_for_setor) * 100
+
+            axes[2].annotate(
+                f"{percent:.1f}%",
+                (patch.get_x() + patch.get_width() / 2.0, height),
+                ha="center",
+                va="center",
+                fontsize=12,
+                color="black",
+                fontweight="bold",
+                xytext=(0, 10),
+                textcoords="offset points",
+            )
 
         # Create custom legend handles using the fixed color map
         handles = [
@@ -381,7 +550,7 @@ class GraphsGenerator:
                 markersize=10,
                 label=status.capitalize(),
             )
-            for status in  existing_cols
+            for status in existing_cols
         ]
 
         # Add the custom legend to all subplots
@@ -399,6 +568,8 @@ class GraphsGenerator:
         buf.seek(0)
 
         return buf
+
+
 
     def plot_line_graph_from_queryset(self, queryset, title):
         # Define the fixed color map for the categories

@@ -36,6 +36,9 @@ class FormSubsectionAnswered(models.Model):
         related_name="related_subsection",
         default=None,
     )
+    
+    def __str__(self):
+        return f"Subsection {self.form_subsection.subsection_title}"
 
 
 class FormSectionAnswered(models.Model):

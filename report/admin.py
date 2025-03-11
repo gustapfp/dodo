@@ -19,11 +19,25 @@ class ONAFormAdmin(forms.ModelForm):
 
 @admin.register(ONAFormAnswered)
 class ONAFormansweredAdmin(admin.ModelAdmin):
-    list_display = ("ona_form", "evaluator", "answered_at")
     filter_horizontal = ["answered_sections"]
     actions = ["make_presentation", "make_pdf_report"]
     form = ONAFormAdmin
+    list_display = ('ona_form', 'evaluator', 'answered_at', 'display_answered_subsections')
     
+    def display_answered_subsections(self, obj):
+        sections_display = []
+        # Loop through each answered section related to the ONAFormAnswered instance
+        for section in obj.answered_sections.all():
+            # Retrieve the related answered subsections from each FormSectionAnswered
+            subsections = section.answered_subsections.all()
+            if subsections:
+                # Join each subsection's string representation (ensure __str__ is meaningful)
+                subs = ", ".join(str(sub) for sub in subsections)
+                # Optionally include the parent section's title for clarity
+                sections_display.append(f"{subs}")
+        return " | ".join(sections_display)
+    display_answered_subsections.short_description = "Answered Subsections"
+ 
 
     @admin.action(description="Criar Relatório PowerPoint")
     def make_presentation(self, request, queryset):
