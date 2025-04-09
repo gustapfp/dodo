@@ -774,13 +774,14 @@ class PDFReportGenerator:
     def display_answers_with_comments(self, questions_answers):
         self.story.append(PageBreak())
         styles = getSampleStyleSheet()
-
-    
+        
+        
+        questions_answers = sorted(questions_answers, key=lambda x: x.question.question_id)
         for question in questions_answers:
             data = []
 
             # Add header row (with column names)
-            header = ['Descrição da Questão', 'Core', "Resposta", "Comentario"]
+            header = [question.question.question_id, 'Core', "Resposta", "Comentario"]
             data.append(header)
             page_width, page_height = letter
             left_margin, right_margin = 4 , 4   
