@@ -16,7 +16,7 @@ class QuestionAnswer(models.Model):
     )
     answer = models.CharField(max_length=20, null=True, blank=True)  # For text answers should remove this
     # core = models.BooleanField(default=False)
-    comment = models.TextField(max_length=600, null=True)
+    comment = models.TextField( null=True)
 
     def __str__(self):
         return f"Answer to {self.question.question_id}"
