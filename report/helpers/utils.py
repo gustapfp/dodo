@@ -21,14 +21,14 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from django.db.models import QuerySet
 from reportlab.platypus import Image
-from reportlab.platypus import Table, TableStyle, PageBreak
+from reportlab.platypus import LongTable, TableStyle, PageBreak
 
 import os
 import matplotlib.dates as mdates
 from django.utils import timezone
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-
+from textwrap import wrap
 
 
 
@@ -671,169 +671,141 @@ class GraphsGenerator:
 class PDFReportGenerator:
     def __init__(self, filename):
         self.filename = filename
-
         self.save_path = f"/tmp/relatorio_formulario_{timezone.now()}.pdf"
         self.doc = SimpleDocTemplate(
             self.save_path,
             pagesize=letter
         )
-        self.story = []  # This will hold the content of the PDF
+        self.story = []
         self.metrics = MetricsCalculator()
         self.graphs = GraphsGenerator()
-        
-      
-        
-    
+
     def create_pdf_report_for_subsection(self, evaluator_name: str, answers: ONAFormAnswered, evaluator_id: int):
-        
-    # Build the PDF content
         sections = answers.ona_form.ONA_sections.all()
-        section_title = sections[0].section_title    
-        subsections = answers.answered_sections.all()
-        subsections = subsections[0].answered_subsections.all()
-        subsection_title = subsections[0].form_subsection.subsection_title    
-        
+        section_title = sections[0].section_title
+        subsections = answers.answered_sections.first().answered_subsections.all()
+        subsection_title = subsections[0].form_subsection.subsection_title
+
         self.add_title(
             evaluator_name=evaluator_name,
             section_title=section_title,
             subsection_title=subsection_title,
         )
         metrics = self.metrics.get_ona_form_average_distribution(ona_form=answers)
-        
         form_distribution_img = self.graphs.plot_bar_plot(
             data=metrics["ONA answer Distribution"],
             title="Distribuição das Respostas no formulario",
         )
         self.insert_image_center(image=form_distribution_img)
         self.display_answers_with_comments(questions_answers=metrics["Answers with comments"])
-        
-        # Generate a timestamped save path
-       
-      
-        
-        
-        # Reinitialize self.doc with the save path so that build() writes directly to this file
-     
+
         self.doc.build(self.story)
-        evaluator = Evaluator.objects.filter(
-            id=evaluator_id
-        ).first()
-        evaluator_email=evaluator.email
-        # Send the email with the generated PDF attached
-        self.send_email_report(report_path=self.save_path, evaluator_email = evaluator_email)
+        evaluator = Evaluator.objects.filter(id=evaluator_id).first()
+        self.send_email_report(report_path=self.save_path, evaluator_email=evaluator.email)
 
     def send_email_report(self, report_path, evaluator_email):
         subject = "Generated Report"
         body = "Segue em anexo o relatório completo da avaliação."
-        email_list = [
-            email.strip() 
-            for email in os.getenv("EMAIL_LIST", "").split(",") 
-            if email.strip()
-        ]
-        
+        email_list = [e.strip() for e in os.getenv("EMAIL_LIST", "").split(",") if e.strip()]
         email = EmailMessage(
             subject=subject,
             body=body,
-            from_email=os.getenv("EMAIL_HOST_USER"), #+ evaluator_email,
+            from_email=os.getenv("EMAIL_HOST_USER"),
             to=email_list,
         )
-       
-# Save your file to temp_file_path and attach it to your email
-
         with open(report_path, "rb") as file:
             email.attach_file(report_path)
-        
         try:
             email.send()
             print(f"Email sent to {email_list}")
         except Exception as e:
-            print(f"Failed to send email: {str(e)}")
+            print(f"Failed to send email: {e}")
             raise
-            
+
     def add_title(self, evaluator_name: str, section_title: str, subsection_title: str) -> None:
-        # Register the DejaVuSans font (supports extended Latin characters)
         pdfmetrics.registerFont(TTFont('DejaVuSans', 'report/helpers/DejaVuSans-Bold.ttf'))
-        
-        # Get default styles and set their font to DejaVuSans
         styles = getSampleStyleSheet()
         styles['Normal'].fontName = 'DejaVuSans'
         styles['Title'].fontName = 'DejaVuSans'
-        
-        # Build the title text
         title = (
             f"Relatório de preenchimento da subseção {subsection_title} "
             f"na seção {section_title}, feito por {evaluator_name}"
         )
-        
-        # Create a Paragraph using the updated 'Title' style
         title_paragraph = Paragraph(title, styles['Title'])
-        
-        # Add the title paragraph to your story
         self.story.append(title_paragraph)
 
     def display_answers_with_comments(self, questions_answers):
+       
         self.story.append(PageBreak())
         styles = getSampleStyleSheet()
-        
-        
         questions_answers = sorted(questions_answers, key=lambda x: x.question.question_id)
+
+        # Calcular dimensões de largura de coluna
+        page_width, _ = letter
+        left_margin, right_margin = 4, 4
+        table_width = page_width - left_margin - right_margin
+        col_widths = [table_width * 0.20] * 4
+
+        max_chars_per_line = 100  # ajuste conforme necessário
+
         for question in questions_answers:
-            data = []
+            # Prepara o conteúdo dividido em múltiplos parágrafos
+            desc_lines = wrap(question.question.description, max_chars_per_line)
+            comment_lines = wrap(str(question.comment or ''), max_chars_per_line)
 
-            # Add header row (with column names)
-            header = [question.question.question_id, 'Core', "Resposta", "Comentario"]
-            data.append(header)
-            page_width, page_height = letter
-            left_margin, right_margin = 4 , 4   
-            table_width = page_width - left_margin - right_margin
-        
-            question_desc = f"{question.question.description}"
-            core = "Sim" if question.question.core else "Não"
-            core_info = f"{core}"
-            answer_info = f"{question.answer}"
-            comment_info = f"{question.comment}"
+            # Cabeçalho inicial
+            data = [[
+                Paragraph(str(question.question.question_id), styles['Normal']),
+                Paragraph('Core', styles['Normal']),
+                Paragraph('Resposta', styles['Normal']),
+                Paragraph('Comentário', styles['Normal']),
+            ]]
 
-            
-            row = [
-                Paragraph(question_desc, styles['Normal']),
-                Paragraph(core_info, styles['Normal']),
-                Paragraph(answer_info, styles['Normal']),
-                Paragraph(comment_info, styles['Normal'])
-            ]
-            data.append(row)
-            col_widths = [table_width * 0.20, table_width * 0.20, table_width * 0.20, table_width * 0.20]
-        
-            table = Table(data, colWidths=col_widths, spaceAfter=20) 
+            # Prepara lista de Paragraphs para cada linha de descrição e comentário
+            desc_paras = [Paragraph(line, styles['Normal']) for line in desc_lines]
+            comment_paras = [Paragraph(line, styles['Normal']) for line in comment_lines]
+
+            # Número de linhas a imprimir (máximo de desc ou comment)
+            row_count = max(len(desc_paras), len(comment_paras))
+
+            for i in range(row_count):
+                row = [
+                    desc_paras[i] if i < len(desc_paras) else '',
+                    Paragraph('Sim' if question.question.core else 'Não', styles['Normal']) if i == 0 else '',
+                    Paragraph(str(question.answer), styles['Normal']) if i == 0 else '',
+                    comment_paras[i] if i < len(comment_paras) else '',
+                ]
+                data.append(row)
+
+            # Cria o LongTable sem KeepInFrame
+            table = LongTable(
+                data,
+                colWidths=col_widths,
+                # repeatRows=1,
+                spaceAfter=20
+            )
             table.setStyle(TableStyle([
-                ('GRID', (0, 0), (-1, -1), 1, colors.black),  
-                ('BACKGROUND', (0, 0), (-1, 0), colors.blue), 
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white), 
-                ('ALIGN',(0,-1),(-1,-1),'CENTER'),
-                ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'), 
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12), 
-                ('TOPPADDING', (0, 1), (-1, -1), 8),  
-                ('LEFTPADDING', (0, 0), (-1, -1), 5), 
-                ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-                # ('SPACEAFTER', (0, 0), (-1, -1), 50)
+                ('GRID',          (0, 0), (-1, -1), 1, colors.black),
+                ('BACKGROUND',    (0, 0), (-1, 0), colors.blue),
+                ('TEXTCOLOR',     (0, 0), (-1, 0), colors.white),
+                ('ALIGN',         (0, 1), (-1, -1), 'CENTER'),
+                ('VALIGN',        (0, 1), (-1, -1), 'MIDDLE'),
+                ('FONTNAME',      (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME',      (0, 1), (-1, -1), 'Helvetica'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('TOPPADDING',    (0, 1), (-1, -1), 8),
+                ('LEFTPADDING',   (0, 0), (-1, -1), 5),
+                ('RIGHTPADDING',  (0, 0), (-1, -1), 5),
             ]))
 
-            # Add the table to the story (content of the PDF)
             self.story.append(table)
             self.story.append(Paragraph("<br />", styles['Normal']))
-    def insert_image_center(self, image: BytesIO) -> None:
-        # The width and height for the image in the PDF
-        img_width, img_height = 400, 400
-     
-        
-        # Use the Image flowable to insert the image into the story
-        img = Image(image, width=img_width, height=img_height)
-        img.hAlign = 'CENTER'  # This centers the image in the PDF
-        
-        # Add the image flowable to the story
-        self.story.append(img)
 
+    def insert_image_center(self, image: BytesIO) -> None:
+        img = Image(image, width=400, height=400)
+        img.hAlign = 'CENTER'
+        self.story.append(img)
+    
 class PowerPointReportGenerator:
     def __init__(self):
         self.template_ona_path = "report/helpers/template-ona-report.pptx"
